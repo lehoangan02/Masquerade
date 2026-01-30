@@ -482,6 +482,10 @@ PrefabInstance:
       propertyPath: skinColor.r
       value: 0.97735846
       objectReference: {fileID: 0}
+    - target: {fileID: 2412362482934087906, guid: bbc5d11a0ba45e048b45b1e480c56e1f, type: 3}
+      propertyPath: patrolVertical
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2433801786550041833, guid: bbc5d11a0ba45e048b45b1e480c56e1f, type: 3}
       propertyPath: m_Name
       value: Creep
@@ -492,7 +496,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8602404082584432109, guid: bbc5d11a0ba45e048b45b1e480c56e1f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.32
+      value: -5.69
       objectReference: {fileID: 0}
     - target: {fileID: 8602404082584432109, guid: bbc5d11a0ba45e048b45b1e480c56e1f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -577,6 +581,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 313327963165214763, guid: f088296a6918f86489b57acde3702e31, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2824252698210481209, guid: f088296a6918f86489b57acde3702e31, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2824252698210481209, guid: f088296a6918f86489b57acde3702e31, type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3325994493648380448, guid: f088296a6918f86489b57acde3702e31, type: 3}

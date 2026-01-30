@@ -4,8 +4,7 @@ public class Enemy_Angry : EnemyBase
 {
     [Header("Angry Stats")]
     public float berserkSpeed = 10f;
-    private Vector2 currentChargeTarget;
-
+    
     private void Reset()
     {
         moveSpeed = 6f; 
@@ -16,50 +15,59 @@ public class Enemy_Angry : EnemyBase
 
     protected override void PerformBehavior(float distanceToPlayer)
     {
-        // Check mask directly
         if (currentMask == MaskType.Red)
         {
-            BerserkLogic();
+            // --- BERSERK MODE (Red Mask) ---
+            moveSpeed = berserkSpeed;
+
+            if (distanceToPlayer > stoppingDistance) 
+            {
+                // CRITICAL: We pass ONLY 'obstacleLayer'.
+                // This means it ignores 'pitLayer', so it will run into pits and die.
+                MoveToSmart(player.position, obstacleLayer);
+            }
+            else 
+            {
+                StopMoving();
+            }
         }
         else
         {
-            // Normal Angry Logic
-            Logic_ChaseIfInRange(distanceToPlayer);
+            // --- NORMAL ANGRY MODE ---
+            // Behaves like a standard enemy (Smart Chase: Avoids Walls AND Pits)
+            
+            if (IsPlayerVisible(distanceToPlayer) || isAlerted)
+            {
+                if (!isAlerted) isAlerted = true; 
+
+                if (distanceToPlayer > stoppingDistance)
+                {
+                    // No mask passed = Defaults to (Obstacle | Pit)
+                    MoveToSmart(player.position); 
+                }
+                else
+                {
+                    StopMoving();
+                    if(spriteRenderer) spriteRenderer.flipX = player.position.x < transform.position.x;
+                }
+            }
+            else
+            {
+                StopMoving();
+            }
         }
     }
 
-    private void BerserkLogic()
-    {
-        // 1. Determine Target (Player)
-        // We re-update target constantly to track player, or you can lock it.
-        // For "Straight Line" logic that refreshes:
-        currentChargeTarget = player.position;
-
-        Vector2 dir = (currentChargeTarget - (Vector2)transform.position).normalized;
-
-        // 2. Wall Check
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, 1f);
-        if (hit.collider != null && hit.collider.CompareTag("Wall"))
-        {
-            // If wall is ahead, we keep targeting player (re-pathing)
-            // Or you can add logic to slide along wall
-        }
-
-        // 3. Move Fast
-        rb.MovePosition(rb.position + dir * berserkSpeed * Time.fixedDeltaTime);
-        if(spriteRenderer) spriteRenderer.flipX = dir.x < 0;
-    }
-
+    // Logic: Berserkers destroy other enemies on impact
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Only kill allies if we have the Red Mask
         if (currentMask == MaskType.Red)
         {
             EnemyBase otherEnemy = collision.gameObject.GetComponent<EnemyBase>();
             if (otherEnemy != null)
             {
-                Destroy(otherEnemy.gameObject);
-                Debug.Log("Berserker smashed an ally!");
+                Debug.Log("Berserker smashed an ally! Masks dropped.");
+                otherEnemy.Die(); // Kills the other enemy and drops their mask
             }
         }
     }

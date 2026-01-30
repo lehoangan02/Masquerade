@@ -21,17 +21,27 @@ public class Enemy_Standard : EnemyBase
 
     protected override void PerformBehavior(float distanceToPlayer)
     {
-        // 1. RED MASK LOGIC (Aggressive)
-        // We use MaskType.Red now
+        // 1. RED MASK LOGIC (Aggressive + Dumb to Pits)
         if (currentMask == MaskType.Red)
         {
             moveSpeed = chaseSpeed * 1.5f; 
-            Logic_ChaseIfInRange(distanceToPlayer); // Infinite Chase
+            
+            // SMART CHASE (BERSERK):
+            // We pass 'obstacleLayer' only. This means it IGNORES the 'pitLayer'.
+            // Result: It chases fast but will fall into pits.
+            if (distanceToPlayer > stoppingDistance) 
+            {
+                MoveToSmart(player.position, obstacleLayer);
+            }
+            else 
+            {
+                StopMoving();
+            }
+            
             return;
         }
 
         // 2. NORMAL LOGIC
-        // IsPlayerVisible handles MaskType.Yellow internally
         bool canSeePlayer = IsPlayerVisible(distanceToPlayer);
 
         if (canSeePlayer || isAlerted) 
@@ -43,12 +53,16 @@ public class Enemy_Standard : EnemyBase
 
         if (loseAggroTimer > 0)
         {
+            // CHASE STATE (Smart & Safe)
             moveSpeed = chaseSpeed;
-            if (distanceToPlayer > stoppingDistance) MoveTo(player.position);
+            
+            // Standard MoveToSmart automatically avoids Walls AND Pits
+            if (distanceToPlayer > stoppingDistance) MoveToSmart(player.position); 
             else StopMoving();
         }
         else
         {
+            // PATROL STATE
             moveSpeed = patrolSpeed;
             PatrolLogic();
         }
@@ -59,7 +73,12 @@ public class Enemy_Standard : EnemyBase
         Vector2 direction = patrolVertical ? Vector2.up : Vector2.right;
         float offset = movingPositive ? patrolRange : -patrolRange;
         Vector2 target = startPos + (direction * offset);
-        MoveTo(target);
+        
+        // --- FIX IS HERE ---
+        // Changed MoveTo -> MoveToSmart
+        // This ensures they don't walk into walls/pits while patrolling
+        MoveToSmart(target); 
+        
         if (Vector2.Distance(transform.position, target) < 0.1f) movingPositive = !movingPositive;
     }
     
