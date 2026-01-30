@@ -139,7 +139,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 027c335b5287443f9857a3dc9c95f869, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneLoader
-  transitionAnimator: {fileID: 8332374456379992572}
+  transition: {fileID: 8332374456379992572}
   transitionTime: 1
 --- !u!1 &7025211647521414047
 GameObject:
@@ -241,14 +241,46 @@ PrefabInstance:
       propertyPath: m_Name
       value: Button
       objectReference: {fileID: 0}
+    - target: {fileID: 4225575078415478584, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5101235348043044363, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
+      propertyPath: m_text
+      value: START
+      objectReference: {fileID: 0}
+    - target: {fileID: 5101235348043044363, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
+      propertyPath: m_fontSize
+      value: 102.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5101235348043044363, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
+      propertyPath: m_margin.w
+      value: 43.712067
+      objectReference: {fileID: 0}
     - target: {fileID: 5101235348043044363, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+      objectReference: {fileID: 11400000, guid: 476c4fe96181845f692f8ecff8aff873, type: 2}
+    - target: {fileID: 5101235348043044363, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
+      propertyPath: m_fontStyle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5101235348043044363, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 102.7
+      objectReference: {fileID: 0}
     - target: {fileID: 5101235348043044363, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+      objectReference: {fileID: -4487590422509093171, guid: 476c4fe96181845f692f8ecff8aff873, type: 2}
+    - target: {fileID: 5101235348043044363, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 5101235348043044363, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8016069146069930438, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -315,7 +347,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8016069146069930438, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000061035
+      value: -156
       objectReference: {fileID: 0}
     - target: {fileID: 8016069146069930438, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

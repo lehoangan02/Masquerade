@@ -8,17 +8,6 @@ public class SceneLoader : MonoBehaviour
     [SerializeField] private Animator transition;
     [SerializeField] private float transitionTime = 5f;
 
-
-    void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
     void Update()
     {
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
@@ -49,11 +38,6 @@ public class SceneLoader : MonoBehaviour
         transition.SetTrigger("Start");
         yield return new WaitForSeconds(transitionTime);
         SceneManager.LoadScene(sceneIndex);
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        transition = FindFirstObjectByType<Animator>();
     }
 
 }
