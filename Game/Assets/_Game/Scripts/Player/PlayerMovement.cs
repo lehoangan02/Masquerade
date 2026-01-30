@@ -9,7 +9,8 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed = 6f;
     public Rigidbody2D rb;
-    public Animator animator;
+    [Tooltip("Optional")]
+    [SerializeField] private Animator animator;
     private Vector2 moveInput;
 
     void Start()
