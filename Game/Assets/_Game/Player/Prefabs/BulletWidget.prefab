@@ -46,9 +46,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BulletTypeWidget
   bulletIcon: {fileID: 0}
   ammoText: {fileID: 0}
+  typeNameText: {fileID: 0}
+  redMaskPrefab: {fileID: 7617987490089478548, guid: 8e40752248e75dd49b05b1efe016b0bf, type: 3}
+  blueMaskPrefab: {fileID: 1005997722415774844, guid: f6397baac7245484493de05891cbc868, type: 3}
+  greenMaskPrefab: {fileID: 2045379204643330621, guid: 621b528141a90f542ae4c6323881ec7f, type: 3}
   maxAmmo: 10
   currentAmmo: 10
   cycleInterval: 1
   autoCycle: 1
   widgetPosition: 1
-  offset: {x: -10, y: 10}
+  offset: {x: -30, y: 30}

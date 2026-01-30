@@ -1,6 +1,61 @@
 using UnityEngine;
 
 /// <summary>
+/// Base throwable type implementation for the widget.
+/// Used for both bullets and masks.
+/// </summary>
+[System.Serializable]
+public class ThrowableType
+{
+    [SerializeField] private string typeName = "Basic";
+    [SerializeField] private Color color = Color.white;
+    [SerializeField] private GameObject prefab;
+
+    public string TypeName => typeName;
+    public Color Color => color;
+    public GameObject Prefab => prefab;
+
+    public ThrowableType(string name, Color col, GameObject prefabRef = null)
+    {
+        typeName = name;
+        color = col;
+        prefab = prefabRef;
+    }
+}
+
+/// <summary>
+/// Red mask type - Rage effect.
+/// </summary>
+[System.Serializable]
+public class RedMaskType : ThrowableType
+{
+    public RedMaskType(GameObject prefab = null) : base("Rage", Color.red, prefab) { }
+}
+
+/// <summary>
+/// Blue mask type - Confusion effect.
+/// </summary>
+[System.Serializable]
+public class BlueMaskType : ThrowableType
+{
+    public BlueMaskType(GameObject prefab = null) : base("Confusion", Color.cyan, prefab) { }
+}
+
+/// <summary>
+/// Green mask type - Charm effect.
+/// </summary>
+[System.Serializable]
+public class GreenMaskType : ThrowableType
+{
+    public GreenMaskType(GameObject prefab = null) : base("Charm", Color.green, prefab) { }
+}
+
+
+// ============================================
+// LEGACY: Keep for backwards compatibility
+// ============================================
+
+/// <summary>
 /// Base bullet type implementation. Extend this for custom bullet types.
 /// </summary>
 [System.Serializable]
@@ -53,7 +108,6 @@ public class RedBulletType : BulletType
     public override void OnHitEffect(GameObject target)
     {
         Debug.Log($"[Red/Fire] Hit {target.name}!");
-        // TODO: Apply burn effect
     }
 }
 
@@ -68,7 +122,6 @@ public class BlueBulletType : BulletType
     public override void OnHitEffect(GameObject target)
     {
         Debug.Log($"[Blue/Ice] Hit {target.name}!");
-        // TODO: Apply slow effect
     }
 }
 
@@ -83,6 +136,5 @@ public class GreenBulletType : BulletType
     public override void OnHitEffect(GameObject target)
     {
         Debug.Log($"[Green/Poison] Hit {target.name}!");
-        // TODO: Apply poison effect
     }
 }

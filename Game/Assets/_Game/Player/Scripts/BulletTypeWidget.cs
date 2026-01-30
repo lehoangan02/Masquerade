@@ -4,8 +4,8 @@ using TMPro;
 using System.Collections.Generic;
 
 /// <summary>
-/// UI Widget that displays current bullet type and cycles automatically.
-/// All bullet types share a single ammo pool.
+/// UI Widget that displays current mask type and cycles automatically.
+/// All mask types share a single ammo pool.
 /// Place on a Canvas UI element.
 /// </summary>
 public class BulletTypeWidget : MonoBehaviour
@@ -13,6 +13,12 @@ public class BulletTypeWidget : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private Image bulletIcon;
     [SerializeField] private TextMeshProUGUI ammoText;
+    [SerializeField] private TextMeshProUGUI typeNameText;
+    
+    [Header("Mask Prefabs")]
+    [SerializeField] private GameObject redMaskPrefab;
+    [SerializeField] private GameObject blueMaskPrefab;
+    [SerializeField] private GameObject greenMaskPrefab;
     
     [Header("Shared Ammo Pool")]
     [SerializeField] private int maxAmmo = 10;
@@ -28,8 +34,8 @@ public class BulletTypeWidget : MonoBehaviour
     
     public enum WidgetPosition { TopRight, BottomRight }
     
-    // Bullet types
-    private List<IBulletType> bulletTypes = new List<IBulletType>();
+    // Mask types
+    private List<ThrowableType> maskTypes = new List<ThrowableType>();
     private int currentTypeIndex = 0;
     private float cycleTimer;
     
@@ -37,8 +43,12 @@ public class BulletTypeWidget : MonoBehaviour
     public static BulletTypeWidget Instance { get; private set; }
     
     // Current type accessor
-    public IBulletType CurrentBulletType => bulletTypes.Count > 0 ? bulletTypes[currentTypeIndex] : null;
-    public Color CurrentColor => CurrentBulletType?.BulletColor ?? Color.white;
+    public ThrowableType CurrentMaskType => maskTypes.Count > 0 ? maskTypes[currentTypeIndex] : null;
+    public Color CurrentColor => CurrentMaskType?.Color ?? Color.white;
+    public GameObject CurrentPrefab => CurrentMaskType?.Prefab;
+    
+    // Legacy accessor for compatibility
+    public IBulletType CurrentBulletType => null; // Deprecated, use CurrentMaskType
     
     // Shared ammo accessors
     public int CurrentAmmo => currentAmmo;
@@ -51,10 +61,10 @@ public class BulletTypeWidget : MonoBehaviour
         // Initialize shared ammo
         currentAmmo = maxAmmo;
         
-        // Initialize default bullet types (placeholders)
-        bulletTypes.Add(new RedBulletType());
-        bulletTypes.Add(new BlueBulletType());
-        bulletTypes.Add(new GreenBulletType());
+        // Initialize mask types (colors as placeholders)
+        maskTypes.Add(new RedMaskType(redMaskPrefab));
+        maskTypes.Add(new BlueMaskType(blueMaskPrefab));
+        maskTypes.Add(new GreenMaskType(greenMaskPrefab));
     }
 
     void Start()
@@ -71,7 +81,7 @@ public class BulletTypeWidget : MonoBehaviour
 
     void Update()
     {
-        if (autoCycle && bulletTypes.Count > 1)
+        if (autoCycle && maskTypes.Count > 1)
         {
             cycleTimer += Time.deltaTime;
             if (cycleTimer >= cycleInterval)
@@ -159,12 +169,18 @@ public class BulletTypeWidget : MonoBehaviour
 
     void UpdateDisplay()
     {
-        if (CurrentBulletType == null) return;
+        if (CurrentMaskType == null) return;
         
         // Update icon color
         if (bulletIcon != null)
         {
-            bulletIcon.color = CurrentBulletType.BulletColor;
+            bulletIcon.color = CurrentMaskType.Color;
+        }
+        
+        // Update type name
+        if (typeNameText != null)
+        {
+            typeNameText.text = CurrentMaskType.TypeName;
         }
         
         // Update ammo text (shared pool)
@@ -175,25 +191,25 @@ public class BulletTypeWidget : MonoBehaviour
     }
 
     /// <summary>
-    /// Cycle to next bullet type.
+    /// Cycle to next mask type.
     /// </summary>
     public void CycleNext()
     {
-        if (bulletTypes.Count == 0) return;
+        if (maskTypes.Count == 0) return;
         
-        currentTypeIndex = (currentTypeIndex + 1) % bulletTypes.Count;
+        currentTypeIndex = (currentTypeIndex + 1) % maskTypes.Count;
         UpdateDisplay();
     }
 
     /// <summary>
-    /// Cycle to previous bullet type.
+    /// Cycle to previous mask type.
     /// </summary>
     public void CyclePrevious()
     {
-        if (bulletTypes.Count == 0) return;
+        if (maskTypes.Count == 0) return;
         
         currentTypeIndex--;
-        if (currentTypeIndex < 0) currentTypeIndex = bulletTypes.Count - 1;
+        if (currentTypeIndex < 0) currentTypeIndex = maskTypes.Count - 1;
         UpdateDisplay();
     }
 
