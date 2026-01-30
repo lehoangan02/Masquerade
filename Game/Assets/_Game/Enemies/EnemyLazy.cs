@@ -3,51 +3,43 @@ using UnityEngine;
 public class Enemy_Lazy : EnemyBase
 {
     [Header("Lazy Settings")]
-    public float shoutRange = 10f; // The "Zone Alert" radius
+    public float shoutRange = 10f; 
 
-    // --- STEP 1: Defaults ---
     private void Reset()
     {
         moveSpeed = 0f;
         visionRange = 6f;
-        fovAngle = 360f; // Full Circle Vision
-        stoppingDistance = 0f;
-        skinColor = Color.green;
+        fovAngle = 360f; 
         shoutRange = 10f;
     }
 
-    // --- STEP 2: Logic ---
-    protected override void PerformBehavior(float distanceToPlayer)
+    // Override ApplyMask to handle the Range Boost
+    public override void ApplyMask(MaskType type)
     {
-        // 1. Ensure we don't move
-        StopMoving();
-
-        // 2. Custom Logic: If player is close, scream
-        if (IsPlayerVisible(distanceToPlayer))
+        base.ApplyMask(type);
+        if (type == MaskType.Aggressive)
         {
-            // Trigger the alert with the Zone Info:
-            // (Target, My Position, My Shout Radius)
-            EnemyAlertSystem.TriggerAlert(player.position, transform.position, shoutRange);
-            
-            // Visual feedback: Face the player
-            if(spriteRenderer) 
-                spriteRenderer.flipX = player.position.x < transform.position.x;
+            shoutRange = 20f; // BIGGER ZONE!
+            Debug.Log("Lazy Enemy: MY SCREAM IS NOW HUGE!");
         }
     }
 
-    // Lazy enemies usually don't care about alerts from others
-    protected override void OnAlertReceived(Vector3 pos, Vector3 origin, float range)
+    protected override void PerformBehavior(float distanceToPlayer)
     {
-        // Do nothing. I am lazy.
+        StopMoving();
+
+        if (IsPlayerVisible(distanceToPlayer))
+        {
+            EnemyAlertSystem.TriggerAlert(player.position, transform.position, shoutRange);
+            if(spriteRenderer) spriteRenderer.flipX = player.position.x < transform.position.x;
+        }
     }
 
-    // --- STEP 3: DRAW THE ZONE ---
-    // This draws the Yellow Circle in the Scene View when you click the enemy
+    protected override void OnAlertReceived(Vector3 p, Vector3 o, float r) { }
+
     private void OnDrawGizmosSelected()
     {
-        // Draw the Vision Range (White) handled by base class usually, 
-        // but here is the Alarm Range (Yellow):
-        Gizmos.color = new Color(1f, 1f, 0f, 0.5f); // Yellow with transparency
+        Gizmos.color = new Color(1f, 1f, 0f, 0.5f);
         Gizmos.DrawWireSphere(transform.position, shoutRange);
     }
 }
