@@ -6,12 +6,12 @@ public abstract class EnemyBase : MonoBehaviour
     [Header("Base Stats")]
     public float moveSpeed = 3f;
     public float visionRange = 5f;
-    public float stoppingDistance = 0.6f; // New: Stops before hitting player
+    public float stoppingDistance = 0.6f;
     public Color skinColor = Color.white;
     public bool showVisionCircle = true;
 
-    [Header("References")]
-    public Transform player;
+    // CHANGED: No longer public, so it doesn't show in Inspector
+    protected Transform player; 
 
     protected Rigidbody2D rb;
     protected SpriteRenderer spriteRenderer;
@@ -23,6 +23,18 @@ public abstract class EnemyBase : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // --- NEW: AUTO-FIND PLAYER BY TAG ---
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+        }
+        else
+        {
+            // Error safety check
+            Debug.LogError("ENEMY ERROR: Could not find an object tagged 'Player'! Please assign the Tag in the Inspector.");
+        }
 
         // Physics Setup
         rb.gravityScale = 0;
@@ -43,12 +55,10 @@ public abstract class EnemyBase : MonoBehaviour
     // --- LOOP ---
     protected virtual void FixedUpdate()
     {
+        // Safety: If player wasn't found, do nothing
         if (player == null) return;
 
-        // Calculate distance for everyone to use
         float dist = Vector2.Distance(transform.position, player.position);
-
-        // RUN THE SPECIFIC LOGIC (Defined in Child Scripts)
         PerformBehavior(dist);
     }
 
@@ -57,30 +67,23 @@ public abstract class EnemyBase : MonoBehaviour
         if (showVisionCircle && lineRenderer != null) DrawCircle();
     }
 
-    // --- METHODS FOR CHILDREN TO USE ---
-    
-    // Abstract: Children MUST implement this
+    // --- METHODS FOR CHILDREN ---
     protected abstract void PerformBehavior(float distanceToPlayer);
 
-    // Common Logic: Chase if close
     protected void Logic_ChaseIfInRange(float dist)
     {
         if (dist <= visionRange || isAlerted)
         {
-            // NEW: Only move if we are further than stopping distance
             if (dist > stoppingDistance)
             {
                 MoveTo(player.position);
             }
             else
             {
-                // We are close enough to attack, stop moving
                 StopMoving();
-                // Optional: Keep looking at player while stopped
                 if(spriteRenderer) spriteRenderer.flipX = player.position.x < transform.position.x;
             }
 
-            // If we reached the spot and player is gone, calm down
             if (isAlerted && dist < 1f) isAlerted = false;
         }
         else
@@ -94,23 +97,20 @@ public abstract class EnemyBase : MonoBehaviour
         Vector2 dir = (target - (Vector2)transform.position).normalized;
         rb.MovePosition(rb.position + dir * moveSpeed * Time.fixedDeltaTime);
         
-        // Flip Sprite (No Teleporting)
         if(spriteRenderer) spriteRenderer.flipX = target.x < transform.position.x;
     }
 
     protected void StopMoving() 
     {
-        // FIX: Changed linearVelocity to velocity for compatibility
         rb.linearVelocity = Vector2.zero; 
     }
 
-    // Standard Alert Receiver
     protected virtual void OnAlertReceived(Vector3 pos)
     {
         isAlerted = true;
     }
 
-    // --- VISUALS (Automatic) ---
+    // --- VISUALS ---
     void SetupLineRenderer()
     {
         lineRenderer = gameObject.AddComponent<LineRenderer>();
