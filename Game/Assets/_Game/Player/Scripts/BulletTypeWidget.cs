@@ -47,6 +47,24 @@ public class BulletTypeWidget : MonoBehaviour
     public Color CurrentColor => CurrentMaskType?.Color ?? Color.white;
     public GameObject CurrentPrefab => CurrentMaskType?.Prefab;
     
+    /// <summary>
+    /// Get the current MaskType enum value for EnemyBase compatibility.
+    /// </summary>
+    public MaskType CurrentMaskTypeEnum
+    {
+        get
+        {
+            if (CurrentMaskType == null) return MaskType.None;
+            
+            // Match by color
+            if (CurrentMaskType.Color == Color.red) return MaskType.Red;
+            if (CurrentMaskType.Color == Color.yellow || CurrentMaskType.Color == Color.cyan) return MaskType.Yellow;
+            if (CurrentMaskType.Color == Color.green) return MaskType.Green;
+            
+            return MaskType.None;
+        }
+    }
+    
     // Legacy accessor for compatibility
     public IBulletType CurrentBulletType => null; // Deprecated, use CurrentMaskType
     
