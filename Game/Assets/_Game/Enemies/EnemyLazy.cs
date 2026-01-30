@@ -37,10 +37,17 @@ public class Enemy_Lazy : EnemyBase
 
     protected override void OnAlertReceived(Vector3 p, Vector3 o, float r) { }
 
-    private void OnDrawGizmosSelected()
+   private void OnDrawGizmosSelected()
     {
-        // Draw the base range (approximate)
+        float rangeToDraw = baseShoutRange;
+
+        // Check if the game is actually running to see the live mask effect
+        if (Application.isPlaying)
+        {
+            if (currentMask == MaskType.Red) rangeToDraw = 20f;
+        }
+
         Gizmos.color = new Color(1f, 1f, 0f, 0.5f);
-        Gizmos.DrawWireSphere(transform.position, baseShoutRange);
+        Gizmos.DrawWireSphere(transform.position, rangeToDraw);
     }
 }

@@ -21,17 +21,18 @@ public class Enemy_Standard : EnemyBase
 
     protected override void PerformBehavior(float distanceToPlayer)
     {
-        // 1. RED MASK LOGIC (Aggressive)
-        // We use MaskType.Red now
+        // 1. RED MASK LOGIC (Aggressive + Smart)
         if (currentMask == MaskType.Red)
         {
             moveSpeed = chaseSpeed * 1.5f; 
-            Logic_ChaseIfInRange(distanceToPlayer); // Infinite Chase
+            // SMART CHASE: Use MoveToSmart instead of MoveTo
+            if (distanceToPlayer > stoppingDistance) MoveToSmart(player.position);
+            else StopMoving();
+            
             return;
         }
 
         // 2. NORMAL LOGIC
-        // IsPlayerVisible handles MaskType.Yellow internally
         bool canSeePlayer = IsPlayerVisible(distanceToPlayer);
 
         if (canSeePlayer || isAlerted) 
@@ -43,12 +44,14 @@ public class Enemy_Standard : EnemyBase
 
         if (loseAggroTimer > 0)
         {
+            // CHASE STATE (Smart)
             moveSpeed = chaseSpeed;
-            if (distanceToPlayer > stoppingDistance) MoveTo(player.position);
+            if (distanceToPlayer > stoppingDistance) MoveToSmart(player.position); // <-- UPDATED
             else StopMoving();
         }
         else
         {
+            // PATROL STATE (Dumb/Linear is fine for patrol)
             moveSpeed = patrolSpeed;
             PatrolLogic();
         }
@@ -56,10 +59,13 @@ public class Enemy_Standard : EnemyBase
     
     private void PatrolLogic()
     {
+        // Patrol can stay dumb (Linear) because we place them in clear areas usually
         Vector2 direction = patrolVertical ? Vector2.up : Vector2.right;
         float offset = movingPositive ? patrolRange : -patrolRange;
         Vector2 target = startPos + (direction * offset);
-        MoveTo(target);
+        
+        MoveTo(target); // Patrol uses simple movement
+        
         if (Vector2.Distance(transform.position, target) < 0.1f) movingPositive = !movingPositive;
     }
     
