@@ -60,6 +60,7 @@ public class SceneLoader : MonoBehaviour
     private IEnumerator LoadScene(string sceneName)
     {
         transitionAnimator.SetTrigger("Start");
+        Debug.Log("Loading scene: " + sceneName);
         yield return new WaitForSeconds(transitionTime);
         SceneManager.LoadScene(sceneName);
     }
