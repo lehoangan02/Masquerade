@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
@@ -13,9 +13,10 @@ public class PlayerController : MonoBehaviour
     
     [Header("State")]
     [SerializeField] private State currentState = State.Normal;
+    [SerializeField] public bool isHidden = false; 
 
     [Header("Movement")]
-    [SerializeField] private float moveSpeed = 6f;
+    [SerializeField] public float moveSpeed = 6f;
     
     [Header("Components")]
     [SerializeField] private Rigidbody2D rb;
