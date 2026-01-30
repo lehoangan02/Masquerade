@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Custom_InvertBehind2D_Stable
-  m_Shader: {fileID: 4800000, guid: 50ccc64c7e14c458289df673732e8f71, type: 3}
+  m_Name: Custom_URP_BackgroundSample_Fixed
+  m_Shader: {fileID: 4800000, guid: 4e78b81c8856f4637860144f9ddd058a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -22,13 +22,10 @@ Material:
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
+    m_TexEnvs: []
     m_Ints: []
-    m_Floats: []
+    m_Floats:
+    - _DistortionStrength: 0.02
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1
