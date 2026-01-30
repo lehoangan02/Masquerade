@@ -347,6 +347,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Crossfade_Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 4230289336352420785, guid: 84d88e6f4748e46e698c959b75ca92f8, type: 3}
+      propertyPath: transitionTime
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 4507212664335066920, guid: 84d88e6f4748e46e698c959b75ca92f8, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -427,10 +431,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5270012548497988601, guid: 84d88e6f4748e46e698c959b75ca92f8, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7025211647521414047, guid: 84d88e6f4748e46e698c959b75ca92f8, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8332374456379992572, guid: 84d88e6f4748e46e698c959b75ca92f8, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 4ce7ebb3f8c9c4c2089311c504010b1a, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 3149172125287679245, guid: 84d88e6f4748e46e698c959b75ca92f8, type: 3}
