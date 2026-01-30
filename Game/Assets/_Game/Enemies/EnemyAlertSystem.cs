@@ -3,13 +3,11 @@ using System;
 
 public static class EnemyAlertSystem
 {
-    // The "Radio Channel"
-    public static event Action<Vector3> OnPlayerFound;
+    // Updated: Now sends Target Position, Sound Origin, and Sound Range
+    public static event Action<Vector3, Vector3, float> OnPlayerFound;
 
-    // The "Speak" button
-    public static void TriggerAlert(Vector3 playerPos)
+    public static void TriggerAlert(Vector3 targetPos, Vector3 soundOrigin, float range)
     {
-        // Invoke sends the message to everyone listening
-        OnPlayerFound?.Invoke(playerPos);
+        OnPlayerFound?.Invoke(targetPos, soundOrigin, range);
     }
 }
