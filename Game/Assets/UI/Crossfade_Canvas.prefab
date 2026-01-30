@@ -33,8 +33,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2330925641373832708}
   - {fileID: 7642766747776597754}
+  - {fileID: 2330925641373832708}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -241,6 +241,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Button
       objectReference: {fileID: 0}
+    - target: {fileID: 5101235348043044363, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    - target: {fileID: 5101235348043044363, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     - target: {fileID: 8016069146069930438, guid: c2a6f8fb18b464051a13b52bad7ea42f, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
