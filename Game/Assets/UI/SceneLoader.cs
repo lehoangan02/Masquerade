@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -20,8 +21,7 @@ public class SceneLoader : MonoBehaviour
     {
         return instance;
     }
-
-    // Update is called once per frame
+    [SerializeField] private Animator transitionAnimator;
     void Update()
     {
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
@@ -29,12 +29,25 @@ public class SceneLoader : MonoBehaviour
             LoadScene("SampleScene");
         }
     }
-    public void LoadScene(string sceneName)
+    public void LoadSceneByName(string sceneName)
     {
+        StartCoroutine(LoadScene(sceneName));
+    }
+    public void LoadSceneByIndex(int sceneIndex)
+    {
+        StartCoroutine(LoadScene(sceneIndex));
+    }
+    private IEnumerator LoadScene(string sceneName)
+    {
+        transitionAnimator.SetTrigger("Start");
+        yield return new WaitForSeconds(1f);
         UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
     }
-    public void LoadScene(int sceneIndex)
+    private IEnumerator LoadScene(int sceneIndex)
     {
+        transitionAnimator.SetTrigger("Start");
+        yield return new WaitForSeconds(1f);
         UnityEngine.SceneManagement.SceneManager.LoadScene(sceneIndex);
     }
+
 }
