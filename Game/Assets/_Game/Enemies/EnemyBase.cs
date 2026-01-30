@@ -6,34 +6,39 @@ public abstract class EnemyBase : MonoBehaviour
     [Header("Base Stats")]
     public float moveSpeed = 3f;
     public float visionRange = 5f;
+    [Range(0, 360)] public float fovAngle = 360f; // 360 = Circle, 60 = Cone
     public float stoppingDistance = 0.6f;
     public Color skinColor = Color.white;
     public bool showVisionCircle = true;
 
-    // CHANGED: No longer public, so it doesn't show in Inspector
-    protected Transform player; 
-
+    // References
+    protected Transform player;
     protected Rigidbody2D rb;
     protected SpriteRenderer spriteRenderer;
-    protected bool isAlerted = false;
     protected LineRenderer lineRenderer;
+    
+    // State
+    protected bool isAlerted = false;
 
     // --- SETUP ---
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        
+        // Find SpriteRenderer in children (fixes issue if visual is a child object)
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        if (spriteRenderer == null)
+             Debug.LogError($"ENEMY ERROR: '{gameObject.name}' has no SpriteRenderer in itself or children!");
 
-        // --- NEW: AUTO-FIND PLAYER BY TAG ---
+        // Auto-find Player
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
+        if (playerObj != null) 
         {
             player = playerObj.transform;
         }
-        else
+        else 
         {
-            // Error safety check
-            Debug.LogError("ENEMY ERROR: Could not find an object tagged 'Player'! Please assign the Tag in the Inspector.");
+            Debug.LogError("ENEMY ERROR: No object with tag 'Player' found! Please tag your player.");
         }
 
         // Physics Setup
@@ -42,6 +47,8 @@ public abstract class EnemyBase : MonoBehaviour
 
         // Visual Setup
         if(spriteRenderer) spriteRenderer.color = skinColor;
+        
+        // Subscribe to Radio
         EnemyAlertSystem.OnPlayerFound += OnAlertReceived;
 
         if (showVisionCircle) SetupLineRenderer();
@@ -49,13 +56,13 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
+        // Unsubscribe to prevent errors when enemy dies
         EnemyAlertSystem.OnPlayerFound -= OnAlertReceived;
     }
 
     // --- LOOP ---
     protected virtual void FixedUpdate()
     {
-        // Safety: If player wasn't found, do nothing
         if (player == null) return;
 
         float dist = Vector2.Distance(transform.position, player.position);
@@ -64,16 +71,46 @@ public abstract class EnemyBase : MonoBehaviour
 
     void LateUpdate()
     {
-        if (showVisionCircle && lineRenderer != null) DrawCircle();
+        if (showVisionCircle && lineRenderer != null) DrawVisionCone();
     }
 
-    // --- METHODS FOR CHILDREN ---
+    // --- CORE LOGIC METHODS ---
+    
+    // Abstract: Children MUST implement this
     protected abstract void PerformBehavior(float distanceToPlayer);
 
+    // Smart Vision Check (Distance + Angle + Obstacles logic could go here)
+    protected bool IsPlayerVisible(float dist)
+    {
+        // 1. Check Distance
+        if (dist > visionRange) return false;
+
+        // 2. If Alerted, we have "Infinite 360" vision (Psychic awareness)
+        if (isAlerted) return true;
+
+        // 3. If Angle is 360, we don't need math (Lazy Enemy)
+        if (fovAngle >= 360f) return true;
+
+        // 4. CONE MATH
+        // Determine which way we are facing based on the Sprite Flip
+        // Assuming: flipX TRUE = Facing LEFT, flipX FALSE = Facing RIGHT
+        Vector2 facingDir = (spriteRenderer != null && spriteRenderer.flipX) ? Vector2.left : Vector2.right;
+        Vector2 dirToPlayer = (player.position - transform.position).normalized;
+
+        // Calculate angle between where we look and where player is
+        float angleToPlayer = Vector2.Angle(facingDir, dirToPlayer);
+
+        // If angle is within half our FOV, we see them
+        return angleToPlayer < (fovAngle / 2f);
+    }
+
+    // Common Movement Logic
     protected void Logic_ChaseIfInRange(float dist)
     {
-        if (dist <= visionRange || isAlerted)
+        if (IsPlayerVisible(dist) || isAlerted)
         {
+            if (!isAlerted) isAlerted = true; 
+
             if (dist > stoppingDistance)
             {
                 MoveTo(player.position);
@@ -81,10 +118,9 @@ public abstract class EnemyBase : MonoBehaviour
             else
             {
                 StopMoving();
+                // Face player when stopped
                 if(spriteRenderer) spriteRenderer.flipX = player.position.x < transform.position.x;
             }
-
-            if (isAlerted && dist < 1f) isAlerted = false;
         }
         else
         {
@@ -97,43 +133,76 @@ public abstract class EnemyBase : MonoBehaviour
         Vector2 dir = (target - (Vector2)transform.position).normalized;
         rb.MovePosition(rb.position + dir * moveSpeed * Time.fixedDeltaTime);
         
-        if(spriteRenderer) spriteRenderer.flipX = target.x < transform.position.x;
+        // Face movement direction
+        if(spriteRenderer) spriteRenderer.flipX = dir.x < 0;
     }
 
-    protected void StopMoving() 
-    {
-        rb.linearVelocity = Vector2.zero; 
-    }
+    protected void StopMoving() => rb.linearVelocity = Vector2.zero;
 
-    protected virtual void OnAlertReceived(Vector3 pos)
+    // --- ALERT SYSTEM ---
+    // Now accepts Sound Origin and Range to limit who hears it
+    protected virtual void OnAlertReceived(Vector3 playerPos, Vector3 soundOrigin, float soundRange)
     {
+        // 1. Check distance to the scream origin
+        float distToSound = Vector2.Distance(transform.position, soundOrigin);
+
+        // 2. If too far, ignore it
+        if (distToSound > soundRange) return;
+
+        // 3. Otherwise, get angry
         isAlerted = true;
     }
 
-    // --- VISUALS ---
+    // --- VISUALS (Cone Drawing) ---
     void SetupLineRenderer()
     {
         lineRenderer = gameObject.AddComponent<LineRenderer>();
         lineRenderer.useWorldSpace = false;
         lineRenderer.startWidth = 0.05f;
         lineRenderer.endWidth = 0.05f;
-        lineRenderer.positionCount = 51;
-        lineRenderer.loop = true;
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         lineRenderer.sortingOrder = -1;
         lineRenderer.startColor = skinColor;
         lineRenderer.endColor = skinColor;
     }
 
-    void DrawCircle()
+    void DrawVisionCone()
     {
-        float angle = 0f;
-        for (int i = 0; i < 51; i++)
+        if (lineRenderer == null) return;
+
+        int segments = 50;
+        lineRenderer.positionCount = segments + 2; 
+
+        // Default to facing Right (0 degrees)
+        float currentFacingAngle = 0f;
+
+        // Check sprite flip safely
+        if (spriteRenderer != null && spriteRenderer.flipX)
         {
-            float x = Mathf.Sin(Mathf.Deg2Rad * angle) * visionRange;
-            float y = Mathf.Cos(Mathf.Deg2Rad * angle) * visionRange;
-            lineRenderer.SetPosition(i, new Vector3(x, y, 0));
-            angle += (360f / 50);
+            currentFacingAngle = 180f; // Face Left
+        }
+        
+        // Start Angle (Half of FOV to the left of facing dir)
+        float startAngle = currentFacingAngle - (fovAngle / 2f);
+        float angleStep = fovAngle / segments;
+
+        // Point 0 is center
+        lineRenderer.SetPosition(0, Vector3.zero);
+
+        for (int i = 0; i <= segments; i++)
+        {
+            float angleRad = Mathf.Deg2Rad * (startAngle + (angleStep * i));
+            float x = Mathf.Cos(angleRad) * visionRange;
+            float y = Mathf.Sin(angleRad) * visionRange;
+            
+            lineRenderer.SetPosition(i + 1, new Vector3(x, y, 0));
+        }
+
+        // Loop logic
+        lineRenderer.loop = true;
+        if (fovAngle >= 360) 
+        {
+            lineRenderer.positionCount = segments; // Clean circle
         }
     }
 }
