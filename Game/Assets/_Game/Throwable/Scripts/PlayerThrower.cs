@@ -3,12 +3,13 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// Handles player throwing mechanics with aimlock.
+/// Supports both bullets and masks via the widget.
 /// Attach to the Player alongside PlayerController.
 /// </summary>
 public class PlayerThrower : MonoBehaviour
 {
     [Header("Throwable Settings")]
-    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private GameObject defaultPrefab;
     [SerializeField] private Transform throwPoint;
     [SerializeField] private float throwCooldown = 0.2f;
 
@@ -171,10 +172,26 @@ public class PlayerThrower : MonoBehaviour
         // Check cooldown
         if (Time.time - lastThrowTime < throwCooldown) return;
         
-        // Check if we have a bullet prefab
-        if (bulletPrefab == null)
+        // Check ammo from widget (if exists)
+        if (BulletTypeWidget.Instance != null)
         {
-            Debug.LogWarning("PlayerThrower: No bullet prefab assigned!");
+            if (!BulletTypeWidget.Instance.UseCurrentAmmo())
+            {
+                Debug.Log("Out of ammo!");
+                return;
+            }
+        }
+
+        // Get prefab from widget or use default
+        GameObject prefabToThrow = defaultPrefab;
+        if (BulletTypeWidget.Instance != null && BulletTypeWidget.Instance.CurrentPrefab != null)
+        {
+            prefabToThrow = BulletTypeWidget.Instance.CurrentPrefab;
+        }
+        
+        if (prefabToThrow == null)
+        {
+            Debug.LogWarning("PlayerThrower: No throwable prefab assigned!");
             return;
         }
 
@@ -182,7 +199,7 @@ public class PlayerThrower : MonoBehaviour
         Vector2 aimDirection = GetAimDirection();
         
         // Spawn and throw
-        ThrowProjectile(aimDirection);
+        ThrowProjectile(prefabToThrow, aimDirection);
         
         lastThrowTime = Time.time;
     }
@@ -212,10 +229,30 @@ public class PlayerThrower : MonoBehaviour
     /// <summary>
     /// Spawn a projectile and throw it.
     /// </summary>
-    void ThrowProjectile(Vector2 direction)
+    void ThrowProjectile(GameObject prefab, Vector2 direction)
     {
         // Spawn at throw point
-        GameObject projectile = Instantiate(bulletPrefab, throwPoint.position, Quaternion.identity);
+        GameObject projectile = Instantiate(prefab, throwPoint.position, Quaternion.identity);
+        
+        // Apply color and type from widget
+        if (BulletTypeWidget.Instance != null)
+        {
+            // Try Mask first
+            Mask mask = projectile.GetComponent<Mask>();
+            if (mask != null)
+            {
+                mask.SetMaskType(BulletTypeWidget.Instance.CurrentMaskTypeEnum);
+            }
+            else
+            {
+                // Try Bullet
+                Bullet bullet = projectile.GetComponent<Bullet>();
+                if (bullet != null)
+                {
+                    bullet.SetColor(BulletTypeWidget.Instance.CurrentColor);
+                }
+            }
+        }
         
         // Get IThrowable and throw
         IThrowable throwable = projectile.GetComponent<IThrowable>();
@@ -231,11 +268,11 @@ public class PlayerThrower : MonoBehaviour
     }
 
     /// <summary>
-    /// Change the current throwable prefab (for weapon switching).
+    /// Change the default throwable prefab.
     /// </summary>
-    public void SetThrowable(GameObject newPrefab)
+    public void SetDefaultPrefab(GameObject newPrefab)
     {
-        bulletPrefab = newPrefab;
+        defaultPrefab = newPrefab;
     }
 
     /// <summary>

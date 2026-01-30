@@ -3,11 +3,11 @@ using System;
 
 public static class EnemyAlertSystem
 {
-    // Action that sends the position of the found player
-    public static event Action<Vector3> OnPlayerFound;
+    // Updated: Now sends Target Position, Sound Origin, and Sound Range
+    public static event Action<Vector3, Vector3, float> OnPlayerFound;
 
-    public static void TriggerAlert(Vector3 playerPos)
+    public static void TriggerAlert(Vector3 targetPos, Vector3 soundOrigin, float range)
     {
-        OnPlayerFound?.Invoke(playerPos);
+        OnPlayerFound?.Invoke(targetPos, soundOrigin, range);
     }
 }

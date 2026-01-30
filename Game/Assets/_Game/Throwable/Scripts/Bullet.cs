@@ -14,8 +14,10 @@ public class Bullet : MonoBehaviour, IThrowable
 
     [Header("Components")]
     [SerializeField] private Rigidbody2D rb;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     private bool hasBeenThrown = false;
+    private IBulletType bulletType;
 
     // IThrowable implementation
     public float Speed => speed;
@@ -24,6 +26,7 @@ public class Bullet : MonoBehaviour, IThrowable
     void Awake()
     {
         if (rb == null) rb = GetComponent<Rigidbody2D>();
+        if (spriteRenderer == null) spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         
         // Configure rigidbody for projectile
         rb.gravityScale = 0f;
@@ -34,6 +37,31 @@ public class Bullet : MonoBehaviour, IThrowable
     {
         // Auto-destroy after lifetime
         Destroy(gameObject, lifetime);
+    }
+
+    /// <summary>
+    /// Set the bullet type (color and effects).
+    /// </summary>
+    public void SetBulletType(IBulletType type)
+    {
+        bulletType = type;
+        
+        // Apply color
+        if (spriteRenderer != null && type != null)
+        {
+            spriteRenderer.color = type.BulletColor;
+        }
+    }
+
+    /// <summary>
+    /// Set just the color (simpler method).
+    /// </summary>
+    public void SetColor(Color color)
+    {
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = color;
+        }
     }
 
     public void Throw(Vector2 direction)
@@ -59,6 +87,9 @@ public class Bullet : MonoBehaviour, IThrowable
         if (target != null)
         {
             target.TakeDamage(damage);
+            
+            // Apply bullet type effect
+            bulletType?.OnHitEffect(other.gameObject);
         }
 
         // Destroy bullet on any hit (except player)
@@ -75,6 +106,9 @@ public class Bullet : MonoBehaviour, IThrowable
         if (target != null)
         {
             target.TakeDamage(damage);
+            
+            // Apply bullet type effect
+            bulletType?.OnHitEffect(collision.gameObject);
         }
 
         // Destroy on collision
