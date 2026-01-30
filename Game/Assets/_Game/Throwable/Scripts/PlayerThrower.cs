@@ -234,14 +234,14 @@ public class PlayerThrower : MonoBehaviour
         // Spawn at throw point
         GameObject projectile = Instantiate(prefab, throwPoint.position, Quaternion.identity);
         
-        // Apply color from widget
+        // Apply color and type from widget
         if (BulletTypeWidget.Instance != null)
         {
             // Try Mask first
             Mask mask = projectile.GetComponent<Mask>();
             if (mask != null)
             {
-                mask.SetColor(BulletTypeWidget.Instance.CurrentColor);
+                mask.SetMaskType(BulletTypeWidget.Instance.CurrentMaskTypeEnum);
             }
             else
             {

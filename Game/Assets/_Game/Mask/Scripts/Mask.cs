@@ -2,30 +2,52 @@ using UnityEngine;
 
 /// <summary>
 /// Base mask throwable. Sticks to enemies on hit.
+/// When dropped (enemy dies), becomes a pickup.
+/// Uses MaskType enum from EnemyBase for compatibility.
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
 public class Mask : MonoBehaviour, IMask
 {
+    public enum MaskState { Idle, Thrown, Attached, Dropped }
+
     [Header("Stats")]
     [SerializeField] private string maskName = "Mask";
+    [SerializeField] private MaskType maskType = MaskType.None;
     [SerializeField] private Color maskColor = Color.white;
     [SerializeField] private float speed = 12f;
     [SerializeField] private int damage = 5;
     [SerializeField] private float lifetime = 5f;
 
     [Header("Stick Settings")]
-    [SerializeField] private Vector2 stickOffset = Vector2.zero;
+    [SerializeField] private Vector2 stickOffset = new Vector2(0, 0.2f);
     [SerializeField] private float stickScale = 0.5f;
+
+    [Header("Pickup Settings")]
+    [SerializeField] private float attractionRadius = 3f;
+    [SerializeField] private float attractionSpeed = 8f;
+    [SerializeField] private float pickupRadius = 0.5f;
+    [SerializeField] private int ammoRefund = 1;
+    
+    [Header("Pickup Visuals")]
+    [SerializeField] private float bobSpeed = 2f;
+    [SerializeField] private float bobAmount = 0.15f;
+    [SerializeField] private float rotateSpeed = 90f;
+    
+    [Header("Spawn Settings")]
+    [Tooltip("Check this to spawn as a pickup (for testing or world drops)")]
+    [SerializeField] private bool spawnAsPickup = false;
 
     [Header("Components")]
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Collider2D col;
 
-    private bool hasBeenThrown = false;
-    private bool isAttached = false;
+    private MaskState currentState = MaskState.Idle;
     private Transform attachedTarget;
+    private Transform player;
+    private Vector3 dropPosition;
+    private float dropTime;
 
     // IThrowable implementation
     public float Speed => speed;
@@ -34,6 +56,13 @@ public class Mask : MonoBehaviour, IMask
     // IMask implementation
     public string MaskName => maskName;
     public Color MaskColor => maskColor;
+    public MaskType Type => maskType;
+    
+    // State accessors
+    public MaskState CurrentState => currentState;
+    public bool IsAttached => currentState == MaskState.Attached;
+    public bool IsDropped => currentState == MaskState.Dropped;
+    public Transform AttachedTarget => attachedTarget;
 
     void Awake()
     {
@@ -50,26 +79,64 @@ public class Mask : MonoBehaviour, IMask
         {
             spriteRenderer.color = maskColor;
         }
+        
+        // Find player
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null) player = playerObj.transform;
     }
 
     void Start()
     {
-        // Auto-destroy after lifetime (only if not attached)
-        Invoke(nameof(CheckDestroy), lifetime);
+        // If spawned as pickup, go directly to Dropped state
+        if (spawnAsPickup)
+        {
+            currentState = MaskState.Dropped;
+            dropPosition = transform.position;
+            dropTime = Time.time;
+            
+            // Configure for pickup
+            rb.bodyType = RigidbodyType2D.Kinematic;
+            rb.linearVelocity = Vector2.zero;
+            if (col != null) col.isTrigger = true;
+            
+            Debug.Log($"[{maskName}] Spawned as pickup.");
+        }
+        else
+        {
+            // Auto-destroy after lifetime (only if idle/thrown - not attached or dropped)
+            Invoke(nameof(CheckDestroy), lifetime);
+        }
+    }
+
+    void Update()
+    {
+        // Check if attached target was destroyed (enemy died)
+        if (currentState == MaskState.Attached && attachedTarget == null)
+        {
+            Drop();
+        }
+        
+        // Handle pickup behavior when dropped
+        if (currentState == MaskState.Dropped && player != null)
+        {
+            HandlePickupBehavior();
+        }
     }
 
     void CheckDestroy()
     {
-        if (!isAttached)
+        // Only destroy if still flying or idle - never if attached or dropped
+        if (currentState == MaskState.Idle || currentState == MaskState.Thrown)
         {
             Destroy(gameObject);
         }
+        // If attached or dropped, don't destroy - mask persists
     }
 
     public void Throw(Vector2 direction)
     {
-        if (hasBeenThrown) return;
-        hasBeenThrown = true;
+        if (currentState == MaskState.Thrown) return;
+        currentState = MaskState.Thrown;
         
         // Set velocity
         rb.linearVelocity = direction.normalized * speed;
@@ -88,6 +155,34 @@ public class Mask : MonoBehaviour, IMask
         }
     }
 
+    /// <summary>
+    /// Set the mask type (matches EnemyBase.MaskType enum).
+    /// </summary>
+    public void SetMaskType(MaskType type)
+    {
+        maskType = type;
+        
+        // Update name to match what EnemyBase looks for
+        switch (type)
+        {
+            case MaskType.Red:
+                maskName = "RedMask";
+                gameObject.name = "RedMask";
+                SetColor(Color.red);
+                break;
+            case MaskType.Yellow:
+                maskName = "YellowMask";
+                gameObject.name = "YellowMask";
+                SetColor(Color.yellow);
+                break;
+            case MaskType.Green:
+                maskName = "GreenMask";
+                gameObject.name = "GreenMask";
+                SetColor(Color.green);
+                break;
+        }
+    }
+
     void OnTriggerEnter2D(Collider2D other)
     {
         HandleCollision(other.gameObject, other.transform);
@@ -100,7 +195,15 @@ public class Mask : MonoBehaviour, IMask
 
     void HandleCollision(GameObject other, Transform otherTransform)
     {
-        if (isAttached) return;
+        // Pickup collision with player when dropped
+        if (currentState == MaskState.Dropped && other.CompareTag("Player"))
+        {
+            PickUp();
+            return;
+        }
+        
+        // Only process attack collisions when thrown
+        if (currentState != MaskState.Thrown) return;
         
         Debug.Log($"[Mask] Hit: {other.name}, Tag: {other.tag}");
         
@@ -126,7 +229,7 @@ public class Mask : MonoBehaviour, IMask
 
     void AttachToTarget(Transform target)
     {
-        isAttached = true;
+        currentState = MaskState.Attached;
         attachedTarget = target;
         
         // Stop movement
@@ -150,6 +253,88 @@ public class Mask : MonoBehaviour, IMask
         Debug.Log($"[{maskName}] Attached to {target.name}!");
     }
 
+    /// <summary>
+    /// Drop the mask (when enemy dies). Becomes a pickup.
+    /// </summary>
+    public void Drop()
+    {
+        if (currentState == MaskState.Dropped) return;
+        
+        currentState = MaskState.Dropped;
+        dropTime = Time.time;
+        
+        // Detach from parent
+        Vector3 worldPos = transform.position;
+        transform.SetParent(null);
+        transform.position = worldPos;
+        dropPosition = worldPos;
+        
+        // Reset scale and rotation
+        transform.localScale = Vector3.one * stickScale;
+        transform.rotation = Quaternion.identity;
+        
+        // Keep kinematic, no velocity
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.linearVelocity = Vector2.zero;
+        
+        // Re-enable collider as trigger for pickup
+        if (col != null)
+        {
+            col.enabled = true;
+            col.isTrigger = true;
+        }
+        
+        Debug.Log($"[{maskName}] Dropped! Ready for pickup.");
+    }
+
+    void HandlePickupBehavior()
+    {
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        
+        // Check for pickup (very close)
+        if (distanceToPlayer <= pickupRadius)
+        {
+            PickUp();
+            return;
+        }
+        
+        // Attraction behavior
+        if (distanceToPlayer <= attractionRadius)
+        {
+            // Move toward player, faster as it gets closer
+            float speedMultiplier = 1f + (1f - (distanceToPlayer / attractionRadius)) * 2f;
+            Vector2 direction = (player.position - transform.position).normalized;
+            transform.position += (Vector3)(direction * attractionSpeed * speedMultiplier * Time.deltaTime);
+            
+            // Spin while moving
+            transform.Rotate(0, 0, rotateSpeed * 2f * Time.deltaTime);
+        }
+        else
+        {
+            // Idle: bob up and down
+            float elapsed = Time.time - dropTime;
+            float yOffset = Mathf.Sin(elapsed * bobSpeed) * bobAmount;
+            transform.position = new Vector3(dropPosition.x, dropPosition.y + yOffset, dropPosition.z);
+            
+            // Slow rotation
+            transform.Rotate(0, 0, rotateSpeed * Time.deltaTime);
+        }
+    }
+
+    void PickUp()
+    {
+        if (currentState != MaskState.Dropped) return;
+        
+        // Add ammo to widget
+        if (BulletTypeWidget.Instance != null)
+        {
+            BulletTypeWidget.Instance.AddAmmo(ammoRefund);
+            Debug.Log($"[{maskName}] Picked up! +{ammoRefund} ammo");
+        }
+        
+        Destroy(gameObject);
+    }
+
     public virtual void OnAttach(GameObject target)
     {
         // Override in subclasses for attach effects (particles, sound, etc.)
@@ -160,5 +345,20 @@ public class Mask : MonoBehaviour, IMask
         // Override in subclasses for mask effects
         // This will be called by enemy scripts later
         Debug.Log($"[{maskName}] Effect applied to {target.name}!");
+    }
+
+    // Editor visualization
+    void OnDrawGizmosSelected()
+    {
+        if (currentState == MaskState.Dropped)
+        {
+            // Attraction radius
+            Gizmos.color = new Color(0, 1, 0, 0.3f);
+            Gizmos.DrawWireSphere(transform.position, attractionRadius);
+            
+            // Pickup radius
+            Gizmos.color = new Color(1, 1, 0, 0.5f);
+            Gizmos.DrawWireSphere(transform.position, pickupRadius);
+        }
     }
 }
