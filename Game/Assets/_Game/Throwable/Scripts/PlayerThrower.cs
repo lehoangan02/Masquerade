@@ -214,8 +214,28 @@ public class PlayerThrower : MonoBehaviour
     /// </summary>
     void ThrowProjectile(Vector2 direction)
     {
+        // Check ammo from widget (if exists)
+        if (BulletTypeWidget.Instance != null)
+        {
+            if (!BulletTypeWidget.Instance.UseCurrentAmmo())
+            {
+                Debug.Log("Out of ammo for this bullet type!");
+                return;
+            }
+        }
+        
         // Spawn at throw point
         GameObject projectile = Instantiate(bulletPrefab, throwPoint.position, Quaternion.identity);
+        
+        // Apply color from widget
+        if (BulletTypeWidget.Instance != null)
+        {
+            Bullet bullet = projectile.GetComponent<Bullet>();
+            if (bullet != null)
+            {
+                bullet.SetBulletType(BulletTypeWidget.Instance.CurrentBulletType);
+            }
+        }
         
         // Get IThrowable and throw
         IThrowable throwable = projectile.GetComponent<IThrowable>();
