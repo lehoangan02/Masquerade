@@ -1,5 +1,8 @@
 using UnityEngine;
 
+// Define the Mask Types
+public enum MaskType { None, Red, Yellow, Green }
+
 [RequireComponent(typeof(Rigidbody2D))]
 public abstract class EnemyBase : MonoBehaviour
 {
@@ -11,7 +14,7 @@ public abstract class EnemyBase : MonoBehaviour
     public Color skinColor = Color.white;
     public bool showVisionCircle = true;
 
-    // --- NEW: MASK VARIABLES ---
+    // --- MASK STATE ---
     protected MaskType currentMask = MaskType.None;
     protected float visionMultiplier = 1f;
 
@@ -26,20 +29,22 @@ public abstract class EnemyBase : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        
+
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null) player = playerObj.transform;
 
         rb.gravityScale = 0;
         rb.freezeRotation = true;
         if(spriteRenderer) spriteRenderer.color = skinColor;
+        
         EnemyAlertSystem.OnPlayerFound += OnAlertReceived;
         if (showVisionCircle) SetupLineRenderer();
     }
 
-    protected virtual void OnDestroy()
+    protected virtual void Update()
     {
-        EnemyAlertSystem.OnPlayerFound -= OnAlertReceived;
+        // constantly check the children for masks
+        UpdateMaskStatus();
     }
 
     protected virtual void FixedUpdate()
@@ -53,29 +58,42 @@ public abstract class EnemyBase : MonoBehaviour
         if (showVisionCircle && lineRenderer != null) DrawVisionCone();
     }
 
-    // --- NEW: APPLY MASK LOGIC ---
-    public virtual void ApplyMask(MaskType type)
+    // --- UPDATED: FIND MASK BY NAME ---
+    public void UpdateMaskStatus()
     {
-        currentMask = type;
+        // 1. Reset Defaults
+        currentMask = MaskType.None;
+        visionMultiplier = 1f;
 
-        if (type == MaskType.DecreaseVision)
+        // 2. Loop through all direct children
+        foreach (Transform child in transform)
         {
-            visionMultiplier = 0.5f; // Cut vision in half
-            // Visual feedback (optional): Turn Blue
-            if(spriteRenderer) spriteRenderer.color = Color.cyan; 
-        }
-        else if (type == MaskType.Aggressive)
-        {
-            visionMultiplier = 1f; // Reset vision reduction if we get aggressive
-            // Visual feedback: Turn Purple
-            if(spriteRenderer) spriteRenderer.color = new Color(0.5f, 0f, 1f); 
+            // We use .Contains() because Unity adds "(Clone)" to instantiated objects
+            string childName = child.name;
+
+            if (childName.Contains("RedMask"))
+            {
+                currentMask = MaskType.Red;
+                // Red has highest priority, so we can stop looking and return immediately
+                // (Logic for Red is handled in subclasses)
+                return; 
+            }
+            else if (childName.Contains("YellowMask"))
+            {
+                currentMask = MaskType.Yellow;
+                // Logic for Yellow (Decrease Vision) happens right here
+                visionMultiplier = 0.5f;
+            }
+            else if (childName.Contains("GreenMask"))
+            {
+                currentMask = MaskType.Green;
+            }
         }
     }
 
-    // --- UPDATED VISION CHECK ---
+    // --- VISION LOGIC (Uses the multiplier) ---
     protected bool IsPlayerVisible(float dist)
     {
-        // APPLY MULTIPLIER HERE
         float actualVision = visionRange * visionMultiplier;
 
         if (dist > actualVision) return false;
@@ -89,33 +107,22 @@ public abstract class EnemyBase : MonoBehaviour
         return angleToPlayer < (fovAngle / 2f);
     }
 
+    // --- SHARED BEHAVIOR HELPERS ---
     protected abstract void PerformBehavior(float distanceToPlayer);
 
-    // ... (Keep Logic_ChaseIfInRange, MoveTo, StopMoving same as before) ...
-    
-    // Helper needed for Angry Berserk Logic
     protected void Logic_ChaseIfInRange(float dist)
     {
-        float actualVision = visionRange * visionMultiplier;
-
         if (IsPlayerVisible(dist) || isAlerted)
         {
             if (!isAlerted) isAlerted = true; 
-
-            if (dist > stoppingDistance)
-            {
-                MoveTo(player.position);
-            }
-            else
+            if (dist > stoppingDistance) MoveTo(player.position);
+            else 
             {
                 StopMoving();
                 if(spriteRenderer) spriteRenderer.flipX = player.position.x < transform.position.x;
             }
         }
-        else
-        {
-            StopMoving();
-        }
+        else StopMoving();
     }
 
     protected void MoveTo(Vector2 target)
@@ -125,7 +132,7 @@ public abstract class EnemyBase : MonoBehaviour
         if(spriteRenderer) spriteRenderer.flipX = dir.x < 0;
     }
 
-    protected void StopMoving() => rb.velocity = Vector2.zero;
+    protected void StopMoving() => rb.linearVelocity = Vector2.zero;
 
     protected virtual void OnAlertReceived(Vector3 p, Vector3 o, float r)
     {
@@ -133,18 +140,16 @@ public abstract class EnemyBase : MonoBehaviour
         isAlerted = true;
     }
 
-    // ... (Keep SetupLineRenderer and DrawVisionCone same as before) ...
-    // Just ensure DrawVisionCone uses (visionRange * visionMultiplier) when drawing!
+    protected virtual void OnDestroy() { EnemyAlertSystem.OnPlayerFound -= OnAlertReceived; }
+
+    // --- DRAWING ---
     void SetupLineRenderer()
     {
         lineRenderer = gameObject.AddComponent<LineRenderer>();
-        lineRenderer.useWorldSpace = false;
-        lineRenderer.startWidth = 0.05f;
-        lineRenderer.endWidth = 0.05f;
+        lineRenderer.startWidth = 0.05f; lineRenderer.endWidth = 0.05f;
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         lineRenderer.sortingOrder = -1;
-        lineRenderer.startColor = skinColor;
-        lineRenderer.endColor = skinColor;
+        lineRenderer.startColor = skinColor; lineRenderer.endColor = skinColor;
     }
 
     void DrawVisionCone()
@@ -157,8 +162,8 @@ public abstract class EnemyBase : MonoBehaviour
         float startAngle = currentFacingAngle - (fovAngle / 2f);
         float angleStep = fovAngle / segments;
         
-        // Use Multiplier for drawing
-        float actualRange = visionRange * visionMultiplier;
+        // Draw the REDUCED vision if mask is yellow
+        float actualRange = visionRange * visionMultiplier; 
 
         lineRenderer.SetPosition(0, Vector3.zero);
         for (int i = 0; i <= segments; i++)

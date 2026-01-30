@@ -3,34 +3,34 @@ using UnityEngine;
 public class Enemy_Lazy : EnemyBase
 {
     [Header("Lazy Settings")]
-    public float shoutRange = 10f; 
+    public float baseShoutRange = 10f; 
 
     private void Reset()
     {
-        moveSpeed = 0f;
-        visionRange = 6f;
+        moveSpeed = 0f; 
+        visionRange = 6f; 
         fovAngle = 360f; 
-        shoutRange = 10f;
-    }
-
-    // Override ApplyMask to handle the Range Boost
-    public override void ApplyMask(MaskType type)
-    {
-        base.ApplyMask(type);
-        if (type == MaskType.Aggressive)
-        {
-            shoutRange = 20f; // BIGGER ZONE!
-            Debug.Log("Lazy Enemy: MY SCREAM IS NOW HUGE!");
-        }
+        baseShoutRange = 10f;
     }
 
     protected override void PerformBehavior(float distanceToPlayer)
     {
         StopMoving();
 
+        // 1. Calculate Range based on Mask
+        float currentShoutRange = baseShoutRange;
+        
+        // If we have the Red Mask attached, scream louder
+        if (currentMask == MaskType.Red)
+        {
+            currentShoutRange = 20f; 
+        }
+
+        // 2. Logic
+        // IsPlayerVisible automatically handles Yellow Mask (Vision reduction)
         if (IsPlayerVisible(distanceToPlayer))
         {
-            EnemyAlertSystem.TriggerAlert(player.position, transform.position, shoutRange);
+            EnemyAlertSystem.TriggerAlert(player.position, transform.position, currentShoutRange);
             if(spriteRenderer) spriteRenderer.flipX = player.position.x < transform.position.x;
         }
     }
@@ -39,7 +39,8 @@ public class Enemy_Lazy : EnemyBase
 
     private void OnDrawGizmosSelected()
     {
+        // Draw the base range (approximate)
         Gizmos.color = new Color(1f, 1f, 0f, 0.5f);
-        Gizmos.DrawWireSphere(transform.position, shoutRange);
+        Gizmos.DrawWireSphere(transform.position, baseShoutRange);
     }
 }
