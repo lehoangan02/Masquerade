@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public enum MaskType { None, Red, Yellow, Green }
 
@@ -13,12 +14,16 @@ public abstract class EnemyBase : MonoBehaviour
     public Color skinColor = Color.white;
     public bool showVisionCircle = true;
 
+    [Header("Vision Settings")]
+    [Tooltip("Adjust Y to move the cone to eye level (e.g., 0.5)")]
+    public Vector3 visionOffset = new Vector3(0, 0.5f, 0); 
+
     [Header("Movement Feel")]
-    [Tooltip("Higher = More slippery. 0.05 = Snappy, 0.3 = Icy")]
     public float slideInertia = 0.1f; 
 
-    [Header("Pathfinding")]
-    public LayerMask obstacleLayer; 
+    [Header("Pathfinding & Pits")]
+    public LayerMask obstacleLayer; // Assign "Default" or "Walls"
+    public LayerMask pitLayer;      // Assign "Pit" layer here
     public float avoidRange = 1.5f; 
 
     // --- MASK STATE ---
@@ -33,7 +38,7 @@ public abstract class EnemyBase : MonoBehaviour
     protected bool isAlerted = false;
 
     // Movement Smoothing Helper
-    private Vector2 currentVelocityRef; // Required by SmoothDamp
+    private Vector2 currentVelocityRef;
 
     protected virtual void Start()
     {
@@ -46,11 +51,12 @@ public abstract class EnemyBase : MonoBehaviour
         rb.gravityScale = 0;
         rb.freezeRotation = true;
         
-        // IMPORTANT: Add some drag so they don't slide forever if physics takes over
+        // Unity 6+ uses 'linearDamping', older versions use 'drag'
         rb.linearDamping = 1f; 
 
         if(spriteRenderer) spriteRenderer.color = skinColor;
         EnemyAlertSystem.OnPlayerFound += OnAlertReceived;
+        
         if (showVisionCircle) SetupLineRenderer();
     }
 
@@ -64,15 +70,78 @@ public abstract class EnemyBase : MonoBehaviour
 
     void LateUpdate() { if (showVisionCircle && lineRenderer != null) DrawVisionCone(); }
 
+    // --- DEATH, DROPS & PITS ---
+    
+    // 1. Handle falling into pits
+    protected virtual void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Pit"))
+        {
+            Debug.Log(gameObject.name + " fell into a pit!");
+            Die();
+        }
+    }
+
+    // 2. Die and Drop Logic
+    public virtual void Die()
+    {
+        List<Transform> masksToDrop = new List<Transform>();
+        
+        // Find masks
+        foreach (Transform child in transform)
+        {
+            if (child.name.Contains("Mask")) masksToDrop.Add(child);
+        }
+
+        // Drop masks
+        foreach (Transform mask in masksToDrop)
+        {
+            mask.SetParent(null); 
+            mask.rotation = Quaternion.identity; 
+            
+            // Optional: Re-enable collider logic here if needed
+            // var col = mask.GetComponent<Collider2D>();
+            // if(col) col.enabled = true;
+        }
+
+        // Kill Enemy
+        Destroy(gameObject);
+    }
+
+    // --- MASK SWAPPING LOGIC ---
+
+    // Automatically removes old masks when a new one is attached
+    private void OnTransformChildrenChanged()
+    {
+        List<Transform> masks = new List<Transform>();
+        foreach (Transform child in transform) { if (child.name.Contains("Mask")) masks.Add(child); }
+
+        if (masks.Count > 1)
+        {
+            // Destroy all except the newest one (last in list)
+            for (int i = 0; i < masks.Count - 1; i++) { Destroy(masks[i].gameObject); }
+            
+            // Center the new mask
+            Transform winner = masks[masks.Count - 1];
+            winner.localPosition = Vector3.zero;
+        }
+    }
+
     public void UpdateMaskStatus()
     {
         currentMask = MaskType.None;
         visionMultiplier = 1f;
-        foreach (Transform child in transform)
+        
+        for (int i = transform.childCount - 1; i >= 0; i--)
         {
-            if (child.name.Contains("RedMask")) { currentMask = MaskType.Red; return; }
-            else if (child.name.Contains("YellowMask")) { currentMask = MaskType.Yellow; visionMultiplier = 0.5f; }
-            else if (child.name.Contains("GreenMask")) { currentMask = MaskType.Green; }
+            Transform child = transform.GetChild(i);
+            if (child.name.Contains("Mask")) // Safe check if pending destroy
+            {
+                if (child.name.Contains("RedMask")) { currentMask = MaskType.Red; }
+                else if (child.name.Contains("YellowMask")) { currentMask = MaskType.Yellow; visionMultiplier = 0.5f; }
+                else if (child.name.Contains("GreenMask")) { currentMask = MaskType.Green; }
+                return;
+            }
         }
     }
 
@@ -82,6 +151,7 @@ public abstract class EnemyBase : MonoBehaviour
         if (dist > actualVision) return false;
         if (isAlerted) return true;
         if (fovAngle >= 360f) return true;
+        
         Vector2 facingDir = (spriteRenderer != null && spriteRenderer.flipX) ? Vector2.left : Vector2.right;
         Vector2 dirToPlayer = (player.position - transform.position).normalized;
         return Vector2.Angle(facingDir, dirToPlayer) < (fovAngle / 2f);
@@ -89,71 +159,56 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected abstract void PerformBehavior(float distanceToPlayer);
 
-    // --- UPDATED MOVEMENT WITH INERTIA ---
+    // --- SMART MOVEMENT ---
 
-    protected void MoveTo(Vector2 target)
+    // Standard Move: Avoids Walls AND Pits
+    protected void MoveToSmart(Vector2 target)
     {
-        Vector2 dir = (target - (Vector2)transform.position).normalized;
-        
-        // Calculate the Target Velocity (Where we WANT to be going)
-        Vector2 targetVelocity = dir * moveSpeed;
-
-        // Smoothly slide current velocity towards target velocity
-        rb.linearVelocity = Vector2.SmoothDamp(rb.linearVelocity, targetVelocity, ref currentVelocityRef, slideInertia);
-
-        // Face direction
-        if(spriteRenderer && rb.linearVelocity.sqrMagnitude > 0.1f) 
-            spriteRenderer.flipX = rb.linearVelocity.x < 0;
+        MoveToSmart(target, obstacleLayer | pitLayer);
     }
 
-    protected void MoveToSmart(Vector2 target)
+    // Specific Move: Pass specific layers to avoid (e.g., only walls)
+    protected void MoveToSmart(Vector2 target, LayerMask avoidanceLayers)
     {
         Vector2 desiredDir = (target - (Vector2)transform.position).normalized;
         Vector2 finalDir = desiredDir;
 
-        // 1. Raycast Obstacle Check
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, desiredDir, avoidRange, obstacleLayer);
+        // Check ahead
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, desiredDir, avoidRange, avoidanceLayers);
 
         if (hit.collider != null)
         {
-            // 2. Try to find a way around
-            Vector2[] directionsToCheck = new Vector2[]
-            {
-                RotateVector(desiredDir, 45),  
-                RotateVector(desiredDir, -45), 
-                RotateVector(desiredDir, 90),  
-                RotateVector(desiredDir, -90)  
+            // Try alternate paths
+            Vector2[] directionsToCheck = new Vector2[] {
+                RotateVector(desiredDir, 45), RotateVector(desiredDir, -45), 
+                RotateVector(desiredDir, 90), RotateVector(desiredDir, -90)  
             };
 
             foreach (Vector2 checkDir in directionsToCheck)
             {
-                RaycastHit2D checkHit = Physics2D.Raycast(transform.position, checkDir, avoidRange, obstacleLayer);
-                if (checkHit.collider == null)
+                if (Physics2D.Raycast(transform.position, checkDir, avoidRange, avoidanceLayers).collider == null)
                 {
                     finalDir = checkDir;
                     break;
                 }
             }
         }
+        ApplyVelocity(finalDir);
+    }
 
-        // 3. APPLY SMOOTH VELOCITY
-        Vector2 targetVelocity = finalDir * moveSpeed;
+    private void ApplyVelocity(Vector2 dir)
+    {
+        Vector2 targetVelocity = dir * moveSpeed;
         rb.linearVelocity = Vector2.SmoothDamp(rb.linearVelocity, targetVelocity, ref currentVelocityRef, slideInertia);
-        
-        // Face movement direction
-        if(spriteRenderer && rb.linearVelocity.sqrMagnitude > 0.1f) 
+        if (spriteRenderer && rb.linearVelocity.sqrMagnitude > 0.1f) 
             spriteRenderer.flipX = rb.linearVelocity.x < 0;
-        
-        Debug.DrawRay(transform.position, finalDir * 2f, Color.blue);
     }
 
     protected void StopMoving()
     {
-        // Instead of stopping instantly (rb.velocity = zero), we damp it to zero
         rb.linearVelocity = Vector2.SmoothDamp(rb.linearVelocity, Vector2.zero, ref currentVelocityRef, slideInertia);
     }
 
-    // --- HELPERS ---
     Vector2 RotateVector(Vector2 v, float degrees)
     {
         float rad = degrees * Mathf.Deg2Rad;
@@ -162,31 +217,17 @@ public abstract class EnemyBase : MonoBehaviour
         return new Vector2(ca * v.x - sa * v.y, sa * v.x + ca * v.y);
     }
 
-    protected void Logic_ChaseIfInRange(float dist)
-    {
-        if (IsPlayerVisible(dist) || isAlerted)
-        {
-            if (!isAlerted) isAlerted = true; 
-            if (dist > stoppingDistance) MoveToSmart(player.position); // Use Smart Move
-            else StopMoving();
-        }
-        else StopMoving();
-    }
+    // --- VISUALS ---
 
-    protected virtual void OnAlertReceived(Vector3 p, Vector3 o, float r) { if (Vector2.Distance(transform.position, o) <= r) isAlerted = true; }
-    protected virtual void OnDestroy() { EnemyAlertSystem.OnPlayerFound -= OnAlertReceived; }
     void SetupLineRenderer()
     {
-        lineRenderer = gameObject.AddComponent<LineRenderer>();
-        lineRenderer.startWidth = 0.05f; 
-        lineRenderer.endWidth = 0.05f;
+        if (!TryGetComponent<LineRenderer>(out lineRenderer)) lineRenderer = gameObject.AddComponent<LineRenderer>();
+        lineRenderer.startWidth = 0.05f; lineRenderer.endWidth = 0.05f;
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         lineRenderer.sortingOrder = -1;
-        lineRenderer.startColor = skinColor; 
-        lineRenderer.endColor = skinColor;
+        lineRenderer.startColor = skinColor; lineRenderer.endColor = skinColor;
         
-        // --- FIX IS HERE ---
-        // Switch to Local Space so the circle moves with the Enemy
+        // IMPORTANT: Local space ensures cone follows enemy
         lineRenderer.useWorldSpace = false; 
     }
 
@@ -195,30 +236,26 @@ public abstract class EnemyBase : MonoBehaviour
         if (lineRenderer == null) return;
         int segments = 50;
         lineRenderer.positionCount = segments + 2;
-
-        // Calculate angles
         float currentFacingAngle = (spriteRenderer != null && spriteRenderer.flipX) ? 180f : 0f;
         float startAngle = currentFacingAngle - (fovAngle / 2f);
         float angleStep = fovAngle / segments;
         float actualRange = visionRange * visionMultiplier;
 
-        // Point 0 is the center of the enemy (Local 0,0)
-        lineRenderer.SetPosition(0, Vector3.zero);
+        // Start at offset (Eye level)
+        lineRenderer.SetPosition(0, visionOffset);
 
-        for (int i = 0; i <= segments; i++)
-        {
+        for (int i = 0; i <= segments; i++) {
             float angleRad = Mathf.Deg2Rad * (startAngle + (angleStep * i));
-            
-            // Calculate offsets
             float x = Mathf.Cos(angleRad) * actualRange;
             float y = Mathf.Sin(angleRad) * actualRange;
-
-            // Since we are in Local Space, we just pass x,y directly.
-            // (We do NOT add transform.position here)
-            lineRenderer.SetPosition(i + 1, new Vector3(x, y, 0));
+            
+            // Apply offset to outer points too
+            lineRenderer.SetPosition(i + 1, new Vector3(x, y, 0) + visionOffset);
         }
-
         lineRenderer.loop = true;
         if (fovAngle >= 360) lineRenderer.positionCount = segments;
     }
+
+    protected virtual void OnAlertReceived(Vector3 p, Vector3 o, float r) { if (Vector2.Distance(transform.position, o) <= r) isAlerted = true; }
+    protected virtual void OnDestroy() { EnemyAlertSystem.OnPlayerFound -= OnAlertReceived; }
 }

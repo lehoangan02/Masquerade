@@ -17,19 +17,24 @@ public class Enemy_Angry : EnemyBase
     {
         if (currentMask == MaskType.Red)
         {
-            // BERSERK MODE (Kill walls logic is optional, but let's make him smart & fast)
+            // --- BERSERK MODE (Red Mask) ---
             moveSpeed = berserkSpeed;
-            
-            // Even when Berserk, he should try to go around walls unless you want him to phase through
-            // Use MoveToSmart to navigate at high speed
-            if (distanceToPlayer > stoppingDistance) MoveToSmart(player.position);
-            else StopMoving();
+
+            if (distanceToPlayer > stoppingDistance) 
+            {
+                // CRITICAL: We pass ONLY 'obstacleLayer'.
+                // This means it ignores 'pitLayer', so it will run into pits and die.
+                MoveToSmart(player.position, obstacleLayer);
+            }
+            else 
+            {
+                StopMoving();
+            }
         }
         else
         {
-            // NORMAL ANGRY (Smart Chase)
-            // Logic_ChaseIfInRange uses MoveTo internally, so let's override it here manually
-            // to use MoveToSmart
+            // --- NORMAL ANGRY MODE ---
+            // Behaves like a standard enemy (Smart Chase: Avoids Walls AND Pits)
             
             if (IsPlayerVisible(distanceToPlayer) || isAlerted)
             {
@@ -37,7 +42,8 @@ public class Enemy_Angry : EnemyBase
 
                 if (distanceToPlayer > stoppingDistance)
                 {
-                    MoveToSmart(player.position); // <-- UPDATED to Smart
+                    // No mask passed = Defaults to (Obstacle | Pit)
+                    MoveToSmart(player.position); 
                 }
                 else
                 {
@@ -52,7 +58,7 @@ public class Enemy_Angry : EnemyBase
         }
     }
 
-    // Keep the collision kill logic
+    // Logic: Berserkers destroy other enemies on impact
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (currentMask == MaskType.Red)
@@ -60,8 +66,8 @@ public class Enemy_Angry : EnemyBase
             EnemyBase otherEnemy = collision.gameObject.GetComponent<EnemyBase>();
             if (otherEnemy != null)
             {
-                Destroy(otherEnemy.gameObject);
-                Debug.Log("Berserker smashed an ally!");
+                Debug.Log("Berserker smashed an ally! Masks dropped.");
+                otherEnemy.Die(); // Kills the other enemy and drops their mask
             }
         }
     }
