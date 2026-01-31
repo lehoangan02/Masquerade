@@ -1,11 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>
-/// Handles player throwing mechanics with aimlock.
-/// Supports both bullets and masks via the widget.
-/// Attach to the Player alongside PlayerController.
-/// </summary>
 public class PlayerThrower : MonoBehaviour
 {
     [Header("Throwable Settings")]
@@ -22,7 +17,7 @@ public class PlayerThrower : MonoBehaviour
     [Header("Animation")]
     [SerializeField] private Animator animator;
     [SerializeField] private string throwTriggerName = "Throw";
-    [SerializeField] private float throwAnimationDelay = 0.5f;
+    [SerializeField] private float throwAnimationDelay = 0.2f; // Reduced slightly for responsiveness
 
     [Header("Input")]
     private InputAction throwAction;
@@ -31,68 +26,52 @@ public class PlayerThrower : MonoBehaviour
     private float lastThrowTime;
     private Transform lockedTarget;
     private LineRenderer aimLine;
+    private Collider2D playerCollider; // Reference to player's collider
 
     void Awake()
     {
         mainCamera = Camera.main;
+        playerCollider = GetComponent<Collider2D>(); // Get player collider
         
-        // Setup throw input (Left Click)
         throwAction = new InputAction("Throw", InputActionType.Button, "<Mouse>/leftButton");
         
-        // Setup aim line
         SetupAimLine();
     }
 
     void SetupAimLine()
     {
-        // Create LineRenderer for aim indicator
         GameObject lineObj = new GameObject("AimLine");
         lineObj.transform.SetParent(transform);
         aimLine = lineObj.AddComponent<LineRenderer>();
         
-        // Configure line appearance
         aimLine.startWidth = aimLineWidth;
         aimLine.endWidth = aimLineWidth;
         aimLine.positionCount = 2;
         aimLine.useWorldSpace = true;
-        
-        // Create simple material
         aimLine.material = new Material(Shader.Find("Sprites/Default"));
         aimLine.startColor = aimLineColor;
         aimLine.endColor = aimLineColor;
-        
-        // Initially hidden
         aimLine.enabled = false;
     }
 
-    void OnEnable()
-    {
-        throwAction.Enable();
-    }
-
-    void OnDisable()
-    {
-        throwAction.Disable();
-    }
+    void OnEnable() => throwAction.Enable();
+    void OnDisable() => throwAction.Disable();
 
     void Start()
     {
-        // Create throw point if not assigned
         if (throwPoint == null)
         {
             GameObject point = new GameObject("ThrowPoint");
             point.transform.SetParent(transform);
-            point.transform.localPosition = Vector3.zero;
+            // Default to slightly in front to help visuals, though IgnoreCollision handles the physics
+            point.transform.localPosition = new Vector3(0.5f, 0, 0); 
             throwPoint = point.transform;
         }
     }
 
     void Update()
     {
-        // Update aimlock
         UpdateAimlock();
-        
-        // Update aim line visual
         UpdateAimLine();
         
         if (throwAction.WasPressedThisFrame())
@@ -104,50 +83,45 @@ public class PlayerThrower : MonoBehaviour
     void UpdateAimlock()
     {
         Vector3 mouseWorldPos = GetMouseWorldPosition();
-        
-        // Find closest enemy near mouse
         lockedTarget = FindClosestEnemy(mouseWorldPos);
     }
 
     Transform FindClosestEnemy(Vector3 position)
     {
-        // Find all colliders in radius around mouse position
         Collider2D[] colliders = Physics2D.OverlapCircleAll(position, aimlockRadius, enemyLayer);
         
-        // Also check by tag if no layer set
-        if (colliders.Length == 0)
+        // Priority: Layer mask -> Tag fallback
+        if (colliders.Length > 0)
         {
-            GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
             Transform closest = null;
             float closestDist = aimlockRadius;
-            
-            foreach (GameObject enemy in enemies)
+            foreach (Collider2D col in colliders)
             {
-                float dist = Vector2.Distance(position, enemy.transform.position);
+                float dist = Vector2.Distance(position, col.transform.position);
                 if (dist < closestDist)
                 {
                     closestDist = dist;
-                    closest = enemy.transform;
+                    closest = col.transform;
                 }
             }
             return closest;
         }
+
+        // Fallback to Tag search
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        Transform closestTag = null;
+        float closestDistTag = aimlockRadius;
         
-        // Find closest from layer-based search
-        Transform closestTarget = null;
-        float closestDistance = aimlockRadius;
-        
-        foreach (Collider2D col in colliders)
+        foreach (GameObject enemy in enemies)
         {
-            float dist = Vector2.Distance(position, col.transform.position);
-            if (dist < closestDistance)
+            float dist = Vector2.Distance(position, enemy.transform.position);
+            if (dist < closestDistTag)
             {
-                closestDistance = dist;
-                closestTarget = col.transform;
+                closestDistTag = dist;
+                closestTag = enemy.transform;
             }
         }
-        
-        return closestTarget;
+        return closestTag;
     }
 
     void UpdateAimLine()
@@ -155,7 +129,7 @@ public class PlayerThrower : MonoBehaviour
         if (lockedTarget != null && aimLine != null)
         {
             aimLine.enabled = true;
-            aimLine.SetPosition(0, throwPoint != null ? throwPoint.position : transform.position);
+            aimLine.SetPosition(0, throwPoint.position);
             aimLine.SetPosition(1, lockedTarget.position);
         }
         else if (aimLine != null)
@@ -166,6 +140,7 @@ public class PlayerThrower : MonoBehaviour
 
     Vector3 GetMouseWorldPosition()
     {
+        if (mainCamera == null) return Vector3.zero;
         Vector3 mouseScreenPos = Mouse.current.position.ReadValue();
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
         mouseWorldPos.z = 0;
@@ -174,116 +149,87 @@ public class PlayerThrower : MonoBehaviour
 
     void TryThrow()
     {
-        // Check cooldown
         if (Time.time - lastThrowTime < throwCooldown) return;
         
-        // Check ammo from widget (if exists)
-        if (BulletTypeWidget.Instance != null)
+        // Ammo Check
+        if (BulletTypeWidget.Instance != null && !BulletTypeWidget.Instance.UseCurrentAmmo())
         {
-            if (!BulletTypeWidget.Instance.UseCurrentAmmo())
-            {
-                Debug.Log("Out of ammo!");
-                return;
-            }
+            Debug.Log("Out of ammo!");
+            return;
         }
 
-        // Get prefab from widget or use default
+        // Prefab Selection
         GameObject prefabToThrow = defaultPrefab;
         if (BulletTypeWidget.Instance != null && BulletTypeWidget.Instance.CurrentPrefab != null)
         {
             prefabToThrow = BulletTypeWidget.Instance.CurrentPrefab;
         }
         
-        if (prefabToThrow == null)
-        {
-            Debug.LogWarning("PlayerThrower: No throwable prefab assigned!");
-            return;
-        }
+        if (prefabToThrow == null) return;
 
-        // Trigger throw animation
-        if (animator != null)
-        {
-            animator.SetTrigger(throwTriggerName);
-        }
+        if (animator != null) animator.SetTrigger(throwTriggerName);
         
-        // Start coroutine to delay projectile spawn
         StartCoroutine(DelayedThrow(prefabToThrow));
-        
         lastThrowTime = Time.time;
     }
 
     private System.Collections.IEnumerator DelayedThrow(GameObject prefabToThrow)
     {
-        // Wait for animation to reach throw point
         yield return new WaitForSeconds(throwAnimationDelay);
         
-        // Get aim direction at the moment of throw (recalculate for accuracy)
         Vector2 aimDirection = GetAimDirection();
-        
-        // Spawn and throw
         ThrowProjectile(prefabToThrow, aimDirection);
     }
 
-    /// <summary>
-    /// Get direction - prioritizes locked target, falls back to mouse.
-    /// </summary>
     public Vector2 GetAimDirection()
     {
         Vector3 targetPos;
-        
+        // Use throwPoint position as origin to ensure accuracy even if player moved
+        Vector3 origin = throwPoint != null ? throwPoint.position : transform.position;
+
         if (lockedTarget != null)
         {
-            // Aim at locked enemy
             targetPos = lockedTarget.position;
         }
         else
         {
-            // Aim at mouse
             targetPos = GetMouseWorldPosition();
         }
         
-        Vector2 direction = (targetPos - transform.position).normalized;
-        return direction;
+        return (targetPos - origin).normalized;
     }
 
-    /// <summary>
-    /// Spawn a projectile and throw it.
-    /// </summary>
     void ThrowProjectile(GameObject prefab, Vector2 direction)
     {
-        // Spawn at throw point
         GameObject projectile = Instantiate(prefab, throwPoint.position, Quaternion.identity);
         
-        // Apply color and type from widget
-        if (BulletTypeWidget.Instance != null)
+        // --- 1. SETUP MASK PROPERTIES ---
+        Mask mask = projectile.GetComponent<Mask>();
+        if (mask != null)
         {
-            // Try Mask first
-            Mask mask = projectile.GetComponent<Mask>();
-            if (mask != null)
+            // CRITICAL FIX: Pass player collider to mask to ignore collision
+            mask.IgnorePlayerCollision(playerCollider);
+
+            if (BulletTypeWidget.Instance != null)
             {
                 mask.SetMaskType(BulletTypeWidget.Instance.CurrentMaskTypeEnum);
             }
-            else
+        }
+        else
+        {
+            // Fallback for bullets
+            Bullet bullet = projectile.GetComponent<Bullet>();
+            if (bullet != null && BulletTypeWidget.Instance != null)
             {
-                // Try Bullet
-                Bullet bullet = projectile.GetComponent<Bullet>();
-                if (bullet != null)
-                {
-                    bullet.SetColor(BulletTypeWidget.Instance.CurrentColor);
-                }
+                bullet.SetColor(BulletTypeWidget.Instance.CurrentColor);
             }
         }
         
-        // Get IThrowable and throw
+        // --- 2. THROW PHYSICS ---
         IThrowable throwable = projectile.GetComponent<IThrowable>();
         if (throwable != null)
         {
             throwable.Throw(direction);
-        }
-        else
-        {
-            Debug.LogWarning("PlayerThrower: Prefab doesn't have IThrowable component!");
-            Destroy(projectile);
         }
     }
 

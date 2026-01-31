@@ -107,7 +107,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDamping: 0
+  m_LinearDamping: 0.2
   m_AngularDamping: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
@@ -180,12 +180,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GreenMask
   maskName: Mask
+  maskType: 0
   maskColor: {r: 0.65342844, g: 1, b: 0.6273585, a: 1}
   speed: 12
   damage: 5
   lifetime: 5
   stickOffset: {x: 0, y: 0}
   stickScale: 0.5
+  attractionRadius: 3
+  attractionSpeed: 8
+  pickupRadius: 0.5
+  ammoRefund: 1
+  bobSpeed: 2
+  bobAmount: 0.15
+  rotateSpeed: 90
+  spawnAsPickup: 0
+  attachSpotLightOnHit: 1
+  spotLightPrefab: {fileID: 0}
+  spotLightColor: {r: 1, g: 1, b: 1, a: 0.9}
+  spotLightIntensity: 1
+  spotLightInnerRadius: 1
+  spotLightOuterRadius: 4
+  spotLightInnerAngle: 30
+  spotLightOuterAngle: 70
+  spotLightLocalOffset: {x: 0, y: 0.6, z: 0}
   rb: {fileID: 3899839726948957276}
   spriteRenderer: {fileID: 0}
   col: {fileID: 234794940142725356}
