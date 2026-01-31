@@ -18,6 +18,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip loseMusic;
 
     [Header("SFX Clips")]
+    public AudioClip enterLevel;
     public AudioClip hurtSound;
     public AudioClip throwMask;
     public AudioClip runInGlass;
