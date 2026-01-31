@@ -123,7 +123,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 1024
+  spritePixelsToUnits: 1050
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -147,7 +147,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -176,9 +176,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 26
-        width: 1024
-        height: 1024
+        y: 0
+        width: 1050
+        height: 1050
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -197,10 +197,10 @@ TextureImporter:
       name: witch_1
       rect:
         serializedVersion: 2
-        x: 1024
-        y: 26
-        width: 1024
-        height: 1024
+        x: 1050
+        y: 0
+        width: 1050
+        height: 1050
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -219,10 +219,10 @@ TextureImporter:
       name: witch_2
       rect:
         serializedVersion: 2
-        x: 2048
-        y: 26
-        width: 1024
-        height: 1024
+        x: 2100
+        y: 0
+        width: 1050
+        height: 1050
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -241,10 +241,10 @@ TextureImporter:
       name: witch_3
       rect:
         serializedVersion: 2
-        x: 3072
-        y: 26
-        width: 1024
-        height: 1024
+        x: 3150
+        y: 0
+        width: 1050
+        height: 1050
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -263,10 +263,10 @@ TextureImporter:
       name: witch_4
       rect:
         serializedVersion: 2
-        x: 4096
-        y: 26
-        width: 1024
-        height: 1024
+        x: 4200
+        y: 0
+        width: 1050
+        height: 1050
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -285,10 +285,10 @@ TextureImporter:
       name: witch_5
       rect:
         serializedVersion: 2
-        x: 5120
-        y: 26
-        width: 1024
-        height: 1024
+        x: 5250
+        y: 0
+        width: 1050
+        height: 1050
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -307,10 +307,10 @@ TextureImporter:
       name: witch_6
       rect:
         serializedVersion: 2
-        x: 6144
-        y: 26
-        width: 1024
-        height: 1024
+        x: 6300
+        y: 0
+        width: 1050
+        height: 1050
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -329,10 +329,10 @@ TextureImporter:
       name: witch_7
       rect:
         serializedVersion: 2
-        x: 7168
-        y: 26
-        width: 1024
-        height: 1024
+        x: 7350
+        y: 0
+        width: 1050
+        height: 1050
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -361,7 +361,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":1024.0,"y":1024.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":1050.0,"y":1050.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       witch_0: -6161070754210539384
       witch_1: -4793536089062914485

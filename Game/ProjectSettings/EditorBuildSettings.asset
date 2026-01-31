@@ -17,6 +17,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LHAN/Menu.unity
     guid: 5adf48529133b4d3f9bbaf88918b8c4a
+  - enabled: 1
+    path: Assets/_Game/Scenes/Intro.unity
+    guid: 4e5cdf05e9a1143bcb191db78f17d97d
+  - enabled: 1
+    path: Assets/_Game/Scenes/Level1_WalledGarden.unity
+    guid: 4d11dd39a8bdf4b59a7cdd3cc2fe637b
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
