@@ -435,7 +435,7 @@ PrefabInstance:
       objectReference: {fileID: 9028160704412149338}
     - target: {fileID: 927038095164235078, guid: 5c4bca5c5268943f6b97b4af7dbb501a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PauseGame
+      value: TogglePause
       objectReference: {fileID: 0}
     - target: {fileID: 927038095164235078, guid: 5c4bca5c5268943f6b97b4af7dbb501a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
