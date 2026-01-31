@@ -16,9 +16,4 @@ public class RedMask : Mask
         // TODO: Visual feedback (particles, etc.)
     }
 
-    public override void ApplyEffect(GameObject target)
-    {
-        Debug.Log($"[Red Mask] Applying Rage effect to {target.name}!");
-        // TODO: Make enemy attack faster/stronger, or attack other enemies
-    }
 }

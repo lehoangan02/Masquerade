@@ -16,9 +16,4 @@ public class GreenMask : Mask
         // TODO: Visual feedback (particles, etc.)
     }
 
-    public override void ApplyEffect(GameObject target)
-    {
-        Debug.Log($"[Green Mask] Applying effect to {target.name}!");
-        // TODO: Make enemy fight for player temporarily
-    }
 }
