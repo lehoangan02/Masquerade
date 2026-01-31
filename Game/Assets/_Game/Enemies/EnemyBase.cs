@@ -29,17 +29,19 @@ public abstract class EnemyBase : MonoBehaviour
     [Header("Vision Settings")]
     public Vector3 visionOffset = Vector3.zero;
 
-    [Header("Movement Feel")]
+    [Header("Movement Smoothing")]
     public float slideInertia = 0.1f; 
+    [Tooltip("How fast the enemy rotates its movement direction. Try values between 5 and 10.")]
+    public float steeringSpeed = 7f; 
 
-    [Header("Pathfinding & Pits")]
-    public LayerMask obstacleLayer; 
-    public LayerMask pitLayer;      
+    [Header("Pathfinding & Tags")]
+    public string pitTag = "Pit";
+    public string wallTag = "Wall";
+    public LayerMask obstacleLayer; // Kept for legacy support if needed
     
     [Header("Detection Settings")]
     [Tooltip("The Radius of the 360 Safety Circle around the enemy.")]
     public float avoidRange = 1.5f; 
-
     [Tooltip("Radius of the enemy body (used for wall sliding).")]
     public float bodyWidth = 0.5f; 
 
@@ -58,9 +60,10 @@ public abstract class EnemyBase : MonoBehaviour
     protected bool isAttacking = false; 
     protected AnimState currentState = AnimState.Idle; 
 
-    // Debugging
+    // Internal Physics State
     private bool debugPitDetected = false;
     private Vector2 currentVelocityRef;
+    private Vector2 currentSteeringDir; // Persistent direction for smoothing
 
     protected virtual void Start()
     {
@@ -96,6 +99,64 @@ public abstract class EnemyBase : MonoBehaviour
 
     void LateUpdate() { if (showVisionCircle && lineRenderer != null) DrawVisionCone(); }
 
+    // --- SMOOTH MOVEMENT LOGIC ---
+    // Replace BOTH MoveToSmart methods in EnemyBase with these:
+protected void MoveToSmart(Vector2 target, bool avoidPits = true)
+{
+    if (isDead) return;
+
+    Vector2 desiredDir = (target - (Vector2)transform.position).normalized;
+    Vector2 avoidanceForce = Vector2.zero;
+    debugPitDetected = false;
+
+    // 1. PIT DETECTION (Only if avoidPits is true)
+    if (avoidPits)
+    {
+        Collider2D[] nearbyObjects = Physics2D.OverlapCircleAll(transform.position, avoidRange);
+        foreach (var col in nearbyObjects)
+        {
+            if (col.CompareTag(pitTag))
+            {
+                debugPitDetected = true;
+                Vector2 closestPoint = col.ClosestPoint(transform.position);
+                Vector2 dirAway = (Vector2)transform.position - closestPoint;
+                float intensity = 1f - Mathf.Clamp01(dirAway.magnitude / avoidRange);
+                avoidanceForce += dirAway.normalized * intensity;
+            }
+        }
+    }
+
+    // 2. BLEND & SMOOTH
+    Vector2 targetDir = (desiredDir + (avoidanceForce * 2.5f)).normalized;
+    currentSteeringDir = Vector2.Lerp(currentSteeringDir, targetDir, Time.deltaTime * steeringSpeed);
+    Vector2 finalDir = currentSteeringDir.normalized;
+
+    // 3. WALL SLIDING (Always active)
+    RaycastHit2D[] wallHits = Physics2D.CircleCastAll(transform.position, bodyWidth, finalDir, 0.5f);
+    foreach (var hit in wallHits)
+    {
+        if (hit.collider != null && hit.collider.CompareTag(wallTag))
+        {
+            Vector2 hitNormal = hit.normal;
+            Vector2 slideDir = Vector2.Perpendicular(hitNormal).normalized;
+            finalDir = Vector2.Dot(slideDir, finalDir) > Vector2.Dot(-slideDir, finalDir) ? slideDir : -slideDir;
+            break;
+        }
+    }
+
+    ApplyVelocity(finalDir);
+}
+
+    private void ApplyVelocity(Vector2 dir) {
+        Vector2 targetVelocity = dir * moveSpeed;
+        rb.linearVelocity = Vector2.SmoothDamp(rb.linearVelocity, targetVelocity, ref currentVelocityRef, slideInertia);
+    }
+
+    protected void StopMoving() { 
+        rb.linearVelocity = Vector2.SmoothDamp(rb.linearVelocity, Vector2.zero, ref currentVelocityRef, slideInertia); 
+    }
+
+    // --- ANIMATION & COMBAT ---
     protected void ChangeAnimationState(AnimState newState)
     {
         if (currentState == newState) return;
@@ -119,7 +180,6 @@ public abstract class EnemyBase : MonoBehaviour
             isAttacking = true;
             ChangeAnimationState(AnimState.Attack);
             StartCoroutine(ResetAttackState()); 
-            Debug.Log($"<color=red>{gameObject.name} attacked Player for {attackDamage} damage!</color>");
         }
     }
 
@@ -144,21 +204,17 @@ public abstract class EnemyBase : MonoBehaviour
         }
         AnimState targetState = currentState;
         if (speed < 0.1f) targetState = AnimState.Idle;
-        else 
-        {
-            if (isAlerted) targetState = AnimState.Run;
-            else targetState = AnimState.Walk;
-        }
+        else targetState = isAlerted ? AnimState.Run : AnimState.Walk;
+        
         if (targetState != currentState) ChangeAnimationState(targetState);
     }
 
-    // --- DEATH & PITS ---
+    // --- TRIGGERS & DEATH ---
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
         if (isDead) return;
-        if (collision.CompareTag("Pit")) 
+        if (collision.CompareTag(pitTag)) 
         {
-            Debug.Log($"<color=red><b>[DEATH]</b> {gameObject.name} fell into PIT: {collision.name}</color>");
             Die();
         }
     }
@@ -167,22 +223,15 @@ public abstract class EnemyBase : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
-        
         StopMoving();
-        rb.linearVelocity = Vector2.zero;
         rb.simulated = false; 
-
         DropMasks();
-
         if (animator != null)
         {
             ChangeAnimationState(AnimState.Dead);
             StartCoroutine(WaitAndDestroy(1.0f)); 
         }
-        else
-        {
-            Destroy(gameObject);
-        }
+        else Destroy(gameObject);
     }
 
     private IEnumerator WaitAndDestroy(float delay)
@@ -191,19 +240,12 @@ public abstract class EnemyBase : MonoBehaviour
         Destroy(gameObject);
     }
 
+    // --- MASK SYSTEM ---
     private void DropMasks()
     {
         List<Transform> masksToDrop = new List<Transform>();
         foreach (Transform child in transform) { if (child.name.Contains("Mask")) masksToDrop.Add(child); }
         foreach (Transform mask in masksToDrop) { mask.SetParent(null); mask.rotation = Quaternion.identity; }
-    }
-
-    private void OnTransformChildrenChanged()
-    {
-        if (isDead) return;
-        List<Transform> masks = new List<Transform>();
-        foreach (Transform child in transform) { if (child.name.Contains("Mask")) masks.Add(child); }
-        if (masks.Count > 1) { for (int i = 0; i < masks.Count - 1; i++) Destroy(masks[i].gameObject); masks[masks.Count - 1].localPosition = Vector3.zero; }
     }
 
     public void UpdateMaskStatus()
@@ -221,6 +263,7 @@ public abstract class EnemyBase : MonoBehaviour
         }
     }
 
+    // --- VISION & HELPERS ---
     public bool CanSeePlayer()
     {
         if (player == null) return false;
@@ -232,9 +275,8 @@ public abstract class EnemyBase : MonoBehaviour
         float actualVision = visionRange * visionMultiplier;
         if (dist > actualVision) return false;
         if (isAlerted) return true;
-        if (fovAngle >= 360f) return true;
         
-        Vector2 facingDir = (animator != null) ? (Vector2)(Quaternion.Euler(0,0,GetFacingAngleFromAnimator()) * Vector2.right) : (spriteRenderer != null && spriteRenderer.flipX ? Vector2.left : Vector2.right);
+        Vector2 facingDir = (animator != null) ? (Vector2)(Quaternion.Euler(0,0,GetFacingAngleFromAnimator()) * Vector2.right) : Vector2.right;
         Vector2 dirToPlayer = (player.position - transform.position).normalized;
         bool seesPlayer = Vector2.Angle(facingDir, dirToPlayer) < (fovAngle / 2f);
         if (seesPlayer) isAlerted = true; 
@@ -243,93 +285,20 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected abstract void PerformBehavior(float distanceToPlayer);
 
-    // -----------------------------------------------------------------------------------
-    // NEW: 360 PROXIMITY DETECTION
-    // -----------------------------------------------------------------------------------
-    protected void MoveToSmart(Vector2 target, LayerMask avoidanceLayers)
-    {
-        if (isDead) return;
-
-        Vector2 desiredDir = (target - (Vector2)transform.position).normalized;
-        Vector2 finalDir = desiredDir;
-
-        debugPitDetected = false;
-
-        // 1. PIT DETECTION (360 Degree Circle around Enemy)
-        // We check for pits specifically if they are in the avoidance layers
-        if ((avoidanceLayers.value & pitLayer.value) != 0)
-        {
-            // This checks a circle CENTERED on the enemy
-            Collider2D pitHit = Physics2D.OverlapCircle(transform.position, avoidRange, pitLayer);
-
-            if (pitHit != null)
-            {
-                debugPitDetected = true;
-                Debug.Log($"<color=cyan><b>[PIT NEARBY]</b></color> Pushing away from {pitHit.name}");
-
-                // Find the closest point on the pit to the enemy
-                Vector2 closestPoint = pitHit.ClosestPoint(transform.position);
-                
-                // Calculate Repulsion Vector (Move AWAY from pit)
-                Vector2 repulsionDir = ((Vector2)transform.position - closestPoint).normalized;
-
-                // If we are inside the pit, this vector might be zero, so we default to -desiredDir
-                if (repulsionDir == Vector2.zero) repulsionDir = -desiredDir;
-
-                // Blend the desired direction with strong repulsion
-                // The closer we are to the pit, the stronger we push away
-                finalDir = (desiredDir + (repulsionDir * 2.5f)).normalized; 
-            }
-        }
-
-        // 2. WALL DETECTION (Directional Ray/Circle Cast)
-        // We still need to look forward for Walls so we don't walk through them
-        if ((avoidanceLayers.value & obstacleLayer.value) != 0)
-        {
-            RaycastHit2D wallHit = Physics2D.CircleCast(transform.position, bodyWidth, finalDir, 1.0f, obstacleLayer);
-            if (wallHit.collider != null)
-            {
-                // Slide along the wall
-                Vector2 hitNormal = wallHit.normal;
-                Vector2 slideDir = Vector2.Perpendicular(hitNormal).normalized;
-                Vector2 left = slideDir;
-                Vector2 right = -slideDir;
-                finalDir = Vector2.Dot(left, finalDir) > Vector2.Dot(right, finalDir) ? left : right;
-            }
-        }
-
-        ApplyVelocity(finalDir);
-    }
-
-    protected void MoveToSmart(Vector2 target) { MoveToSmart(target, obstacleLayer | pitLayer); }
-
-    private void ApplyVelocity(Vector2 dir) {
-        Vector2 targetVelocity = dir * moveSpeed;
-        rb.linearVelocity = Vector2.SmoothDamp(rb.linearVelocity, targetVelocity, ref currentVelocityRef, slideInertia);
-    }
-
-    protected void StopMoving() { rb.linearVelocity = Vector2.SmoothDamp(rb.linearVelocity, Vector2.zero, ref currentVelocityRef, slideInertia); }
-    
-    // --- VISUALS ---
     void SetupLineRenderer() 
     { 
         if (!TryGetComponent(out lineRenderer)) lineRenderer = gameObject.AddComponent<LineRenderer>(); 
-        
         lineRenderer.material = new Material(Shader.Find("Sprites/Default")); 
         lineRenderer.startColor = lineRenderer.endColor = skinColor; 
         lineRenderer.startWidth = lineRenderer.endWidth = 0.05f; 
         lineRenderer.useWorldSpace = false; 
-        lineRenderer.sortingOrder = visionSortingOrder; 
     }
 
     void DrawVisionCone() 
     { 
         if (!lineRenderer) return; 
-        lineRenderer.sortingOrder = visionSortingOrder;
-
         int s = 50; 
         lineRenderer.positionCount = s + 3; 
-
         float ang = (animator ? GetFacingAngleFromAnimator() : 0f) - fovAngle/2f;
         float step = fovAngle/s;
         float rng = visionRange * visionMultiplier; 
@@ -338,32 +307,22 @@ public abstract class EnemyBase : MonoBehaviour
         for(int i=0; i<=s; i++) 
         { 
             float r = Mathf.Deg2Rad * (ang + step * i); 
-            Vector3 pointOnCircle = new Vector3(Mathf.Cos(r)*rng, Mathf.Sin(r)*rng) + visionOffset;
-            lineRenderer.SetPosition(i+1, pointOnCircle); 
+            lineRenderer.SetPosition(i+1, new Vector3(Mathf.Cos(r)*rng, Mathf.Sin(r)*rng) + visionOffset); 
         } 
         lineRenderer.SetPosition(s+2, visionOffset);
     }
 
-    float GetFacingAngleFromAnimator() { float x = animator.GetFloat("Horizontal"), y = animator.GetFloat("Vertical"); return (Mathf.Abs(x)<0.1f && Mathf.Abs(y)<0.1f) ? 270f : Mathf.Atan2(y, x) * Mathf.Rad2Deg; }
+    float GetFacingAngleFromAnimator() { 
+        float x = animator.GetFloat("Horizontal"), y = animator.GetFloat("Vertical"); 
+        return (Mathf.Abs(x)<0.1f && Mathf.Abs(y)<0.1f) ? 270f : Mathf.Atan2(y, x) * Mathf.Rad2Deg; 
+    }
+
     protected virtual void OnAlertReceived(Vector3 p, Vector3 o, float r) { if (Vector2.Distance(transform.position, o) <= r) isAlerted = true; }
     protected virtual void OnDestroy() { EnemyAlertSystem.OnPlayerFound -= OnAlertReceived; }
-    
-    // --- NEW: 360 DEBUG GIZMO (CENTERED ON ENEMY) ---
+
     private void OnDrawGizmos()
     {
-        // Draw the Safety Circle around the enemy
-        // Green = Safe
-        // Red = Pit Nearby (Danger)
-        if (Application.isPlaying)
-        {
-            Gizmos.color = debugPitDetected ? Color.red : Color.green;
-            Gizmos.DrawWireSphere(transform.position, avoidRange);
-        }
-        else
-        {
-            // Editor Preview (Cyan to distinguish from vision)
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(transform.position, avoidRange);
-        }
+        Gizmos.color = debugPitDetected ? Color.red : Color.green;
+        Gizmos.DrawWireSphere(transform.position, avoidRange);
     }
 }

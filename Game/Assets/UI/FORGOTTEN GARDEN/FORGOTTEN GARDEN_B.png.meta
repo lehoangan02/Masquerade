@@ -1,0 +1,1547 @@
+fileFormatVersion: 2
+guid: bbcfbacf07a984eb28143530871cbf4a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8623239834552422312
+    second: FORGOTTEN GARDEN_B_0
+  - first:
+      213: -7912091525758292560
+    second: FORGOTTEN GARDEN_B_1
+  - first:
+      213: -3071780933318798741
+    second: FORGOTTEN GARDEN_B_2
+  - first:
+      213: -7195915363209393448
+    second: FORGOTTEN GARDEN_B_3
+  - first:
+      213: 9139987145923881337
+    second: FORGOTTEN GARDEN_B_4
+  - first:
+      213: -315095585638526590
+    second: FORGOTTEN GARDEN_B_5
+  - first:
+      213: -6954550474652514027
+    second: FORGOTTEN GARDEN_B_6
+  - first:
+      213: 5750547192785855311
+    second: FORGOTTEN GARDEN_B_7
+  - first:
+      213: -8163928508338677462
+    second: FORGOTTEN GARDEN_B_8
+  - first:
+      213: 5442153748613189684
+    second: FORGOTTEN GARDEN_B_9
+  - first:
+      213: 6234191183667872649
+    second: FORGOTTEN GARDEN_B_10
+  - first:
+      213: 3081600096205990317
+    second: FORGOTTEN GARDEN_B_11
+  - first:
+      213: 6118660044117387258
+    second: FORGOTTEN GARDEN_B_12
+  - first:
+      213: -2346405326297123625
+    second: FORGOTTEN GARDEN_B_13
+  - first:
+      213: -365373321190722106
+    second: FORGOTTEN GARDEN_B_14
+  - first:
+      213: -7141895696683521731
+    second: FORGOTTEN GARDEN_B_15
+  - first:
+      213: 5394896144152912854
+    second: FORGOTTEN GARDEN_B_16
+  - first:
+      213: -7152277193940363513
+    second: FORGOTTEN GARDEN_B_17
+  - first:
+      213: -3968764730097879508
+    second: FORGOTTEN GARDEN_B_18
+  - first:
+      213: 139987836280496405
+    second: FORGOTTEN GARDEN_B_19
+  - first:
+      213: 6268107613910452112
+    second: FORGOTTEN GARDEN_B_20
+  - first:
+      213: -3943607040328406740
+    second: FORGOTTEN GARDEN_B_21
+  - first:
+      213: -7292214156520864232
+    second: FORGOTTEN GARDEN_B_22
+  - first:
+      213: 1281820968921074833
+    second: FORGOTTEN GARDEN_B_23
+  - first:
+      213: -852106946564394669
+    second: FORGOTTEN GARDEN_B_24
+  - first:
+      213: 8457869195258030294
+    second: FORGOTTEN GARDEN_B_25
+  - first:
+      213: -3800226641507184291
+    second: FORGOTTEN GARDEN_B_26
+  - first:
+      213: 1986401732608971311
+    second: FORGOTTEN GARDEN_B_27
+  - first:
+      213: -242811776794418697
+    second: FORGOTTEN GARDEN_B_28
+  - first:
+      213: -8726267620548918125
+    second: FORGOTTEN GARDEN_B_29
+  - first:
+      213: -604373292057697322
+    second: FORGOTTEN GARDEN_B_30
+  - first:
+      213: 750021760849584552
+    second: FORGOTTEN GARDEN_B_31
+  - first:
+      213: -5346067414041050329
+    second: FORGOTTEN GARDEN_B_32
+  - first:
+      213: -2208384096620558080
+    second: FORGOTTEN GARDEN_B_33
+  - first:
+      213: -85791560153727401
+    second: FORGOTTEN GARDEN_B_34
+  - first:
+      213: -6289795570683137044
+    second: FORGOTTEN GARDEN_B_35
+  - first:
+      213: -8560741543771042293
+    second: FORGOTTEN GARDEN_B_36
+  - first:
+      213: -4563016659315900141
+    second: FORGOTTEN GARDEN_B_37
+  - first:
+      213: 4140238604857988971
+    second: FORGOTTEN GARDEN_B_38
+  - first:
+      213: -7323761904032346255
+    second: FORGOTTEN GARDEN_B_39
+  - first:
+      213: -8311261729198231888
+    second: FORGOTTEN GARDEN_B_40
+  - first:
+      213: -1679075675732343216
+    second: FORGOTTEN GARDEN_B_41
+  - first:
+      213: -4653217092169159356
+    second: FORGOTTEN GARDEN_B_42
+  - first:
+      213: 8221569864131434249
+    second: FORGOTTEN GARDEN_B_43
+  - first:
+      213: 1893090863455560503
+    second: FORGOTTEN GARDEN_B_44
+  - first:
+      213: -6035737447473317345
+    second: FORGOTTEN GARDEN_B_45
+  - first:
+      213: -4286746272772836550
+    second: FORGOTTEN GARDEN_B_46
+  - first:
+      213: -9190166024308840532
+    second: FORGOTTEN GARDEN_B_47
+  - first:
+      213: 1174019782019807242
+    second: FORGOTTEN GARDEN_B_48
+  - first:
+      213: -2089100681143613767
+    second: FORGOTTEN GARDEN_B_49
+  - first:
+      213: -5801665958310252871
+    second: FORGOTTEN GARDEN_B_50
+  - first:
+      213: -6119833718887197089
+    second: FORGOTTEN GARDEN_B_51
+  - first:
+      213: -205063674935839859
+    second: FORGOTTEN GARDEN_B_52
+  - first:
+      213: -2554424315194784734
+    second: FORGOTTEN GARDEN_B_53
+  - first:
+      213: 271221320181833886
+    second: FORGOTTEN GARDEN_B_54
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 350
+        width: 385
+        height: 403
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8503180fe09145880800000000000000
+      internalID: -8623239834552422312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_1
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 719
+        width: 41
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bd6cc86daa923290800000000000000
+      internalID: -7912091525758292560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_2
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 648
+        width: 22
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6217b12487de55d0800000000000000
+      internalID: -3071780933318798741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_3
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 647
+        width: 23
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8dac02e4a19f22c90800000000000000
+      internalID: -7195915363209393448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_4
+      rect:
+        serializedVersion: 2
+        x: 333
+        y: 642
+        width: 52
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 979ed6c22e1c7de70800000000000000
+      internalID: 9139987145923881337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_5
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 631
+        width: 83
+        height: 135
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 281d8bbfb3e80abf0800000000000000
+      internalID: -315095585638526590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_6
+      rect:
+        serializedVersion: 2
+        x: 537
+        y: 632
+        width: 83
+        height: 135
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51900d9a0397c7f90800000000000000
+      internalID: -6954550474652514027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_7
+      rect:
+        serializedVersion: 2
+        x: 624
+        y: 626
+        width: 143
+        height: 142
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f43ee12443c0ecf40800000000000000
+      internalID: 5750547192785855311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_8
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 625
+        width: 33
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a29d9c8a646e3be80800000000000000
+      internalID: -8163928508338677462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_9
+      rect:
+        serializedVersion: 2
+        x: 414
+        y: 488
+        width: 93
+        height: 135
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4305627200a668b40800000000000000
+      internalID: 5442153748613189684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_10
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 488
+        width: 90
+        height: 135
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9834564f9db448650800000000000000
+      internalID: 6234191183667872649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_11
+      rect:
+        serializedVersion: 2
+        x: 671
+        y: 546
+        width: 50
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da9ea22e5fa04ca20800000000000000
+      internalID: 3081600096205990317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_12
+      rect:
+        serializedVersion: 2
+        x: 722
+        y: 613
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af72efe54e8d9e450800000000000000
+      internalID: 6118660044117387258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_13
+      rect:
+        serializedVersion: 2
+        x: 726
+        y: 587
+        width: 40
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d4b9fa99c4ef6fd0800000000000000
+      internalID: -2346405326297123625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_14
+      rect:
+        serializedVersion: 2
+        x: 723
+        y: 585
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c5b50476eeedeaf0800000000000000
+      internalID: -365373321190722106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_15
+      rect:
+        serializedVersion: 2
+        x: 735
+        y: 581
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d39a94804b3e2ec90800000000000000
+      internalID: -7141895696683521731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_16
+      rect:
+        serializedVersion: 2
+        x: 754
+        y: 581
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d3eb50b5758eda40800000000000000
+      internalID: 5394896144152912854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_17
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 541
+        width: 28
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7079e0859c10ebc90800000000000000
+      internalID: -7152277193940363513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_18
+      rect:
+        serializedVersion: 2
+        x: 389
+        y: 337
+        width: 140
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c26ba61618d1ce8c0800000000000000
+      internalID: -3968764730097879508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_19
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 480
+        width: 34
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 511ef56023651f100800000000000000
+      internalID: 139987836280496405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_20
+      rect:
+        serializedVersion: 2
+        x: 527
+        y: 337
+        width: 146
+        height: 143
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 097cd0d3aaaccf650800000000000000
+      internalID: 6268107613910452112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_21
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 480
+        width: 38
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c29ee7b7a4e7549c0800000000000000
+      internalID: -3943607040328406740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_22
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 433
+        width: 74
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 816cf764cd9dcca90800000000000000
+      internalID: -7292214156520864232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_23
+      rect:
+        serializedVersion: 2
+        x: 685
+        y: 391
+        width: 21
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19c003e3161f9c110800000000000000
+      internalID: 1281820968921074833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_24
+      rect:
+        serializedVersion: 2
+        x: 721
+        y: 384
+        width: 46
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 351f26b2f35bc24f0800000000000000
+      internalID: -852106946564394669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_25
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 0
+        width: 188
+        height: 374
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d8e21ca833606570800000000000000
+      internalID: 8457869195258030294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_26
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 287
+        width: 112
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d511df60102e24bc0800000000000000
+      internalID: -3800226641507184291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_27
+      rect:
+        serializedVersion: 2
+        x: 399
+        y: 304
+        width: 17
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f22d065f9dd119b10800000000000000
+      internalID: 1986401732608971311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_28
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 314
+        width: 13
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f123e8b9fb51acf0800000000000000
+      internalID: -242811776794418697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_29
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 241
+        width: 74
+        height: 95
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 394403635d116e680800000000000000
+      internalID: -8726267620548918125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_30
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 314
+        width: 19
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d3ea2761b5dc97f0800000000000000
+      internalID: -604373292057697322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_31
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 304
+        width: 17
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a1a04551dc986a00800000000000000
+      internalID: 750021760849584552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_32
+      rect:
+        serializedVersion: 2
+        x: 586
+        y: 241
+        width: 74
+        height: 95
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 723cac8f204fec5b0800000000000000
+      internalID: -5346067414041050329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_33
+      rect:
+        serializedVersion: 2
+        x: 675
+        y: 297
+        width: 39
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0094f495d5e3a51e0800000000000000
+      internalID: -2208384096620558080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_34
+      rect:
+        serializedVersion: 2
+        x: 726
+        y: 298
+        width: 37
+        height: 83
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75e7f44d7053fcef0800000000000000
+      internalID: -85791560153727401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_35
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 296
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce33b93d04826b8a0800000000000000
+      internalID: -6289795570683137044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_36
+      rect:
+        serializedVersion: 2
+        x: 547
+        y: 296
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0e09953ce2223980800000000000000
+      internalID: -8560741543771042293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_37
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 0
+        width: 146
+        height: 275
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 31149453688eca0c0800000000000000
+      internalID: -4563016659315900141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_38
+      rect:
+        serializedVersion: 2
+        x: 389
+        y: 240
+        width: 40
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b675bef3315157930800000000000000
+      internalID: 4140238604857988971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_39
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 145
+        width: 74
+        height: 95
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17f0d9ae955cc5a90800000000000000
+      internalID: -7323761904032346255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_40
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 240
+        width: 40
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0be27d30e7778ac80800000000000000
+      internalID: -8311261729198231888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_41
+      rect:
+        serializedVersion: 2
+        x: 586
+        y: 145
+        width: 74
+        height: 95
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05689fca199b2b8e0800000000000000
+      internalID: -1679075675732343216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_42
+      rect:
+        serializedVersion: 2
+        x: 671
+        y: 195
+        width: 50
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44d2b7e55b37c6fb0800000000000000
+      internalID: -4653217092169159356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_43
+      rect:
+        serializedVersion: 2
+        x: 719
+        y: 192
+        width: 49
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9075c9f4b32e81270800000000000000
+      internalID: 8221569864131434249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_44
+      rect:
+        serializedVersion: 2
+        x: 399
+        y: 208
+        width: 19
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7336ecb3c1c954a10800000000000000
+      internalID: 1893090863455560503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_45
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 218
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1a74dd25c0cc3ca0800000000000000
+      internalID: -6035737447473317345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_46
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 208
+        width: 17
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3335212afa6284c0800000000000000
+      internalID: -4286746272772836550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_47
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 200
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca7253641b8f57080800000000000000
+      internalID: -9190166024308840532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_48
+      rect:
+        serializedVersion: 2
+        x: 547
+        y: 200
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a08729285c4fa4010800000000000000
+      internalID: 1174019782019807242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_49
+      rect:
+        serializedVersion: 2
+        x: 389
+        y: 144
+        width: 40
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b68860cff50203e0800000000000000
+      internalID: -2089100681143613767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_50
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 144
+        width: 40
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bee079ac875c7fa0800000000000000
+      internalID: -5801665958310252871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_51
+      rect:
+        serializedVersion: 2
+        x: 683
+        y: 99
+        width: 69
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f56554d28abf11ba0800000000000000
+      internalID: -6119833718887197089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_52
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 0
+        width: 142
+        height: 142
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d83fc139ca7772df0800000000000000
+      internalID: -205063674935839859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_53
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 5
+        width: 138
+        height: 136
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 224c1378e9cdc8cd0800000000000000
+      internalID: -2554424315194784734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FORGOTTEN GARDEN_B_54
+      rect:
+        serializedVersion: 2
+        x: 679
+        y: 0
+        width: 82
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9063fc8a5293c300800000000000000
+      internalID: 271221320181833886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      FORGOTTEN GARDEN_B_0: -8623239834552422312
+      FORGOTTEN GARDEN_B_1: -7912091525758292560
+      FORGOTTEN GARDEN_B_10: 6234191183667872649
+      FORGOTTEN GARDEN_B_11: 3081600096205990317
+      FORGOTTEN GARDEN_B_12: 6118660044117387258
+      FORGOTTEN GARDEN_B_13: -2346405326297123625
+      FORGOTTEN GARDEN_B_14: -365373321190722106
+      FORGOTTEN GARDEN_B_15: -7141895696683521731
+      FORGOTTEN GARDEN_B_16: 5394896144152912854
+      FORGOTTEN GARDEN_B_17: -7152277193940363513
+      FORGOTTEN GARDEN_B_18: -3968764730097879508
+      FORGOTTEN GARDEN_B_19: 139987836280496405
+      FORGOTTEN GARDEN_B_2: -3071780933318798741
+      FORGOTTEN GARDEN_B_20: 6268107613910452112
+      FORGOTTEN GARDEN_B_21: -3943607040328406740
+      FORGOTTEN GARDEN_B_22: -7292214156520864232
+      FORGOTTEN GARDEN_B_23: 1281820968921074833
+      FORGOTTEN GARDEN_B_24: -852106946564394669
+      FORGOTTEN GARDEN_B_25: 8457869195258030294
+      FORGOTTEN GARDEN_B_26: -3800226641507184291
+      FORGOTTEN GARDEN_B_27: 1986401732608971311
+      FORGOTTEN GARDEN_B_28: -242811776794418697
+      FORGOTTEN GARDEN_B_29: -8726267620548918125
+      FORGOTTEN GARDEN_B_3: -7195915363209393448
+      FORGOTTEN GARDEN_B_30: -604373292057697322
+      FORGOTTEN GARDEN_B_31: 750021760849584552
+      FORGOTTEN GARDEN_B_32: -5346067414041050329
+      FORGOTTEN GARDEN_B_33: -2208384096620558080
+      FORGOTTEN GARDEN_B_34: -85791560153727401
+      FORGOTTEN GARDEN_B_35: -6289795570683137044
+      FORGOTTEN GARDEN_B_36: -8560741543771042293
+      FORGOTTEN GARDEN_B_37: -4563016659315900141
+      FORGOTTEN GARDEN_B_38: 4140238604857988971
+      FORGOTTEN GARDEN_B_39: -7323761904032346255
+      FORGOTTEN GARDEN_B_4: 9139987145923881337
+      FORGOTTEN GARDEN_B_40: -8311261729198231888
+      FORGOTTEN GARDEN_B_41: -1679075675732343216
+      FORGOTTEN GARDEN_B_42: -4653217092169159356
+      FORGOTTEN GARDEN_B_43: 8221569864131434249
+      FORGOTTEN GARDEN_B_44: 1893090863455560503
+      FORGOTTEN GARDEN_B_45: -6035737447473317345
+      FORGOTTEN GARDEN_B_46: -4286746272772836550
+      FORGOTTEN GARDEN_B_47: -9190166024308840532
+      FORGOTTEN GARDEN_B_48: 1174019782019807242
+      FORGOTTEN GARDEN_B_49: -2089100681143613767
+      FORGOTTEN GARDEN_B_5: -315095585638526590
+      FORGOTTEN GARDEN_B_50: -5801665958310252871
+      FORGOTTEN GARDEN_B_51: -6119833718887197089
+      FORGOTTEN GARDEN_B_52: -205063674935839859
+      FORGOTTEN GARDEN_B_53: -2554424315194784734
+      FORGOTTEN GARDEN_B_54: 271221320181833886
+      FORGOTTEN GARDEN_B_6: -6954550474652514027
+      FORGOTTEN GARDEN_B_7: 5750547192785855311
+      FORGOTTEN GARDEN_B_8: -8163928508338677462
+      FORGOTTEN GARDEN_B_9: 5442153748613189684
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
