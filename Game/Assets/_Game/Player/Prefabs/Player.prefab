@@ -31,7 +31,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1043192435436107677}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.72291607, y: 0.3726339, z: 0}
   m_LocalScale: {x: 1.2, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: -5615041109936842368, guid: 2fc4b22b602490d6aa05e016aa012835, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -120,9 +120,9 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!61 &7918279211516910683
 BoxCollider2D:
@@ -158,7 +158,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.01444228, y: -0.06705349}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -168,7 +168,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.34390727, y: 0.560542}
   m_EdgeRadius: 0
 --- !u!114 &537896703140039652
 MonoBehaviour:
@@ -196,11 +196,11 @@ MonoBehaviour:
   playerSpotLightPrefab: {fileID: 0}
   playerSpotLightColor: {r: 1, g: 1, b: 1, a: 0.9}
   playerSpotLightIntensity: 1
-  playerSpotLightInnerRadius: 1
-  playerSpotLightOuterRadius: 4
-  playerSpotLightInnerAngle: 30
-  playerSpotLightOuterAngle: 70
-  playerSpotLightLocalOffset: {x: 0, y: 0.6, z: 0}
+  playerSpotLightInnerRadius: 3
+  playerSpotLightOuterRadius: 5
+  playerSpotLightInnerAngle: 360
+  playerSpotLightOuterAngle: 360
+  playerSpotLightLocalOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &7644424965198961820
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,6 +228,7 @@ MonoBehaviour:
   OnHealthChanged:
     m_PersistentCalls:
       m_Calls: []
+  pauseManager: {fileID: 0}
 --- !u!114 &7466043142647848563
 MonoBehaviour:
   m_ObjectHideFlags: 0
