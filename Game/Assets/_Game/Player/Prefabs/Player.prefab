@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 537896703140039652}
   - component: {fileID: 7644424965198961820}
   - component: {fileID: 7466043142647848563}
+  - component: {fileID: 879940362085601549}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -31,8 +32,8 @@ Transform:
   m_GameObject: {fileID: 1043192435436107677}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.72291607, y: 0.3726339, z: 0}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -86,7 +87,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: -5615041109936842368, guid: 2fc4b22b602490d6aa05e016aa012835, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -161,7 +162,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 2, y: 2}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -182,9 +183,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   currentState: 0
+  isHidden: 0
   moveSpeed: 6
+  killRange: 2
+  dashDuration: 0.1
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
   rb: {fileID: 7327933077107029157}
   animator: {fileID: 0}
+  ensurePlayerSpotLight: 1
+  playerSpotLightPrefab: {fileID: 0}
+  playerSpotLightColor: {r: 1, g: 1, b: 1, a: 0.9}
+  playerSpotLightIntensity: 1
+  playerSpotLightInnerRadius: 1
+  playerSpotLightOuterRadius: 4
+  playerSpotLightInnerAngle: 30
+  playerSpotLightOuterAngle: 70
+  playerSpotLightLocalOffset: {x: 0, y: 0.6, z: 0}
 --- !u!114 &7644424965198961820
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,6 +240,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3feaf55e7c249774986f802c5c486e27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerThrower
-  bulletPrefab: {fileID: 6300554218925657568, guid: 06e17d5196b039e4e8508a06c7d5b461, type: 3}
+  defaultPrefab: {fileID: 0}
   throwPoint: {fileID: 4983453789041795484}
   throwCooldown: 0.2
+  aimlockRadius: 2
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  aimLineColor: {r: 1, g: 0, b: 0, a: 0.3}
+  aimLineWidth: 0.05
+  animator: {fileID: 879940362085601549}
+  throwTriggerName: Throw
+  throwAnimationDelay: 0.5
+--- !u!95 &879940362085601549
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1043192435436107677}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7748c276bdb33ac199ab7271c26ee766, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

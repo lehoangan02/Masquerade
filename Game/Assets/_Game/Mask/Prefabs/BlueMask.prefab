@@ -82,7 +82,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 20
   m_MaskInteraction: 0
   m_Sprite: {fileID: -8586218804567216477, guid: d880a5077b2e94ba1bc00616f9fceb19, type: 3}
   m_Color: {r: 0.6, g: 0.9223962, b: 1, a: 1}
@@ -195,6 +195,15 @@ MonoBehaviour:
   bobAmount: 0.15
   rotateSpeed: 90
   spawnAsPickup: 0
+  attachSpotLightOnHit: 1
+  spotLightPrefab: {fileID: 0}
+  spotLightColor: {r: 1, g: 1, b: 1, a: 0.9}
+  spotLightIntensity: 1
+  spotLightInnerRadius: 1
+  spotLightOuterRadius: 4
+  spotLightInnerAngle: 30
+  spotLightOuterAngle: 70
+  spotLightLocalOffset: {x: 0, y: 0.6, z: 0}
   rb: {fileID: 621582111592524286}
   spriteRenderer: {fileID: 0}
   col: {fileID: 6704145068528883940}

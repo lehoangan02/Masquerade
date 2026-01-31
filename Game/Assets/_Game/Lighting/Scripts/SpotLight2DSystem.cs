@@ -28,6 +28,9 @@ public static class SpotLight2DSystem
         if (target == null) return false;
 
         RefreshSpotLightsIfNeeded();
+        
+        // If no spot lights exist, default to visible
+        if (SpotLights.Count == 0) return true;
 
         Vector3 targetPos = target.position;
         for (int i = SpotLights.Count - 1; i >= 0; i--)
