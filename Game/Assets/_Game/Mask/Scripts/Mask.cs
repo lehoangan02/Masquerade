@@ -22,7 +22,7 @@ public class Mask : MonoBehaviour, IMask
 
     [Header("Stick Settings")]
     [SerializeField] private Vector2 stickOffset = new Vector2(0, 0.2f);
-    [SerializeField] private float stickScale = 0.5f;
+    [SerializeField] private float stickScale = 4f;
 
     [Header("Pickup Settings")]
     [SerializeField] private float attractionRadius = 3f;
@@ -55,9 +55,11 @@ public class Mask : MonoBehaviour, IMask
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Collider2D col;
 
+private const float MASK_SCALE = 4f;
     private MaskState currentState = MaskState.Idle;
     private Transform attachedTarget;
     private Transform player;
+    private Collider2D playerCollider; // Store reference to player collider
     private Vector3 dropPosition;
     private float dropTime;
     private GameObject attachedSpotLightObject;
@@ -84,40 +86,40 @@ public class Mask : MonoBehaviour, IMask
         if (spriteRenderer == null) spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         if (col == null) col = GetComponent<Collider2D>();
         
-        // Configure rigidbody for projectile
+        transform.localScale = Vector3.one * MASK_SCALE;
         rb.gravityScale = 0f;
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        if (col != null) col.isTrigger = false;
         
-        // Apply color
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.color = maskColor;
-        }
+        if (spriteRenderer != null) spriteRenderer.color = maskColor;
         
-        // Find player
+        // Find player transform for distance checks (Pickup)
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null) player = playerObj.transform;
     }
 
+    /// <summary>
+    /// CALLED BY PLAYERTHROWER: Ignores physics collision with player
+    /// </summary>
+    public void IgnorePlayerCollision(Collider2D playerCol)
+    {
+        playerCollider = playerCol;
+        if (playerCollider != null && col != null)
+        {
+            // This prevents the recoil and "left-only" ejection bug
+            Physics2D.IgnoreCollision(col, playerCollider, true);
+        }
+    }
+
     void Start()
     {
-        // If spawned as pickup, go directly to Dropped state
-        if (spawnAsPickup)
+        // If spawned via debug/world placement (Pickup Mode)
+        if (currentState == MaskState.Dropped) // Logic handled in Drop() usually
         {
-            currentState = MaskState.Dropped;
-            dropPosition = transform.position;
-            dropTime = Time.time;
-            
-            // Configure for pickup
-            rb.bodyType = RigidbodyType2D.Kinematic;
-            rb.linearVelocity = Vector2.zero;
-            if (col != null) col.isTrigger = true;
-            
-            Debug.Log($"[{maskName}] Spawned as pickup.");
+             // Handle initialization if pre-placed in scene
         }
         else
         {
-            // Auto-destroy after lifetime (only if idle/thrown - not attached or dropped)
             Invoke(nameof(CheckDestroy), lifetime);
         }
     }
@@ -151,6 +153,12 @@ public class Mask : MonoBehaviour, IMask
     {
         if (currentState == MaskState.Thrown) return;
         currentState = MaskState.Thrown;
+        
+        // Ensure proper scale
+        transform.localScale = Vector3.one * MASK_SCALE;
+        
+        // Ensure collider is solid for wall collision
+        if (col != null) col.isTrigger = false;
         
         // Set velocity
         rb.linearVelocity = direction.normalized * speed;
@@ -221,6 +229,7 @@ public class Mask : MonoBehaviour, IMask
         
         Debug.Log($"[Mask] Hit: {other.name}, Tag: {other.tag}");
         
+        // Ignore player collisions
         if (other.CompareTag("Player")) return;
 
         // Check if it's an enemy
@@ -237,8 +246,15 @@ public class Mask : MonoBehaviour, IMask
             return;
         }
         
-        // Hit something else - destroy
-        Destroy(gameObject);
+        // Check if it's a wall - become collectable
+        if (other.CompareTag("Wall") || other.layer == LayerMask.NameToLayer("Wall"))
+        {
+            Drop();
+            Debug.Log($"[{maskName}] Hit wall, becoming collectable!");
+            return;
+        }
+        
+        // Hit something else - ignore (don't destroy or drop)
     }
 
     void AttachToTarget(Transform target)
@@ -259,7 +275,7 @@ public class Mask : MonoBehaviour, IMask
         // Position on face (center with offset)
         transform.localPosition = stickOffset;
         transform.localRotation = Quaternion.identity;
-        transform.localScale = Vector3.one * stickScale;
+        transform.localScale = Vector3.one * MASK_SCALE;
 
         if (attachSpotLightOnHit)
         {
@@ -290,8 +306,8 @@ public class Mask : MonoBehaviour, IMask
 
         CleanupSpotLight();
         
-        // Reset scale and rotation
-        transform.localScale = Vector3.one * stickScale;
+        // Reset scale and rotation to full size
+        transform.localScale = Vector3.one * MASK_SCALE;
         transform.rotation = Quaternion.identity;
         
         // Keep kinematic, no velocity
@@ -299,10 +315,16 @@ public class Mask : MonoBehaviour, IMask
         rb.linearVelocity = Vector2.zero;
         
         // Re-enable collider as trigger for pickup
-        if (col != null)
+       if (col != null)
         {
             col.enabled = true;
-            col.isTrigger = true;
+            col.isTrigger = true; // Become a trigger so player can overlap
+            
+            // CRITICAL FIX: Re-enable collision with player so OnTriggerEnter works
+            if (playerCollider != null)
+            {
+                Physics2D.IgnoreCollision(col, playerCollider, false);
+            }
         }
         
         Debug.Log($"[{maskName}] Dropped! Ready for pickup.");
