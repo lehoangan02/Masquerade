@@ -19,5 +19,10 @@ public class KillArea : MonoBehaviour
                 health.TakeDamage(99999);
             }
         }
+        else if (other.CompareTag("Enemy"))
+        {
+            // Destroy enemy on contact with kill area
+            Destroy(other.gameObject);
+        }
     }
 }

@@ -25,7 +25,7 @@ public abstract class EnemyBase : MonoBehaviour
     private float lastAttackTime = -999f;
 
     [Header("Vision Settings")]
-public Vector3 visionOffset = Vector3.zero;
+    public Vector3 visionOffset = Vector3.zero;
 
     [Header("Movement Feel")]
     public float slideInertia = 0.1f; 
@@ -47,8 +47,8 @@ public Vector3 visionOffset = Vector3.zero;
     // State Flags
     protected bool isAlerted = false;
     protected bool isDead = false;
-    protected bool isAttacking = false; // Prevents movement from overriding attack
-    protected AnimState currentState = AnimState.Idle; // Track current state
+    protected bool isAttacking = false; 
+    protected AnimState currentState = AnimState.Idle; 
 
     private Vector2 currentVelocityRef;
 
@@ -80,7 +80,7 @@ public Vector3 visionOffset = Vector3.zero;
 
     protected virtual void FixedUpdate()
     {
-        if (player == null || isDead || isAttacking) return; // Don't move while attacking
+        if (player == null || isDead || isAttacking) return; 
         PerformBehavior(Vector2.Distance(transform.position, player.position));
     }
 
@@ -89,12 +89,10 @@ public Vector3 visionOffset = Vector3.zero;
     // --- STATE MANAGEMENT HELPER ---
     protected void ChangeAnimationState(AnimState newState)
     {
-        // Don't switch if we are already in this state (prevents trigger spam)
         if (currentState == newState) return;
 
         currentState = newState;
 
-        // Call the specific trigger we set up in the V5/V6 Tool
         switch (newState)
         {
             case AnimState.Idle:   animator.SetTrigger("DoIdle"); break;
@@ -112,30 +110,26 @@ public Vector3 visionOffset = Vector3.zero;
         {
             lastAttackTime = Time.time;
             
-            // 1. Stop Moving
             StopMoving();
             
-            // 2. Play Animation & Lock State
             isAttacking = true;
             ChangeAnimationState(AnimState.Attack);
-            StartCoroutine(ResetAttackState()); // Unlock after animation finishes
+            StartCoroutine(ResetAttackState()); 
 
-            // 3. Deal Damage
             Debug.Log($"<color=red>{gameObject.name} attacked Player for {attackDamage} damage!</color>");
         }
     }
 
     private IEnumerator ResetAttackState()
     {
-        // Wait for animation duration (approx 0.5s for most pixel attacks)
         yield return new WaitForSeconds(0.5f); 
         
         isAttacking = false;
-        currentState = AnimState.Idle; // Reset state so UpdateAnimation can take over again
-        animator.SetTrigger("DoIdle"); // Return to idle immediately
+        currentState = AnimState.Idle; 
+        animator.SetTrigger("DoIdle"); 
     }
 
-    // --- ANIMATION LOGIC (UPDATED) ---
+    // --- ANIMATION LOGIC ---
     protected void UpdateAnimation()
     {
         if (animator == null || isDead || isAttacking) return;
@@ -143,7 +137,6 @@ public Vector3 visionOffset = Vector3.zero;
         Vector2 velocity = rb.linearVelocity;
         float speed = velocity.magnitude;
 
-        // 1. Always update Direction for Blend Trees (so they face the right way)
         if (speed > 0.01f)
         {
             velocity.Normalize(); 
@@ -151,8 +144,6 @@ public Vector3 visionOffset = Vector3.zero;
             animator.SetFloat("Vertical", velocity.y);
         }
 
-        // 2. Decide State based on Logic
-        // Logic: If barely moving -> Idle. If moving AND Alerted -> Run. If moving AND Not Alerted -> Walk.
         AnimState targetState = currentState;
 
         if (speed < 0.1f)
@@ -161,12 +152,10 @@ public Vector3 visionOffset = Vector3.zero;
         }
         else 
         {
-            // If we know about the player (isAlerted), we RUN. Otherwise we WALK (Patrol).
             if (isAlerted) targetState = AnimState.Run;
             else targetState = AnimState.Walk;
         }
 
-        // 3. Apply Change
         if (targetState != currentState)
         {
             ChangeAnimationState(targetState);
@@ -193,11 +182,8 @@ public Vector3 visionOffset = Vector3.zero;
 
         if (animator != null)
         {
-            // Use the new State helper
-            // Note: Horizontal/Vertical are still set from the last frame, 
-            // so the Death Blend Tree will pick the correct directional death.
             ChangeAnimationState(AnimState.Dead);
-            StartCoroutine(WaitAndDestroy(1.0f)); // Wait longer for 8-frame death
+            StartCoroutine(WaitAndDestroy(1.0f)); 
         }
         else
         {
@@ -218,7 +204,7 @@ public Vector3 visionOffset = Vector3.zero;
         foreach (Transform mask in masksToDrop) { mask.SetParent(null); mask.rotation = Quaternion.identity; }
     }
 
-    // --- MOVEMENT & HELPERS ---
+    // --- HELPERS ---
     private void OnTransformChildrenChanged()
     {
         if (isDead) return;
@@ -242,12 +228,21 @@ public Vector3 visionOffset = Vector3.zero;
         }
     }
 
+    // =========================================================
+    // [FIX] NEW PUBLIC METHOD FOR PLAYER CONTROLLER TO CALL
+    // =========================================================
+    public bool CanSeePlayer()
+    {
+        if (player == null) return false;
+        // Calculates distance automatically and calls the internal check
+        return IsPlayerVisible(Vector2.Distance(transform.position, player.position));
+    }
+
     protected bool IsPlayerVisible(float dist)
     {
         float actualVision = visionRange * visionMultiplier;
         if (dist > actualVision) return false;
         
-        // If already alerted, we keep seeing them (chase logic)
         if (isAlerted) return true;
         
         if (fovAngle >= 360f) return true;
@@ -256,7 +251,6 @@ public Vector3 visionOffset = Vector3.zero;
         
         bool seesPlayer = Vector2.Angle(facingDir, dirToPlayer) < (fovAngle / 2f);
         
-        // If we see them, we become Alerted -> Updates Animation to RUN
         if (seesPlayer) isAlerted = true; 
         
         return seesPlayer;
@@ -292,28 +286,20 @@ public Vector3 visionOffset = Vector3.zero;
     { 
         if (!lineRenderer) return; 
         
-        int s = 50; // Resolution (Smoothness)
-        
-        // OLD: s + 2
-        // NEW: s + 3 (We need one extra point to close the loop back to center)
+        int s = 50; 
         lineRenderer.positionCount = s + 3; 
 
         float ang = (animator ? GetFacingAngleFromAnimator() : 0f) - fovAngle/2f;
         float step = fovAngle/s;
         float rng = visionRange * visionMultiplier; 
 
-        // 1. Start at Center
         lineRenderer.SetPosition(0, visionOffset); 
-
-        // 2. Draw the Arc (Indices 1 to s+1)
         for(int i=0; i<=s; i++) 
         { 
             float r = Mathf.Deg2Rad * (ang + step * i); 
             Vector3 pointOnCircle = new Vector3(Mathf.Cos(r)*rng, Mathf.Sin(r)*rng) + visionOffset;
             lineRenderer.SetPosition(i+1, pointOnCircle); 
         } 
-        
-        // 3. NEW: Close the loop (Draw line from End of Arc back to Center)
         lineRenderer.SetPosition(s+2, visionOffset);
     }
     float GetFacingAngleFromAnimator() { float x = animator.GetFloat("Horizontal"), y = animator.GetFloat("Vertical"); return (Mathf.Abs(x)<0.1f && Mathf.Abs(y)<0.1f) ? 270f : Mathf.Atan2(y, x) * Mathf.Rad2Deg; }
