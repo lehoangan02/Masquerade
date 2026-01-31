@@ -17,6 +17,7 @@ public class PauseManager : MonoBehaviour
     }
     public void RestartScene()
     {
+        Debug.Log("Restarting scene: " + SceneManager.GetActiveScene().name);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     public void TogglePause()

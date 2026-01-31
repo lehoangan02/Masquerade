@@ -29,6 +29,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
     public bool IsInvincible => isInvincible;
+    public  PauseManager pauseManager;
 
     void Awake()
     {
@@ -67,6 +68,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     private void Die()
     {
         Debug.Log($"{gameObject.name} died!");
+        pauseManager.PauseGame();
         OnDeath?.Invoke();
         
         var controller = GetComponent<PlayerController>();
