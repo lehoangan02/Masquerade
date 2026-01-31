@@ -171,16 +171,16 @@ public class PlayerController : MonoBehaviour
         // 1. Send Direction to Blend Tree
         if (moveInput.sqrMagnitude > 0.01f)
         {
+            animator.SetBool("IsWalking", true);
             animator.SetFloat("Horizontal", moveInput.x);
             animator.SetFloat("Vertical", moveInput.y);
-            animator.SetTrigger("Walk");
         }
         else
         {
             // When stopped, keep facing the last direction
-            animator.SetFloat("Horizontal", lastMoveDirection.x);
-            animator.SetFloat("Vertical", lastMoveDirection.y);
-            animator.SetTrigger("Idle");
+            animator.SetBool("IsWalking", false);
+            animator.SetFloat("LastHori", lastMoveDirection.x);
+            animator.SetFloat("LastVert", lastMoveDirection.y);
         }
     }
 
