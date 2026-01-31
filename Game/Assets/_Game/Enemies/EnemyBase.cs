@@ -20,6 +20,11 @@ public abstract class EnemyBase : MonoBehaviour
     [Tooltip("Set to 0 to be behind Enemy.")]
     public int visionSortingOrder = 0; 
 
+    [Header("Visibility (Spot Lights)")]
+    [SerializeField] private bool onlyRenderWhenLit = true;
+    [SerializeField] private LayerMask spotLightOcclusionMask;
+    [SerializeField] private float visibilityCheckRadius = 0.25f;
+
     [Header("Combat")]
     public float attackRange = 1.2f;
     public float attackCooldown = 1.0f;
@@ -51,6 +56,7 @@ public abstract class EnemyBase : MonoBehaviour
     protected Transform player;
     protected Rigidbody2D rb;
     protected SpriteRenderer spriteRenderer;
+    protected SpriteRenderer[] spriteRenderers;
     protected LineRenderer lineRenderer;
     protected Animator animator; 
     
@@ -69,6 +75,7 @@ public abstract class EnemyBase : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
+        spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -97,7 +104,29 @@ public abstract class EnemyBase : MonoBehaviour
         PerformBehavior(Vector2.Distance(transform.position, player.position));
     }
 
-    void LateUpdate() { if (showVisionCircle && lineRenderer != null) DrawVisionCone(); }
+    protected virtual void LateUpdate()
+    {
+        if (showVisionCircle && lineRenderer != null) DrawVisionCone();
+        if (onlyRenderWhenLit) UpdateVisibilityBySpotLights();
+    }
+
+    private void UpdateVisibilityBySpotLights()
+    {
+        bool isLit = SpotLight2DSystem.IsTargetLit(transform, visibilityCheckRadius, spotLightOcclusionMask);
+        if (spriteRenderers == null || spriteRenderers.Length == 0)
+        {
+            if (spriteRenderer != null) spriteRenderer.enabled = isLit;
+            return;
+        }
+
+        for (int i = 0; i < spriteRenderers.Length; i++)
+        {
+            if (spriteRenderers[i] != null)
+            {
+                spriteRenderers[i].enabled = isLit;
+            }
+        }
+    }
 
     // --- SMOOTH MOVEMENT LOGIC ---
     // Replace BOTH MoveToSmart methods in EnemyBase with these:
