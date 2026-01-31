@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 public enum MaskType { None, Red, Yellow, Green }
-
-// 1. Define the States available to the enemy
 public enum AnimState { Idle, Walk, Run, Attack, Dead }
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -17,6 +15,10 @@ public abstract class EnemyBase : MonoBehaviour
     public float stoppingDistance = 0.6f;
     public Color skinColor = Color.white;
     public bool showVisionCircle = true;
+
+    [Header("Visual Settings")] // <--- NEW SECTION
+    [Tooltip("Order in Layer for the Vision Cone. Set this HIGHER than ground (0) but LOWER than Enemy (10).")]
+    public int visionSortingOrder = 5; 
 
     [Header("Combat")]
     public float attackRange = 1.2f;
@@ -86,13 +88,11 @@ public abstract class EnemyBase : MonoBehaviour
 
     void LateUpdate() { if (showVisionCircle && lineRenderer != null) DrawVisionCone(); }
 
-    // --- STATE MANAGEMENT HELPER ---
+    // --- STATE MANAGEMENT ---
     protected void ChangeAnimationState(AnimState newState)
     {
         if (currentState == newState) return;
-
         currentState = newState;
-
         switch (newState)
         {
             case AnimState.Idle:   animator.SetTrigger("DoIdle"); break;
@@ -109,13 +109,10 @@ public abstract class EnemyBase : MonoBehaviour
         if (Time.time >= lastAttackTime + attackCooldown)
         {
             lastAttackTime = Time.time;
-            
             StopMoving();
-            
             isAttacking = true;
             ChangeAnimationState(AnimState.Attack);
             StartCoroutine(ResetAttackState()); 
-
             Debug.Log($"<color=red>{gameObject.name} attacked Player for {attackDamage} damage!</color>");
         }
     }
@@ -123,7 +120,6 @@ public abstract class EnemyBase : MonoBehaviour
     private IEnumerator ResetAttackState()
     {
         yield return new WaitForSeconds(0.5f); 
-        
         isAttacking = false;
         currentState = AnimState.Idle; 
         animator.SetTrigger("DoIdle"); 
@@ -145,21 +141,14 @@ public abstract class EnemyBase : MonoBehaviour
         }
 
         AnimState targetState = currentState;
-
-        if (speed < 0.1f)
-        {
-            targetState = AnimState.Idle;
-        }
+        if (speed < 0.1f) targetState = AnimState.Idle;
         else 
         {
             if (isAlerted) targetState = AnimState.Run;
             else targetState = AnimState.Walk;
         }
 
-        if (targetState != currentState)
-        {
-            ChangeAnimationState(targetState);
-        }
+        if (targetState != currentState) ChangeAnimationState(targetState);
     }
 
     // --- DEATH & PITS ---
@@ -228,13 +217,9 @@ public abstract class EnemyBase : MonoBehaviour
         }
     }
 
-    // =========================================================
-    // [FIX] NEW PUBLIC METHOD FOR PLAYER CONTROLLER TO CALL
-    // =========================================================
     public bool CanSeePlayer()
     {
         if (player == null) return false;
-        // Calculates distance automatically and calls the internal check
         return IsPlayerVisible(Vector2.Distance(transform.position, player.position));
     }
 
@@ -242,17 +227,13 @@ public abstract class EnemyBase : MonoBehaviour
     {
         float actualVision = visionRange * visionMultiplier;
         if (dist > actualVision) return false;
-        
         if (isAlerted) return true;
-        
         if (fovAngle >= 360f) return true;
+        
         Vector2 facingDir = (animator != null) ? (Vector2)(Quaternion.Euler(0,0,GetFacingAngleFromAnimator()) * Vector2.right) : (spriteRenderer != null && spriteRenderer.flipX ? Vector2.left : Vector2.right);
         Vector2 dirToPlayer = (player.position - transform.position).normalized;
-        
         bool seesPlayer = Vector2.Angle(facingDir, dirToPlayer) < (fovAngle / 2f);
-        
         if (seesPlayer) isAlerted = true; 
-        
         return seesPlayer;
     }
 
@@ -280,12 +261,24 @@ public abstract class EnemyBase : MonoBehaviour
     protected void StopMoving() { rb.linearVelocity = Vector2.SmoothDamp(rb.linearVelocity, Vector2.zero, ref currentVelocityRef, slideInertia); }
     Vector2 RotateVector(Vector2 v, float degrees) { float r = degrees * Mathf.Deg2Rad, c = Mathf.Cos(r), s = Mathf.Sin(r); return new Vector2(c * v.x - s * v.y, s * v.x + c * v.y); }
     
-    // VISUALS
-    void SetupLineRenderer() { if (!TryGetComponent(out lineRenderer)) lineRenderer = gameObject.AddComponent<LineRenderer>(); lineRenderer.material = new Material(Shader.Find("Sprites/Default")); lineRenderer.startColor = lineRenderer.endColor = skinColor; lineRenderer.startWidth = lineRenderer.endWidth = 0.05f; lineRenderer.useWorldSpace = false; lineRenderer.sortingOrder = -1; }
+    // --- VISUALS (FIXED) ---
+    void SetupLineRenderer() 
+    { 
+        if (!TryGetComponent(out lineRenderer)) lineRenderer = gameObject.AddComponent<LineRenderer>(); 
+        
+        lineRenderer.material = new Material(Shader.Find("Sprites/Default")); 
+        lineRenderer.startColor = lineRenderer.endColor = skinColor; 
+        lineRenderer.startWidth = lineRenderer.endWidth = 0.05f; 
+        lineRenderer.useWorldSpace = false; 
+        
+        // --- FIX IS HERE ---
+        // Was -1, now uses the public variable (Default 5)
+        lineRenderer.sortingOrder = visionSortingOrder; 
+    }
+
     void DrawVisionCone() 
     { 
         if (!lineRenderer) return; 
-        
         int s = 50; 
         lineRenderer.positionCount = s + 3; 
 
@@ -302,6 +295,7 @@ public abstract class EnemyBase : MonoBehaviour
         } 
         lineRenderer.SetPosition(s+2, visionOffset);
     }
+
     float GetFacingAngleFromAnimator() { float x = animator.GetFloat("Horizontal"), y = animator.GetFloat("Vertical"); return (Mathf.Abs(x)<0.1f && Mathf.Abs(y)<0.1f) ? 270f : Mathf.Atan2(y, x) * Mathf.Rad2Deg; }
     protected virtual void OnAlertReceived(Vector3 p, Vector3 o, float r) { if (Vector2.Distance(transform.position, o) <= r) isAlerted = true; }
     protected virtual void OnDestroy() { EnemyAlertSystem.OnPlayerFound -= OnAlertReceived; }
