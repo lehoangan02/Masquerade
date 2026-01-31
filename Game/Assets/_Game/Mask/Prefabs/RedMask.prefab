@@ -201,9 +201,9 @@ MonoBehaviour:
   spotLightIntensity: 1
   spotLightInnerRadius: 1
   spotLightOuterRadius: 4
-  spotLightInnerAngle: 30
-  spotLightOuterAngle: 70
-  spotLightLocalOffset: {x: 0, y: 0.6, z: 0}
+  spotLightInnerAngle: 360
+  spotLightOuterAngle: 360
+  spotLightLocalOffset: {x: 0, y: 0, z: 0}
   rb: {fileID: 7993943629527337402}
   spriteRenderer: {fileID: 0}
   col: {fileID: 912360627098339701}

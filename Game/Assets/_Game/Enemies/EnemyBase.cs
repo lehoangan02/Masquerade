@@ -19,11 +19,6 @@ public abstract class EnemyBase : MonoBehaviour
     [Header("Visual Settings")]
     public int visionSortingOrder = 0;
 
-    [Header("Visibility (Spot Lights)")]
-    [SerializeField] private bool onlyRenderWhenLit = true;
-    [SerializeField] private LayerMask spotLightOcclusionMask;
-    [SerializeField] private float visibilityCheckRadius = 0.25f;
-
     [Header("Combat")]
     public float attackRange = 1.2f;
     public float attackCooldown = 1.0f;
@@ -40,10 +35,10 @@ public abstract class EnemyBase : MonoBehaviour
 
     [Header("Pathfinding & Obstacles")]
     [Tooltip("Select layers the enemy should slide against (e.g., Environment, Obstacles).")]
-    public LayerMask obstacleLayer; 
+    public LayerMask obstacleLayer;
     
     [Tooltip("Add any tags here that should act as solid walls (e.g., Wall, Environment, Pillar).")]
-    public List<string> obstacleTags = new List<string> { "Wall" }; 
+    public List<string> obstacleTags = new List<string> { "Wall" };
     
     public string pitTag = "Pit";
     
@@ -57,7 +52,6 @@ public abstract class EnemyBase : MonoBehaviour
     protected Transform player;
     protected Rigidbody2D rb;
     protected SpriteRenderer spriteRenderer;
-    protected SpriteRenderer[] spriteRenderers;
     protected LineRenderer lineRenderer;
     protected Animator animator;
 
@@ -70,13 +64,12 @@ public abstract class EnemyBase : MonoBehaviour
     // Internal Physics State
     private bool debugPitDetected = false;
     private Vector2 currentVelocityRef;
-    private Vector2 currentSteeringDir; 
+    private Vector2 currentSteeringDir;
 
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
-        spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -108,18 +101,6 @@ public abstract class EnemyBase : MonoBehaviour
     protected virtual void LateUpdate()
     {
         if (showVisionCircle && lineRenderer != null) DrawVisionCone();
-        if (onlyRenderWhenLit) UpdateVisibilityBySpotLights();
-    }
-
-    private void UpdateVisibilityBySpotLights()
-    {
-        bool isLit = SpotLight2DSystem.IsTargetLit(transform, visibilityCheckRadius, spotLightOcclusionMask);
-        if (spriteRenderers == null || spriteRenderers.Length == 0)
-        {
-            if (spriteRenderer != null) spriteRenderer.enabled = isLit;
-            return;
-        }
-        foreach (var sr in spriteRenderers) if (sr != null) sr.enabled = isLit;
     }
 
     // --- SMART MOVEMENT ---
@@ -170,15 +151,12 @@ public abstract class EnemyBase : MonoBehaviour
         ApplyVelocity(finalDir);
     }
 
-    // Helper to check multiple optional tags
     private RaycastHit2D GetObstacleTagHit(Vector2 dir)
     {
         RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, bodyWidth, dir, 0.5f);
         foreach (var h in hits)
         {
             if (h.collider == null) continue;
-            
-            // Check if the object has any of the tags in our list
             foreach (string t in obstacleTags)
             {
                 if (h.collider.CompareTag(t)) return h;
@@ -279,19 +257,56 @@ public abstract class EnemyBase : MonoBehaviour
         }
     }
 
+    // --- MASK MANAGEMENT (UPDATED) ---
+
+    /// <summary>
+    /// Helper to cleanly attach a new mask. Removes old ones, instantiates new one.
+    /// Call this from your projectile or interaction script.
+    /// </summary>
+    public void EquipNewMask(GameObject maskPrefab)
+    {
+        if (maskPrefab == null) return;
+
+        // Create the new mask
+        GameObject newMask = Instantiate(maskPrefab, transform.position, Quaternion.identity, transform);
+        
+        // Naming it helps the UpdateMaskStatus logic run cleanly without "(Clone)" strings
+        newMask.name = maskPrefab.name;
+
+        // Force an update to clean up old masks immediately
+        UpdateMaskStatus();
+    }
+
     public void UpdateMaskStatus()
     {
         currentMask = MaskType.None;
         visionMultiplier = 1f;
+
+        bool foundNewestMask = false;
+
+        // Iterate BACKWARDS through children.
+        // Unity adds new children to the END of the list.
+        // So the last child is the newest one.
         for (int i = transform.childCount - 1; i >= 0; i--)
         {
             Transform child = transform.GetChild(i);
+
             if (child.name.Contains("Mask"))
             {
-                if (child.name.Contains("RedMask")) currentMask = MaskType.Red;
-                else if (child.name.Contains("YellowMask")) { currentMask = MaskType.Yellow; visionMultiplier = 0.5f; }
-                else if (child.name.Contains("GreenMask")) currentMask = MaskType.Green;
-                return;
+                if (!foundNewestMask)
+                {
+                    // This is the last (newest) mask we found. Keep it.
+                    foundNewestMask = true;
+
+                    if (child.name.Contains("RedMask")) currentMask = MaskType.Red;
+                    else if (child.name.Contains("YellowMask")) { currentMask = MaskType.Yellow; visionMultiplier = 0.5f; }
+                    else if (child.name.Contains("GreenMask")) currentMask = MaskType.Green;
+                }
+                else
+                {
+                    // We already found a newer mask, so this child is old. Destroy it.
+                    Destroy(child.gameObject);
+                }
             }
         }
     }
