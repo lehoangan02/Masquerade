@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7843849973687307220}
   - component: {fileID: 4292943442976138666}
   - component: {fileID: 1528530586655590873}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Creep
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -81,6 +81,7 @@ MonoBehaviour:
   stoppingDistance: 0.6
   skinColor: {r: 1, g: 1, b: 1, a: 1}
   showVisionCircle: 1
+  visionSortingOrder: 5
   attackRange: 2
   attackCooldown: 1
   attackDamage: 10
@@ -88,11 +89,12 @@ MonoBehaviour:
   slideInertia: 0.1
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   pitLayer:
     serializedVersion: 2
-    m_Bits: 0
-  avoidRange: 1.5
+    m_Bits: 256
+  avoidRange: 2
+  bodyWidth: 0.4
   patrolVertical: 0
   patrolRange: 3
   patrolSpeed: 1.5
@@ -132,7 +134,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.1251421, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -142,7 +144,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.7497158, y: 1}
   m_EdgeRadius: 0
 --- !u!212 &4292943442976138666
 SpriteRenderer:
