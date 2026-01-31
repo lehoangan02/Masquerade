@@ -82,17 +82,22 @@ MonoBehaviour:
   skinColor: {r: 1, g: 1, b: 1, a: 1}
   showVisionCircle: 1
   visionSortingOrder: 5
+  onlyRenderWhenLit: 1
+  spotLightOcclusionMask:
+    serializedVersion: 2
+    m_Bits: 0
+  visibilityCheckRadius: 0.25
   attackRange: 2
   attackCooldown: 1
   attackDamage: 10
   visionOffset: {x: 0, y: 0, z: 0}
   slideInertia: 0.1
+  steeringSpeed: 7
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 64
-  pitLayer:
-    serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 8
+  obstacleTags: []
+  pitTag: Pit
   avoidRange: 2
   bodyWidth: 0.4
   patrolVertical: 0
