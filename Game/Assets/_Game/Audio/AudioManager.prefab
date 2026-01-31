@@ -51,10 +51,14 @@ MonoBehaviour:
   levelMusicArray:
   - {fileID: 8300000, guid: 0a93a1990dfdc8a4c954ddac520ea333, type: 3}
   - {fileID: 8300000, guid: 25438bc57680f4c48b450cb9e976ddbf, type: 3}
+  - {fileID: 8300000, guid: d50827628baa92840b574ad70c10c29f, type: 3}
+  - {fileID: 8300000, guid: 97131eef96ccdec44a1648ddc9c09c8a, type: 3}
+  - {fileID: 8300000, guid: 33ffcf58a54ed1d469f7dbb0e2b233e5, type: 3}
   backgroundMusic: {fileID: 8300000, guid: e5a2784e677ed594bb19ebfb5fdc8486, type: 3}
   chaseMusic: {fileID: 8300000, guid: 62b65b49824d0ad4eaf30d8931f6a7e7, type: 3}
   winMusic: {fileID: 8300000, guid: 848c757fad075da498c18f976343de8b, type: 3}
   loseMusic: {fileID: 8300000, guid: 9da19b39c74a27c43a48d845bfc35c58, type: 3}
+  enterLevel: {fileID: 8300000, guid: 59b60fddb2af67b4598f6adf4d02c96a, type: 3}
   hurtSound: {fileID: 8300000, guid: 2266c8badadff364eb90ccc71c47b861, type: 3}
   throwMask: {fileID: 8300000, guid: 90b6c32e5c90d394bb10f7d58da7ff58, type: 3}
   runInGlass: {fileID: 8300000, guid: 81c1fe0cee2b5b8479c7351387c8d2c1, type: 3}
