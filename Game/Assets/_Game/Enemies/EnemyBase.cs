@@ -17,7 +17,8 @@ public abstract class EnemyBase : MonoBehaviour
     public bool showVisionCircle = true;
 
     [Header("Visual Settings")]
-    public int visionSortingOrder = 5; 
+    [Tooltip("Set to 0 to be behind Enemy.")]
+    public int visionSortingOrder = 0; 
 
     [Header("Combat")]
     public float attackRange = 1.2f;
@@ -34,9 +35,13 @@ public abstract class EnemyBase : MonoBehaviour
     [Header("Pathfinding & Pits")]
     public LayerMask obstacleLayer; 
     public LayerMask pitLayer;      
+    
+    [Header("Detection Settings")]
+    [Tooltip("The Radius of the 360 Safety Circle around the enemy.")]
     public float avoidRange = 1.5f; 
-    [Tooltip("How 'fat' the detection circle is. Set to 0.4 or 0.5.")]
-    public float bodyWidth = 0.5f; // <--- NEW: Controls CircleCast width
+
+    [Tooltip("Radius of the enemy body (used for wall sliding).")]
+    public float bodyWidth = 0.5f; 
 
     // References
     protected MaskType currentMask = MaskType.None;
@@ -53,6 +58,8 @@ public abstract class EnemyBase : MonoBehaviour
     protected bool isAttacking = false; 
     protected AnimState currentState = AnimState.Idle; 
 
+    // Debugging
+    private bool debugPitDetected = false;
     private Vector2 currentVelocityRef;
 
     protected virtual void Start()
@@ -151,7 +158,6 @@ public abstract class EnemyBase : MonoBehaviour
         if (isDead) return;
         if (collision.CompareTag("Pit")) 
         {
-            // NEW LOG: Tells you exactly when they fall
             Debug.Log($"<color=red><b>[DEATH]</b> {gameObject.name} fell into PIT: {collision.name}</color>");
             Die();
         }
@@ -238,48 +244,58 @@ public abstract class EnemyBase : MonoBehaviour
     protected abstract void PerformBehavior(float distanceToPlayer);
 
     // -----------------------------------------------------------------------------------
-    // UPDATED: CIRCLE CAST (Body Width) + DEBUG LOGS
+    // NEW: 360 PROXIMITY DETECTION
     // -----------------------------------------------------------------------------------
     protected void MoveToSmart(Vector2 target, LayerMask avoidanceLayers)
     {
         if (isDead) return;
-        
+
         Vector2 desiredDir = (target - (Vector2)transform.position).normalized;
         Vector2 finalDir = desiredDir;
 
-        // Use CircleCast (Thick check) instead of Raycast (Thin check)
-        RaycastHit2D hit = Physics2D.CircleCast(transform.position, bodyWidth, desiredDir, avoidRange, avoidanceLayers);
+        debugPitDetected = false;
 
-        if (hit.collider != null)
+        // 1. PIT DETECTION (360 Degree Circle around Enemy)
+        // We check for pits specifically if they are in the avoidance layers
+        if ((avoidanceLayers.value & pitLayer.value) != 0)
         {
-            // LOGGING SECTION
-            string layerName = LayerMask.LayerToName(hit.collider.gameObject.layer);
-            
-            // Check if what we hit is specifically in the Pit Layer
-            bool isPit = ((1 << hit.collider.gameObject.layer) & pitLayer) != 0;
+            // This checks a circle CENTERED on the enemy
+            Collider2D pitHit = Physics2D.OverlapCircle(transform.position, avoidRange, pitLayer);
 
-            if (isPit)
+            if (pitHit != null)
             {
-                Debug.Log($"<color=cyan><b>[PIT DETECTED]</b></color> {gameObject.name} saw a PIT: '{hit.collider.name}'. Avoiding!");
-            }
-            else
-            {
-                 // Uncomment this if you want to see Wall detections too
-                 // Debug.Log($"<color=orange>[OBSTACLE]</color> {gameObject.name} saw a Wall: '{hit.collider.name}'.");
-            }
+                debugPitDetected = true;
+                Debug.Log($"<color=cyan><b>[PIT NEARBY]</b></color> Pushing away from {pitHit.name}");
 
-            // AVOIDANCE LOGIC
-            Vector2 hitNormal = hit.normal;
-            Vector2 avoidDir = Vector2.Perpendicular(hitNormal).normalized;
-            Vector2 left = avoidDir;
-            Vector2 right = -avoidDir;
-            finalDir = Vector2.Dot(left, desiredDir) > Vector2.Dot(right, desiredDir) ? left : right;
-            
-            Debug.DrawRay(transform.position, finalDir * 2f, Color.red);
+                // Find the closest point on the pit to the enemy
+                Vector2 closestPoint = pitHit.ClosestPoint(transform.position);
+                
+                // Calculate Repulsion Vector (Move AWAY from pit)
+                Vector2 repulsionDir = ((Vector2)transform.position - closestPoint).normalized;
+
+                // If we are inside the pit, this vector might be zero, so we default to -desiredDir
+                if (repulsionDir == Vector2.zero) repulsionDir = -desiredDir;
+
+                // Blend the desired direction with strong repulsion
+                // The closer we are to the pit, the stronger we push away
+                finalDir = (desiredDir + (repulsionDir * 2.5f)).normalized; 
+            }
         }
-        else
+
+        // 2. WALL DETECTION (Directional Ray/Circle Cast)
+        // We still need to look forward for Walls so we don't walk through them
+        if ((avoidanceLayers.value & obstacleLayer.value) != 0)
         {
-            Debug.DrawRay(transform.position, desiredDir * 2f, Color.green);
+            RaycastHit2D wallHit = Physics2D.CircleCast(transform.position, bodyWidth, finalDir, 1.0f, obstacleLayer);
+            if (wallHit.collider != null)
+            {
+                // Slide along the wall
+                Vector2 hitNormal = wallHit.normal;
+                Vector2 slideDir = Vector2.Perpendicular(hitNormal).normalized;
+                Vector2 left = slideDir;
+                Vector2 right = -slideDir;
+                finalDir = Vector2.Dot(left, finalDir) > Vector2.Dot(right, finalDir) ? left : right;
+            }
         }
 
         ApplyVelocity(finalDir);
@@ -309,6 +325,8 @@ public abstract class EnemyBase : MonoBehaviour
     void DrawVisionCone() 
     { 
         if (!lineRenderer) return; 
+        lineRenderer.sortingOrder = visionSortingOrder;
+
         int s = 50; 
         lineRenderer.positionCount = s + 3; 
 
@@ -330,9 +348,22 @@ public abstract class EnemyBase : MonoBehaviour
     protected virtual void OnAlertReceived(Vector3 p, Vector3 o, float r) { if (Vector2.Distance(transform.position, o) <= r) isAlerted = true; }
     protected virtual void OnDestroy() { EnemyAlertSystem.OnPlayerFound -= OnAlertReceived; }
     
-    private void OnDrawGizmosSelected()
+    // --- NEW: 360 DEBUG GIZMO (CENTERED ON ENEMY) ---
+    private void OnDrawGizmos()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, bodyWidth);
+        // Draw the Safety Circle around the enemy
+        // Green = Safe
+        // Red = Pit Nearby (Danger)
+        if (Application.isPlaying)
+        {
+            Gizmos.color = debugPitDetected ? Color.red : Color.green;
+            Gizmos.DrawWireSphere(transform.position, avoidRange);
+        }
+        else
+        {
+            // Editor Preview (Cyan to distinguish from vision)
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(transform.position, avoidRange);
+        }
     }
 }
