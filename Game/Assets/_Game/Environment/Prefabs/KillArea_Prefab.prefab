@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5293109909417580721}
   - component: {fileID: 5274352161144566321}
   - component: {fileID: 7454605066172364096}
+  - component: {fileID: 2962864781406794845}
   m_Layer: 0
   m_Name: KillArea_Prefab
   m_TagString: Pit
@@ -28,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 4.9448, y: 1.6087, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
+  m_LocalScale: {x: 1.8931528, y: 1.8931528, z: 1.2621019}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -138,3 +139,15 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.6, y: 0.6}
   m_EdgeRadius: 0
+--- !u!114 &2962864781406794845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8967450520182165440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3621b66d2b3b87c4b95f2782ffd26973, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KillArea
