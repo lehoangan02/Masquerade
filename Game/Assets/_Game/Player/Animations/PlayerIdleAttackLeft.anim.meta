@@ -1,13 +1,8 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Game/Assets/_Game/Player/Animations/PlayerIdleAttackLeft.anim.meta
 guid: 47502ceba1eefa6b6953c5c57823f186
 NativeFormatImporter:
-========
-guid: 434647a053ba4487faffd6cbf230ccbc
-DefaultImporter:
->>>>>>>> f1b50e133941ce809e54f6e5b5d73352f185292c:Game/Assets/Free-Top-Down-Orc-Game-Character-Pixel-Art.zip.meta
   externalObjects: {}
-  mainObjectFileID: 7400000
+  mainObjectFileID: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
