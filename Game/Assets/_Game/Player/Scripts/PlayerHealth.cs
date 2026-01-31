@@ -30,12 +30,14 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public int MaxHealth => maxHealth;
     public bool IsInvincible => isInvincible;
     public  PauseManager pauseManager;
+    private Animator animator;
 
     void Awake()
     {
         currentHealth = maxHealth;
         if (spriteRenderer == null)
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        animator = GetComponentInChildren<Animator>();
     }
 
     public void TakeDamage(int amount)
@@ -68,6 +70,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     private void Die()
     {
         Debug.Log($"{gameObject.name} died!");
+        animator.SetTrigger("Die");
         pauseManager.PauseGame();
         OnDeath?.Invoke();
         
