@@ -19,6 +19,11 @@ public class PlayerThrower : MonoBehaviour
     [SerializeField] private Color aimLineColor = new Color(1f, 0f, 0f, 0.3f);
     [SerializeField] private float aimLineWidth = 0.05f;
 
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private string throwTriggerName = "Throw";
+    [SerializeField] private float throwAnimationDelay = 0.5f;
+
     [Header("Input")]
     private InputAction throwAction;
     private Camera mainCamera;
@@ -195,13 +200,28 @@ public class PlayerThrower : MonoBehaviour
             return;
         }
 
-        // Get aim direction (locked target or mouse position)
+        // Trigger throw animation
+        if (animator != null)
+        {
+            animator.SetTrigger(throwTriggerName);
+        }
+        
+        // Start coroutine to delay projectile spawn
+        StartCoroutine(DelayedThrow(prefabToThrow));
+        
+        lastThrowTime = Time.time;
+    }
+
+    private System.Collections.IEnumerator DelayedThrow(GameObject prefabToThrow)
+    {
+        // Wait for animation to reach throw point
+        yield return new WaitForSeconds(throwAnimationDelay);
+        
+        // Get aim direction at the moment of throw (recalculate for accuracy)
         Vector2 aimDirection = GetAimDirection();
         
         // Spawn and throw
         ThrowProjectile(prefabToThrow, aimDirection);
-        
-        lastThrowTime = Time.time;
     }
 
     /// <summary>

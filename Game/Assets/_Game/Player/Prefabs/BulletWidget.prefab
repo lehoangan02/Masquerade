@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 5413175889765007953}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.69523, y: 1.01351, z: 0}
+  m_LocalPosition: {x: -6.77176, y: 0.23645, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -47,9 +47,20 @@ MonoBehaviour:
   bulletIcon: {fileID: 0}
   ammoText: {fileID: 0}
   typeNameText: {fileID: 0}
-  redMaskPrefab: {fileID: 7617987490089478548, guid: 8e40752248e75dd49b05b1efe016b0bf, type: 3}
+  leftMaskIcon: {fileID: 0}
+  centerMaskIcon: {fileID: 0}
+  rightMaskIcon: {fileID: 0}
+  selectionFrame: {fileID: 0}
+  sideMaskAlpha: 0.5
+  centerMaskSize: 60
+  sideMaskSize: 40
+  maskSpacing: 55
+  redMaskPrefab: {fileID: 1150755491892355185, guid: 8e40752248e75dd49b05b1efe016b0bf, type: 3}
   blueMaskPrefab: {fileID: 1005997722415774844, guid: f6397baac7245484493de05891cbc868, type: 3}
-  greenMaskPrefab: {fileID: 2045379204643330621, guid: 621b528141a90f542ae4c6323881ec7f, type: 3}
+  yellowMaskPrefab: {fileID: 2898653785204451766, guid: 4004392c2b960794aa476e9ae39ac381, type: 3}
+  redMaskSprite: {fileID: 5816307435188172087, guid: 72d1d08d2591648e981f640e195d0ac0, type: 3}
+  blueMaskSprite: {fileID: 2103403651440522056, guid: 47e96d503a7564fcd88dfef7b7f7d722, type: 3}
+  yellowMaskSprite: {fileID: -9203661014933980489, guid: 391f7a9d8b30347788c475e85ad6b369, type: 3}
   maxAmmo: 10
   currentAmmo: 10
   cycleInterval: 1

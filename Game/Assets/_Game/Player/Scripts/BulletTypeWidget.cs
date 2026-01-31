@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 /// <summary>
 /// UI Widget that displays current mask type and cycles automatically.
+/// Shows a roulette-style display with 3 masks visible.
 /// All mask types share a single ammo pool.
 /// Place on a Canvas UI element.
 /// </summary>
@@ -15,10 +16,27 @@ public class BulletTypeWidget : MonoBehaviour
     [SerializeField] private TextMeshProUGUI ammoText;
     [SerializeField] private TextMeshProUGUI typeNameText;
     
+    [Header("Roulette Display")]
+    [SerializeField] private Image leftMaskIcon;
+    [SerializeField] private Image centerMaskIcon;
+    [SerializeField] private Image rightMaskIcon;
+    [SerializeField] private Image selectionFrame;
+    
+    [Header("Roulette Settings")]
+    [SerializeField] private float sideMaskAlpha = 0.5f;
+    [SerializeField] private float centerMaskSize = 60f;
+    [SerializeField] private float sideMaskSize = 40f;
+    [SerializeField] private float maskSpacing = 50f;
+    
     [Header("Mask Prefabs")]
     [SerializeField] private GameObject redMaskPrefab;
     [SerializeField] private GameObject blueMaskPrefab;
-    [SerializeField] private GameObject greenMaskPrefab;
+    [SerializeField] private GameObject yellowMaskPrefab;
+    
+    [Header("Mask Sprites (Assign from Assets/_Game/Arts/)")]
+    [SerializeField] private Sprite redMaskSprite;
+    [SerializeField] private Sprite blueMaskSprite;
+    [SerializeField] private Sprite yellowMaskSprite;
     
     [Header("Shared Ammo Pool")]
     [SerializeField] private int maxAmmo = 10;
@@ -36,6 +54,7 @@ public class BulletTypeWidget : MonoBehaviour
     
     // Mask types
     private List<ThrowableType> maskTypes = new List<ThrowableType>();
+    private List<Sprite> maskSprites = new List<Sprite>();
     private int currentTypeIndex = 0;
     private float cycleTimer;
     
@@ -56,10 +75,11 @@ public class BulletTypeWidget : MonoBehaviour
         {
             if (CurrentMaskType == null) return MaskType.None;
             
-            // Match by color
-            if (CurrentMaskType.Color == Color.red) return MaskType.Red;
-            if (CurrentMaskType.Color == Color.yellow || CurrentMaskType.Color == Color.cyan) return MaskType.Yellow;
-            if (CurrentMaskType.Color == Color.green) return MaskType.Green;
+            // Match by type name or color
+            string typeName = CurrentMaskType.TypeName?.ToLower() ?? "";
+            if (typeName.Contains("red") || CurrentMaskType.Color == Color.red) return MaskType.Red;
+            if (typeName.Contains("blue") || CurrentMaskType.Color == Color.blue || CurrentMaskType.Color == Color.cyan) return MaskType.Green;
+            if (typeName.Contains("yellow") || CurrentMaskType.Color == Color.yellow) return MaskType.Yellow;
             
             return MaskType.None;
         }
@@ -79,10 +99,26 @@ public class BulletTypeWidget : MonoBehaviour
         // Initialize shared ammo
         currentAmmo = maxAmmo;
         
-        // Initialize mask types (colors as placeholders)
+        // Initialize mask types: Red, Blue, Yellow
         maskTypes.Add(new RedMaskType(redMaskPrefab));
         maskTypes.Add(new BlueMaskType(blueMaskPrefab));
-        maskTypes.Add(new GreenMaskType(greenMaskPrefab));
+        maskTypes.Add(new YellowMaskType(yellowMaskPrefab));
+        
+        // Use assigned sprites directly
+        InitializeMaskSprites();
+    }
+    
+    void InitializeMaskSprites()
+    {
+        maskSprites.Clear();
+        maskSprites.Add(redMaskSprite);    // Index 0: Red
+        maskSprites.Add(blueMaskSprite);   // Index 1: Blue
+        maskSprites.Add(yellowMaskSprite); // Index 2: Yellow
+        
+        // Log warning if sprites are missing
+        if (redMaskSprite == null) Debug.LogWarning("BulletTypeWidget: Red Mask Sprite not assigned!");
+        if (blueMaskSprite == null) Debug.LogWarning("BulletTypeWidget: Blue Mask Sprite not assigned!");
+        if (yellowMaskSprite == null) Debug.LogWarning("BulletTypeWidget: Yellow Mask Sprite not assigned!");
     }
 
     void Start()
@@ -132,21 +168,47 @@ public class BulletTypeWidget : MonoBehaviour
         // Create container panel
         RectTransform rect = GetComponent<RectTransform>();
         if (rect == null) rect = gameObject.AddComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(80, 100);
+        rect.sizeDelta = new Vector2(180, 120);
         
         // Add background
         Image bg = gameObject.AddComponent<Image>();
         bg.color = new Color(0, 0, 0, 0.5f);
         
-        // Create bullet icon
-        GameObject iconObj = new GameObject("BulletIcon");
-        iconObj.transform.SetParent(transform, false);
-        bulletIcon = iconObj.AddComponent<Image>();
-        RectTransform iconRect = iconObj.GetComponent<RectTransform>();
-        iconRect.anchorMin = new Vector2(0.5f, 0.6f);
-        iconRect.anchorMax = new Vector2(0.5f, 0.6f);
-        iconRect.sizeDelta = new Vector2(50, 50);
-        iconRect.anchoredPosition = Vector2.zero;
+        // Create roulette container
+        GameObject rouletteContainer = new GameObject("RouletteContainer");
+        rouletteContainer.transform.SetParent(transform, false);
+        RectTransform rouletteRect = rouletteContainer.AddComponent<RectTransform>();
+        rouletteRect.anchorMin = new Vector2(0, 0.35f);
+        rouletteRect.anchorMax = new Vector2(1, 1f);
+        rouletteRect.offsetMin = Vector2.zero;
+        rouletteRect.offsetMax = Vector2.zero;
+        
+        // Create left mask icon (previous)
+        leftMaskIcon = CreateMaskIcon(rouletteContainer.transform, "LeftMask", -maskSpacing, sideMaskSize);
+        Color leftColor = leftMaskIcon.color;
+        leftColor.a = sideMaskAlpha;
+        leftMaskIcon.color = leftColor;
+        
+        // Create selection frame behind center mask
+        GameObject frameObj = new GameObject("SelectionFrame");
+        frameObj.transform.SetParent(rouletteContainer.transform, false);
+        selectionFrame = frameObj.AddComponent<Image>();
+        selectionFrame.color = new Color(1f, 0.84f, 0f, 0.8f); // Gold color
+        RectTransform frameRect = frameObj.GetComponent<RectTransform>();
+        frameRect.anchorMin = new Vector2(0.5f, 0.5f);
+        frameRect.anchorMax = new Vector2(0.5f, 0.5f);
+        frameRect.sizeDelta = new Vector2(centerMaskSize + 12, centerMaskSize + 12);
+        frameRect.anchoredPosition = Vector2.zero;
+        
+        // Create center mask icon (current) - on top of frame
+        centerMaskIcon = CreateMaskIcon(rouletteContainer.transform, "CenterMask", 0, centerMaskSize);
+        bulletIcon = centerMaskIcon; // Keep reference for compatibility
+        
+        // Create right mask icon (next)
+        rightMaskIcon = CreateMaskIcon(rouletteContainer.transform, "RightMask", maskSpacing, sideMaskSize);
+        Color rightColor = rightMaskIcon.color;
+        rightColor.a = sideMaskAlpha;
+        rightMaskIcon.color = rightColor;
         
         // Create ammo text
         GameObject textObj = new GameObject("AmmoText");
@@ -160,6 +222,22 @@ public class BulletTypeWidget : MonoBehaviour
         textRect.anchorMax = new Vector2(1, 0.35f);
         textRect.offsetMin = Vector2.zero;
         textRect.offsetMax = Vector2.zero;
+    }
+    
+    Image CreateMaskIcon(Transform parent, string name, float xOffset, float size)
+    {
+        GameObject iconObj = new GameObject(name);
+        iconObj.transform.SetParent(parent, false);
+        Image icon = iconObj.AddComponent<Image>();
+        icon.preserveAspect = true;
+        
+        RectTransform iconRect = iconObj.GetComponent<RectTransform>();
+        iconRect.anchorMin = new Vector2(0.5f, 0.5f);
+        iconRect.anchorMax = new Vector2(0.5f, 0.5f);
+        iconRect.sizeDelta = new Vector2(size, size);
+        iconRect.anchoredPosition = new Vector2(xOffset, 0);
+        
+        return icon;
     }
 
     void PositionWidget()
@@ -187,12 +265,34 @@ public class BulletTypeWidget : MonoBehaviour
 
     void UpdateDisplay()
     {
-        if (CurrentMaskType == null) return;
+        if (CurrentMaskType == null || maskTypes.Count == 0) return;
         
-        // Update icon color
-        if (bulletIcon != null)
+        // Calculate indices for left (previous) and right (next) masks
+        int leftIndex = (currentTypeIndex - 1 + maskTypes.Count) % maskTypes.Count;
+        int rightIndex = (currentTypeIndex + 1) % maskTypes.Count;
+        
+        // Update left mask (previous)
+        if (leftMaskIcon != null)
         {
-            bulletIcon.color = CurrentMaskType.Color;
+            UpdateMaskIcon(leftMaskIcon, leftIndex, sideMaskAlpha);
+        }
+        
+        // Update center mask (current)
+        if (centerMaskIcon != null)
+        {
+            UpdateMaskIcon(centerMaskIcon, currentTypeIndex, 1f);
+        }
+        
+        // Update right mask (next)
+        if (rightMaskIcon != null)
+        {
+            UpdateMaskIcon(rightMaskIcon, rightIndex, sideMaskAlpha);
+        }
+        
+        // Legacy: Update bulletIcon if it's separate from centerMaskIcon
+        if (bulletIcon != null && bulletIcon != centerMaskIcon)
+        {
+            UpdateMaskIcon(bulletIcon, currentTypeIndex, 1f);
         }
         
         // Update type name
@@ -205,6 +305,26 @@ public class BulletTypeWidget : MonoBehaviour
         if (ammoText != null)
         {
             ammoText.text = $"{currentAmmo}/{maxAmmo}";
+        }
+    }
+    
+    void UpdateMaskIcon(Image icon, int typeIndex, float alpha)
+    {
+        if (icon == null || typeIndex < 0 || typeIndex >= maskTypes.Count) return;
+        
+        // Set sprite if available
+        if (typeIndex < maskSprites.Count && maskSprites[typeIndex] != null)
+        {
+            icon.sprite = maskSprites[typeIndex];
+            icon.color = new Color(1f, 1f, 1f, alpha); // Use sprite's own colors
+        }
+        else
+        {
+            // Fallback to colored box if no sprite
+            icon.sprite = null;
+            Color color = maskTypes[typeIndex].Color;
+            color.a = alpha;
+            icon.color = color;
         }
     }
 
