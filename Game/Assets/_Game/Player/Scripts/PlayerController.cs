@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.Universal;
 using System.Collections; 
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -23,6 +24,17 @@ public class PlayerController : MonoBehaviour
     [Header("Components")]
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Animator animator;
+
+    [Header("Player Spot Light")]
+    [SerializeField] private bool ensurePlayerSpotLight = true;
+    [SerializeField] private GameObject playerSpotLightPrefab;
+    [SerializeField] private Color playerSpotLightColor = new Color(1f, 1f, 1f, 0.9f);
+    [SerializeField] private float playerSpotLightIntensity = 1.0f;
+    [SerializeField] private float playerSpotLightInnerRadius = 1.0f;
+    [SerializeField] private float playerSpotLightOuterRadius = 4.0f;
+    [Range(0f, 360f)] [SerializeField] private float playerSpotLightInnerAngle = 30f;
+    [Range(0f, 360f)] [SerializeField] private float playerSpotLightOuterAngle = 70f;
+    [SerializeField] private Vector3 playerSpotLightLocalOffset = new Vector3(0f, 0.6f, 0f);
 
     private Vector2 moveInput;
     private Vector2 lastMoveDirection = Vector2.down; // Defaults to down
@@ -56,6 +68,11 @@ public class PlayerController : MonoBehaviour
         killAction = new InputAction("Kill", InputActionType.Button);
         killAction.AddBinding("<Keyboard>/space");
         killAction.performed += ctx => TryStealthKill();
+
+        if (ensurePlayerSpotLight)
+        {
+            EnsurePlayerSpotLight();
+        }
     }
 
     void OnEnable()
@@ -194,5 +211,59 @@ public class PlayerController : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, killRange);
+    }
+
+    private void EnsurePlayerSpotLight()
+    {
+        Light2D existing = GetComponentInChildren<Light2D>(true);
+        if (existing != null && existing.lightType == Light2D.LightType.Point && existing.pointLightOuterAngle < 360f)
+        {
+            if (existing.GetComponent<SpotLight2DRegister>() == null)
+            {
+                existing.gameObject.AddComponent<SpotLight2DRegister>();
+            }
+            SpotLight2DSystem.Register(existing);
+            return;
+        }
+
+        GameObject lightObject;
+        Light2D light2D;
+
+        if (playerSpotLightPrefab != null)
+        {
+            lightObject = Instantiate(playerSpotLightPrefab, transform);
+            light2D = lightObject.GetComponent<Light2D>();
+            if (light2D == null)
+            {
+                light2D = lightObject.GetComponentInChildren<Light2D>();
+            }
+            if (light2D == null)
+            {
+                light2D = lightObject.AddComponent<Light2D>();
+            }
+        }
+        else
+        {
+            lightObject = new GameObject("PlayerSpotLight2D");
+            lightObject.transform.SetParent(transform);
+            lightObject.transform.localPosition = playerSpotLightLocalOffset;
+            lightObject.transform.localRotation = Quaternion.identity;
+            light2D = lightObject.AddComponent<Light2D>();
+        }
+
+        light2D.lightType = Light2D.LightType.Point;
+        light2D.color = playerSpotLightColor;
+        light2D.intensity = playerSpotLightIntensity;
+        light2D.pointLightInnerRadius = playerSpotLightInnerRadius;
+        light2D.pointLightOuterRadius = playerSpotLightOuterRadius;
+        light2D.pointLightInnerAngle = playerSpotLightInnerAngle;
+        light2D.pointLightOuterAngle = playerSpotLightOuterAngle;
+
+        if (lightObject.GetComponent<SpotLight2DRegister>() == null)
+        {
+            lightObject.AddComponent<SpotLight2DRegister>();
+        }
+
+        SpotLight2DSystem.Register(light2D);
     }
 }

@@ -17,8 +17,12 @@ public abstract class EnemyBase : MonoBehaviour
     public bool showVisionCircle = true;
 
     [Header("Visual Settings")]
-    [Tooltip("Set to 0 to be behind Enemy.")]
-    public int visionSortingOrder = 0; 
+    public int visionSortingOrder = 0;
+
+    [Header("Visibility (Spot Lights)")]
+    [SerializeField] private bool onlyRenderWhenLit = true;
+    [SerializeField] private LayerMask spotLightOcclusionMask;
+    [SerializeField] private float visibilityCheckRadius = 0.25f;
 
     [Header("Combat")]
     public float attackRange = 1.2f;
@@ -30,20 +34,22 @@ public abstract class EnemyBase : MonoBehaviour
     public Vector3 visionOffset = Vector3.zero;
 
     [Header("Movement Smoothing")]
-    public float slideInertia = 0.1f; 
-    [Tooltip("How fast the enemy rotates its movement direction. Try values between 5 and 10.")]
-    public float steeringSpeed = 7f; 
+    public float slideInertia = 0.1f;
+    [Tooltip("How fast the enemy rotates its movement direction.")]
+    public float steeringSpeed = 7f;
 
-    [Header("Pathfinding & Tags")]
+    [Header("Pathfinding & Obstacles")]
+    [Tooltip("Select layers the enemy should slide against (e.g., Environment, Obstacles).")]
+    public LayerMask obstacleLayer; 
+    
+    [Tooltip("Add any tags here that should act as solid walls (e.g., Wall, Environment, Pillar).")]
+    public List<string> obstacleTags = new List<string> { "Wall" }; 
+    
     public string pitTag = "Pit";
-    public string wallTag = "Wall";
-    public LayerMask obstacleLayer; // Kept for legacy support if needed
     
     [Header("Detection Settings")]
-    [Tooltip("The Radius of the 360 Safety Circle around the enemy.")]
-    public float avoidRange = 1.5f; 
-    [Tooltip("Radius of the enemy body (used for wall sliding).")]
-    public float bodyWidth = 0.5f; 
+    public float avoidRange = 1.5f;
+    public float bodyWidth = 0.4f;
 
     // References
     protected MaskType currentMask = MaskType.None;
@@ -51,24 +57,26 @@ public abstract class EnemyBase : MonoBehaviour
     protected Transform player;
     protected Rigidbody2D rb;
     protected SpriteRenderer spriteRenderer;
+    protected SpriteRenderer[] spriteRenderers;
     protected LineRenderer lineRenderer;
-    protected Animator animator; 
-    
+    protected Animator animator;
+
     // State Flags
     protected bool isAlerted = false;
     protected bool isDead = false;
-    protected bool isAttacking = false; 
-    protected AnimState currentState = AnimState.Idle; 
+    protected bool isAttacking = false;
+    protected AnimState currentState = AnimState.Idle;
 
     // Internal Physics State
     private bool debugPitDetected = false;
     private Vector2 currentVelocityRef;
-    private Vector2 currentSteeringDir; // Persistent direction for smoothing
+    private Vector2 currentSteeringDir; 
 
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
+        spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -76,99 +84,134 @@ public abstract class EnemyBase : MonoBehaviour
 
         rb.gravityScale = 0;
         rb.freezeRotation = true;
-        rb.linearDamping = 1f; 
+        rb.linearDamping = 1f;
 
-        if(spriteRenderer) spriteRenderer.color = skinColor;
+        if (spriteRenderer) spriteRenderer.color = skinColor;
         EnemyAlertSystem.OnPlayerFound += OnAlertReceived;
-        
+
         if (showVisionCircle) SetupLineRenderer();
     }
 
-    protected virtual void Update() 
-    { 
+    protected virtual void Update()
+    {
         if (isDead) return;
         UpdateMaskStatus();
-        UpdateAnimation(); 
+        UpdateAnimation();
     }
 
     protected virtual void FixedUpdate()
     {
-        if (player == null || isDead || isAttacking) return; 
+        if (player == null || isDead || isAttacking) return;
         PerformBehavior(Vector2.Distance(transform.position, player.position));
     }
 
-    void LateUpdate() { if (showVisionCircle && lineRenderer != null) DrawVisionCone(); }
-
-    // --- SMOOTH MOVEMENT LOGIC ---
-    // Replace BOTH MoveToSmart methods in EnemyBase with these:
-protected void MoveToSmart(Vector2 target, bool avoidPits = true)
-{
-    if (isDead) return;
-
-    Vector2 desiredDir = (target - (Vector2)transform.position).normalized;
-    Vector2 avoidanceForce = Vector2.zero;
-    debugPitDetected = false;
-
-    // 1. PIT DETECTION (Only if avoidPits is true)
-    if (avoidPits)
+    protected virtual void LateUpdate()
     {
-        Collider2D[] nearbyObjects = Physics2D.OverlapCircleAll(transform.position, avoidRange);
-        foreach (var col in nearbyObjects)
+        if (showVisionCircle && lineRenderer != null) DrawVisionCone();
+        if (onlyRenderWhenLit) UpdateVisibilityBySpotLights();
+    }
+
+    private void UpdateVisibilityBySpotLights()
+    {
+        bool isLit = SpotLight2DSystem.IsTargetLit(transform, visibilityCheckRadius, spotLightOcclusionMask);
+        if (spriteRenderers == null || spriteRenderers.Length == 0)
         {
-            if (col.CompareTag(pitTag))
+            if (spriteRenderer != null) spriteRenderer.enabled = isLit;
+            return;
+        }
+        foreach (var sr in spriteRenderers) if (sr != null) sr.enabled = isLit;
+    }
+
+    // --- SMART MOVEMENT ---
+    protected void MoveToSmart(Vector2 target, bool avoidPits = true)
+    {
+        if (isDead) return;
+
+        Vector2 desiredDir = (target - (Vector2)transform.position).normalized;
+        Vector2 avoidanceForce = Vector2.zero;
+        debugPitDetected = false;
+
+        // 1. PIT AVOIDANCE
+        if (avoidPits)
+        {
+            Collider2D[] nearby = Physics2D.OverlapCircleAll(transform.position, avoidRange);
+            foreach (var col in nearby)
             {
-                debugPitDetected = true;
-                Vector2 closestPoint = col.ClosestPoint(transform.position);
-                Vector2 dirAway = (Vector2)transform.position - closestPoint;
-                float intensity = 1f - Mathf.Clamp01(dirAway.magnitude / avoidRange);
-                avoidanceForce += dirAway.normalized * intensity;
+                if (col.CompareTag(pitTag))
+                {
+                    debugPitDetected = true;
+                    Vector2 dirAway = (Vector2)transform.position - col.ClosestPoint(transform.position);
+                    float intensity = 1f - Mathf.Clamp01(dirAway.magnitude / avoidRange);
+                    avoidanceForce += dirAway.normalized * intensity;
+                }
             }
         }
-    }
 
-    // 2. BLEND & SMOOTH
-    Vector2 targetDir = (desiredDir + (avoidanceForce * 2.5f)).normalized;
-    currentSteeringDir = Vector2.Lerp(currentSteeringDir, targetDir, Time.deltaTime * steeringSpeed);
-    Vector2 finalDir = currentSteeringDir.normalized;
+        // 2. STEERING BLEND
+        Vector2 targetDir = (desiredDir + (avoidanceForce * 2.5f)).normalized;
+        currentSteeringDir = Vector2.Lerp(currentSteeringDir, targetDir, Time.deltaTime * steeringSpeed);
+        Vector2 finalDir = currentSteeringDir.normalized;
 
-    // 3. WALL SLIDING (Always active)
-    RaycastHit2D[] wallHits = Physics2D.CircleCastAll(transform.position, bodyWidth, finalDir, 0.5f);
-    foreach (var hit in wallHits)
-    {
-        if (hit.collider != null && hit.collider.CompareTag(wallTag))
+        // 3. OPTIONAL OBSTACLE SLIDING (Layer OR Tag)
+        RaycastHit2D hit = Physics2D.CircleCast(transform.position, bodyWidth, finalDir, 0.5f, obstacleLayer);
+        
+        // If the layer didn't hit, check the optional tags list
+        if (hit.collider == null)
         {
-            Vector2 hitNormal = hit.normal;
-            Vector2 slideDir = Vector2.Perpendicular(hitNormal).normalized;
-            finalDir = Vector2.Dot(slideDir, finalDir) > Vector2.Dot(-slideDir, finalDir) ? slideDir : -slideDir;
-            break;
+            hit = GetObstacleTagHit(finalDir);
         }
+
+        if (hit.collider != null)
+        {
+            Vector2 slideDir = Vector2.Perpendicular(hit.normal).normalized;
+            finalDir = Vector2.Dot(slideDir, finalDir) > Vector2.Dot(-slideDir, finalDir) ? slideDir : -slideDir;
+        }
+
+        ApplyVelocity(finalDir);
     }
 
-    ApplyVelocity(finalDir);
-}
+    // Helper to check multiple optional tags
+    private RaycastHit2D GetObstacleTagHit(Vector2 dir)
+    {
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, bodyWidth, dir, 0.5f);
+        foreach (var h in hits)
+        {
+            if (h.collider == null) continue;
+            
+            // Check if the object has any of the tags in our list
+            foreach (string t in obstacleTags)
+            {
+                if (h.collider.CompareTag(t)) return h;
+            }
+        }
+        return new RaycastHit2D();
+    }
 
-    private void ApplyVelocity(Vector2 dir) {
+    private void ApplyVelocity(Vector2 dir)
+    {
         Vector2 targetVelocity = dir * moveSpeed;
         rb.linearVelocity = Vector2.SmoothDamp(rb.linearVelocity, targetVelocity, ref currentVelocityRef, slideInertia);
     }
 
-    protected void StopMoving() { 
-        rb.linearVelocity = Vector2.SmoothDamp(rb.linearVelocity, Vector2.zero, ref currentVelocityRef, slideInertia); 
+    protected void StopMoving()
+    {
+        rb.linearVelocity = Vector2.SmoothDamp(rb.linearVelocity, Vector2.zero, ref currentVelocityRef, slideInertia);
     }
 
     // --- ANIMATION & COMBAT ---
     protected void ChangeAnimationState(AnimState newState)
     {
-        if (currentState == newState) return;
+        if (currentState == newState || animator == null) return;
         currentState = newState;
-        switch (newState)
-        {
-            case AnimState.Idle:   animator.SetTrigger("DoIdle"); break;
-            case AnimState.Walk:   animator.SetTrigger("DoWalk"); break;
-            case AnimState.Run:    animator.SetTrigger("DoRun"); break;
-            case AnimState.Attack: animator.SetTrigger("Attack"); break;
-            case AnimState.Dead:   animator.SetTrigger("Die"); break;
-        }
+        string trigger = newState switch {
+            AnimState.Idle => "DoIdle",
+            AnimState.Walk => "DoWalk",
+            AnimState.Run => "DoRun",
+            AnimState.Attack => "Attack",
+            AnimState.Dead => "Die",
+            _ => "DoIdle"
+        };
+        animator.SetTrigger(trigger);
     }
 
     protected void TryAttack()
@@ -179,44 +222,34 @@ protected void MoveToSmart(Vector2 target, bool avoidPits = true)
             StopMoving();
             isAttacking = true;
             ChangeAnimationState(AnimState.Attack);
-            StartCoroutine(ResetAttackState()); 
+            StartCoroutine(ResetAttackState());
         }
     }
 
     private IEnumerator ResetAttackState()
     {
-        yield return new WaitForSeconds(0.5f); 
+        yield return new WaitForSeconds(0.5f);
         isAttacking = false;
-        currentState = AnimState.Idle; 
-        animator.SetTrigger("DoIdle"); 
+        ChangeAnimationState(AnimState.Idle);
     }
 
     protected void UpdateAnimation()
     {
         if (animator == null || isDead || isAttacking) return;
-        Vector2 velocity = rb.linearVelocity;
-        float speed = velocity.magnitude;
-        if (speed > 0.01f)
+        Vector2 vel = rb.linearVelocity;
+        if (vel.magnitude > 0.01f)
         {
-            velocity.Normalize(); 
-            animator.SetFloat("Horizontal", velocity.x);
-            animator.SetFloat("Vertical", velocity.y);
+            animator.SetFloat("Horizontal", vel.normalized.x);
+            animator.SetFloat("Vertical", vel.normalized.y);
         }
-        AnimState targetState = currentState;
-        if (speed < 0.1f) targetState = AnimState.Idle;
-        else targetState = isAlerted ? AnimState.Run : AnimState.Walk;
-        
-        if (targetState != currentState) ChangeAnimationState(targetState);
+        AnimState target = (vel.magnitude < 0.1f) ? AnimState.Idle : (isAlerted ? AnimState.Run : AnimState.Walk);
+        if (target != currentState) ChangeAnimationState(target);
     }
 
     // --- TRIGGERS & DEATH ---
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        if (isDead) return;
-        if (collision.CompareTag(pitTag)) 
-        {
-            Die();
-        }
+        if (!isDead && collision.CompareTag(pitTag)) Die();
     }
 
     public virtual void Die()
@@ -224,37 +257,37 @@ protected void MoveToSmart(Vector2 target, bool avoidPits = true)
         if (isDead) return;
         isDead = true;
         StopMoving();
-        rb.simulated = false; 
+        rb.simulated = false;
         DropMasks();
         if (animator != null)
         {
             ChangeAnimationState(AnimState.Dead);
-            StartCoroutine(WaitAndDestroy(1.0f)); 
+            StartCoroutine(WaitAndDestroy(1.0f));
         }
         else Destroy(gameObject);
     }
 
-    private IEnumerator WaitAndDestroy(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        Destroy(gameObject);
-    }
+    private IEnumerator WaitAndDestroy(float delay) { yield return new WaitForSeconds(delay); Destroy(gameObject); }
 
-    // --- MASK SYSTEM ---
     private void DropMasks()
     {
-        List<Transform> masksToDrop = new List<Transform>();
-        foreach (Transform child in transform) { if (child.name.Contains("Mask")) masksToDrop.Add(child); }
-        foreach (Transform mask in masksToDrop) { mask.SetParent(null); mask.rotation = Quaternion.identity; }
+        foreach (Transform child in transform) {
+            if (child.name.Contains("Mask")) {
+                child.SetParent(null);
+                child.rotation = Quaternion.identity;
+            }
+        }
     }
 
     public void UpdateMaskStatus()
     {
         currentMask = MaskType.None;
         visionMultiplier = 1f;
-        for (int i = transform.childCount - 1; i >= 0; i--) {
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
             Transform child = transform.GetChild(i);
-            if (child.name.Contains("Mask")) {
+            if (child.name.Contains("Mask"))
+            {
                 if (child.name.Contains("RedMask")) currentMask = MaskType.Red;
                 else if (child.name.Contains("YellowMask")) { currentMask = MaskType.Yellow; visionMultiplier = 0.5f; }
                 else if (child.name.Contains("GreenMask")) currentMask = MaskType.Green;
@@ -263,66 +296,58 @@ protected void MoveToSmart(Vector2 target, bool avoidPits = true)
         }
     }
 
-    // --- VISION & HELPERS ---
-    public bool CanSeePlayer()
-    {
-        if (player == null) return false;
-        return IsPlayerVisible(Vector2.Distance(transform.position, player.position));
-    }
+    // --- VISION ---
+    public bool CanSeePlayer() => player != null && IsPlayerVisible(Vector2.Distance(transform.position, player.position));
 
     protected bool IsPlayerVisible(float dist)
     {
         float actualVision = visionRange * visionMultiplier;
         if (dist > actualVision) return false;
         if (isAlerted) return true;
-        
-        Vector2 facingDir = (animator != null) ? (Vector2)(Quaternion.Euler(0,0,GetFacingAngleFromAnimator()) * Vector2.right) : Vector2.right;
+
+        Vector2 facingDir = (animator != null) ? (Vector2)(Quaternion.Euler(0, 0, GetFacingAngleFromAnimator()) * Vector2.right) : Vector2.right;
         Vector2 dirToPlayer = (player.position - transform.position).normalized;
-        bool seesPlayer = Vector2.Angle(facingDir, dirToPlayer) < (fovAngle / 2f);
-        if (seesPlayer) isAlerted = true; 
-        return seesPlayer;
+        bool sees = Vector2.Angle(facingDir, dirToPlayer) < (fovAngle / 2f);
+        if (sees) isAlerted = true;
+        return sees;
     }
 
     protected abstract void PerformBehavior(float distanceToPlayer);
 
-    void SetupLineRenderer() 
-    { 
-        if (!TryGetComponent(out lineRenderer)) lineRenderer = gameObject.AddComponent<LineRenderer>(); 
-        lineRenderer.material = new Material(Shader.Find("Sprites/Default")); 
-        lineRenderer.startColor = lineRenderer.endColor = skinColor; 
-        lineRenderer.startWidth = lineRenderer.endWidth = 0.05f; 
-        lineRenderer.useWorldSpace = false; 
+    void SetupLineRenderer()
+    {
+        if (!TryGetComponent(out lineRenderer)) lineRenderer = gameObject.AddComponent<LineRenderer>();
+        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        lineRenderer.startColor = lineRenderer.endColor = skinColor;
+        lineRenderer.startWidth = lineRenderer.endWidth = 0.05f;
+        lineRenderer.useWorldSpace = false;
+        lineRenderer.sortingOrder = visionSortingOrder;
     }
 
-    void DrawVisionCone() 
-    { 
-        if (!lineRenderer) return; 
-        int s = 50; 
-        lineRenderer.positionCount = s + 3; 
-        float ang = (animator ? GetFacingAngleFromAnimator() : 0f) - fovAngle/2f;
-        float step = fovAngle/s;
-        float rng = visionRange * visionMultiplier; 
-
-        lineRenderer.SetPosition(0, visionOffset); 
-        for(int i=0; i<=s; i++) 
-        { 
-            float r = Mathf.Deg2Rad * (ang + step * i); 
-            lineRenderer.SetPosition(i+1, new Vector3(Mathf.Cos(r)*rng, Mathf.Sin(r)*rng) + visionOffset); 
-        } 
-        lineRenderer.SetPosition(s+2, visionOffset);
+    void DrawVisionCone()
+    {
+        if (!lineRenderer) return;
+        int s = 50;
+        lineRenderer.positionCount = s + 3;
+        float ang = (animator ? GetFacingAngleFromAnimator() : 0f) - fovAngle / 2f;
+        float step = fovAngle / s;
+        float rng = visionRange * visionMultiplier;
+        lineRenderer.SetPosition(0, visionOffset);
+        for (int i = 0; i <= s; i++) {
+            float r = Mathf.Deg2Rad * (ang + step * i);
+            lineRenderer.SetPosition(i + 1, new Vector3(Mathf.Cos(r) * rng, Mathf.Sin(r) * rng) + visionOffset);
+        }
+        lineRenderer.SetPosition(s + 2, visionOffset);
     }
 
-    float GetFacingAngleFromAnimator() { 
-        float x = animator.GetFloat("Horizontal"), y = animator.GetFloat("Vertical"); 
-        return (Mathf.Abs(x)<0.1f && Mathf.Abs(y)<0.1f) ? 270f : Mathf.Atan2(y, x) * Mathf.Rad2Deg; 
+    float GetFacingAngleFromAnimator()
+    {
+        if (!animator) return 0f;
+        float x = animator.GetFloat("Horizontal"), y = animator.GetFloat("Vertical");
+        return (Mathf.Abs(x) < 0.1f && Mathf.Abs(y) < 0.1f) ? 270f : Mathf.Atan2(y, x) * Mathf.Rad2Deg;
     }
 
     protected virtual void OnAlertReceived(Vector3 p, Vector3 o, float r) { if (Vector2.Distance(transform.position, o) <= r) isAlerted = true; }
     protected virtual void OnDestroy() { EnemyAlertSystem.OnPlayerFound -= OnAlertReceived; }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = debugPitDetected ? Color.red : Color.green;
-        Gizmos.DrawWireSphere(transform.position, avoidRange);
-    }
+    private void OnDrawGizmos() { Gizmos.color = debugPitDetected ? Color.red : Color.green; Gizmos.DrawWireSphere(transform.position, avoidRange); }
 }

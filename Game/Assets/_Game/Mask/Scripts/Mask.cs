@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 /// <summary>
 /// Base mask throwable. Sticks to enemies on hit.
@@ -38,6 +39,17 @@ public class Mask : MonoBehaviour, IMask
     [Tooltip("Check this to spawn as a pickup (for testing or world drops)")]
     [SerializeField] private bool spawnAsPickup = false;
 
+    [Header("Attached Spotlight")]
+    [SerializeField] private bool attachSpotLightOnHit = true;
+    [SerializeField] private GameObject spotLightPrefab;
+    [SerializeField] private Color spotLightColor = new Color(1f, 1f, 1f, 0.9f);
+    [SerializeField] private float spotLightIntensity = 1.0f;
+    [SerializeField] private float spotLightInnerRadius = 1.0f;
+    [SerializeField] private float spotLightOuterRadius = 4.0f;
+    [Range(0f, 360f)] [SerializeField] private float spotLightInnerAngle = 30f;
+    [Range(0f, 360f)] [SerializeField] private float spotLightOuterAngle = 70f;
+    [SerializeField] private Vector3 spotLightLocalOffset = new Vector3(0f, 0.6f, 0f);
+
     [Header("Components")]
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -48,6 +60,8 @@ public class Mask : MonoBehaviour, IMask
     private Transform player;
     private Vector3 dropPosition;
     private float dropTime;
+    private GameObject attachedSpotLightObject;
+    private Light2D attachedSpotLight;
 
     // IThrowable implementation
     public float Speed => speed;
@@ -246,6 +260,11 @@ public class Mask : MonoBehaviour, IMask
         transform.localPosition = stickOffset;
         transform.localRotation = Quaternion.identity;
         transform.localScale = Vector3.one * stickScale;
+
+        if (attachSpotLightOnHit)
+        {
+            AttachSpotLight(target);
+        }
         
         // Call attach event
         OnAttach(target.gameObject);
@@ -268,6 +287,8 @@ public class Mask : MonoBehaviour, IMask
         transform.SetParent(null);
         transform.position = worldPos;
         dropPosition = worldPos;
+
+        CleanupSpotLight();
         
         // Reset scale and rotation
         transform.localScale = Vector3.one * stickScale;
@@ -333,6 +354,78 @@ public class Mask : MonoBehaviour, IMask
         }
         
         Destroy(gameObject);
+    }
+
+    private void AttachSpotLight(Transform target)
+    {
+        if (target == null) return;
+        if (attachedSpotLightObject != null) return;
+
+        if (spotLightPrefab != null)
+        {
+            attachedSpotLightObject = Instantiate(spotLightPrefab, target);
+            attachedSpotLight = attachedSpotLightObject.GetComponent<Light2D>();
+            if (attachedSpotLight == null)
+            {
+                attachedSpotLight = attachedSpotLightObject.GetComponentInChildren<Light2D>();
+            }
+            if (attachedSpotLight == null)
+            {
+                attachedSpotLight = attachedSpotLightObject.AddComponent<Light2D>();
+                attachedSpotLight.lightType = Light2D.LightType.Point;
+                attachedSpotLight.color = spotLightColor;
+                attachedSpotLight.intensity = spotLightIntensity;
+                attachedSpotLight.pointLightInnerRadius = spotLightInnerRadius;
+                attachedSpotLight.pointLightOuterRadius = spotLightOuterRadius;
+                attachedSpotLight.pointLightInnerAngle = spotLightInnerAngle;
+                attachedSpotLight.pointLightOuterAngle = spotLightOuterAngle;
+            }
+        }
+        else
+        {
+            attachedSpotLightObject = new GameObject("EnemySpotLight2D");
+            attachedSpotLightObject.transform.SetParent(target);
+            attachedSpotLightObject.transform.localPosition = spotLightLocalOffset;
+            attachedSpotLightObject.transform.localRotation = Quaternion.identity;
+
+            attachedSpotLight = attachedSpotLightObject.AddComponent<Light2D>();
+            attachedSpotLight.lightType = Light2D.LightType.Point;
+            attachedSpotLight.color = spotLightColor;
+            attachedSpotLight.intensity = spotLightIntensity;
+            attachedSpotLight.pointLightInnerRadius = spotLightInnerRadius;
+            attachedSpotLight.pointLightOuterRadius = spotLightOuterRadius;
+            attachedSpotLight.pointLightInnerAngle = spotLightInnerAngle;
+            attachedSpotLight.pointLightOuterAngle = spotLightOuterAngle;
+        }
+
+        if (attachedSpotLightObject != null)
+        {
+            if (attachedSpotLightObject.GetComponent<SpotLight2DRegister>() == null)
+            {
+                attachedSpotLightObject.AddComponent<SpotLight2DRegister>();
+            }
+        }
+
+        if (attachedSpotLight != null)
+        {
+            SpotLight2DSystem.Register(attachedSpotLight);
+        }
+    }
+
+    private void CleanupSpotLight()
+    {
+        if (attachedSpotLight != null)
+        {
+            SpotLight2DSystem.Unregister(attachedSpotLight);
+        }
+
+        if (attachedSpotLightObject != null)
+        {
+            Destroy(attachedSpotLightObject);
+        }
+
+        attachedSpotLight = null;
+        attachedSpotLightObject = null;
     }
 
     public virtual void OnAttach(GameObject target)
