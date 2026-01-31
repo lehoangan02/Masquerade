@@ -21,52 +21,72 @@ public class Enemy_Standard : EnemyBase
 
     protected override void PerformBehavior(float distanceToPlayer)
     {
-        // 1. RED MASK LOGIC (Aggressive + Dumb)
+        // -------------------------------------------------------------------
+        // 1. RED MASK LOGIC (Reckless - DOES NOT AVOID PITS)
+        // -------------------------------------------------------------------
         if (currentMask == MaskType.Red)
         {
-            moveSpeed = chaseSpeed * 1.5f; 
+            moveSpeed = chaseSpeed * 1.5f; // Faster speed
             
             if (distanceToPlayer <= attackRange)
             {
-                TryAttack(); // <--- ATTACK
+                TryAttack(); 
             }
             else if (distanceToPlayer > stoppingDistance) 
             {
-                MoveToSmart(player.position, obstacleLayer); // Ignores Pits
+                // UNSAFE CHASE:
+                // We pass ONLY 'obstacleLayer'. The enemy is blind to the Pit Layer.
+                // It will walk straight into the pit if it is between you and them.
+                MoveToSmart(player.position, obstacleLayer); 
             }
-            else StopMoving();
-            
-            return;
+            else 
+            {
+                StopMoving();
+            }
+            return; // Exit here so we don't do normal logic
         }
 
-        // 2. NORMAL LOGIC
+        // -------------------------------------------------------------------
+        // 2. NORMAL LOGIC (Smart - AVOIDS PITS)
+        // -------------------------------------------------------------------
         bool canSeePlayer = IsPlayerVisible(distanceToPlayer);
 
+        // Handle Vision & Alert Memory
         if (canSeePlayer || isAlerted) 
         {
             loseAggroTimer = giveUpTime;
             if (isAlerted) isAlerted = false; 
         }
-        else if (loseAggroTimer > 0) loseAggroTimer -= Time.deltaTime;
+        else if (loseAggroTimer > 0) 
+        {
+            loseAggroTimer -= Time.deltaTime;
+        }
 
+        // Chase Logic
         if (loseAggroTimer > 0)
         {
             moveSpeed = chaseSpeed;
 
-            // --- ATTACK LOGIC ---
             if (distanceToPlayer <= attackRange)
             {
-                TryAttack(); // <--- ATTACK
+                TryAttack();
             }
             else if (distanceToPlayer > stoppingDistance) 
             {
+                // SAFE CHASE:
+                // Calling this without arguments uses the default from EnemyBase.
+                // It checks (obstacleLayer | pitLayer).
+                // It sees the pit as an obstacle and finds a path AROUND it.
                 MoveToSmart(player.position); 
             }
-            else StopMoving();
+            else 
+            {
+                StopMoving();
+            }
         }
         else
         {
-            // PATROL
+            // PATROL (Always Safe)
             moveSpeed = patrolSpeed;
             PatrolLogic();
         }
@@ -78,9 +98,12 @@ public class Enemy_Standard : EnemyBase
         float offset = movingPositive ? patrolRange : -patrolRange;
         Vector2 target = startPos + (direction * offset);
         
+        // Patrol uses Safe Pathfinding
         MoveToSmart(target); 
         
-        if (Vector2.Distance(transform.position, target) < 0.1f) movingPositive = !movingPositive;
+        // Switch direction when we reach the patrol point
+        if (Vector2.Distance(transform.position, target) < 0.1f) 
+            movingPositive = !movingPositive;
     }
     
     protected override void OnAlertReceived(Vector3 p, Vector3 o, float r)

@@ -16,8 +16,7 @@ public abstract class EnemyBase : MonoBehaviour
     public Color skinColor = Color.white;
     public bool showVisionCircle = true;
 
-    [Header("Visual Settings")] // <--- NEW SECTION
-    [Tooltip("Order in Layer for the Vision Cone. Set this HIGHER than ground (0) but LOWER than Enemy (10).")]
+    [Header("Visual Settings")]
     public int visionSortingOrder = 5; 
 
     [Header("Combat")]
@@ -36,6 +35,8 @@ public abstract class EnemyBase : MonoBehaviour
     public LayerMask obstacleLayer; 
     public LayerMask pitLayer;      
     public float avoidRange = 1.5f; 
+    [Tooltip("How 'fat' the detection circle is. Set to 0.4 or 0.5.")]
+    public float bodyWidth = 0.5f; // <--- NEW: Controls CircleCast width
 
     // References
     protected MaskType currentMask = MaskType.None;
@@ -88,7 +89,6 @@ public abstract class EnemyBase : MonoBehaviour
 
     void LateUpdate() { if (showVisionCircle && lineRenderer != null) DrawVisionCone(); }
 
-    // --- STATE MANAGEMENT ---
     protected void ChangeAnimationState(AnimState newState)
     {
         if (currentState == newState) return;
@@ -103,7 +103,6 @@ public abstract class EnemyBase : MonoBehaviour
         }
     }
 
-    // --- COMBAT LOGIC ---
     protected void TryAttack()
     {
         if (Time.time >= lastAttackTime + attackCooldown)
@@ -125,21 +124,17 @@ public abstract class EnemyBase : MonoBehaviour
         animator.SetTrigger("DoIdle"); 
     }
 
-    // --- ANIMATION LOGIC ---
     protected void UpdateAnimation()
     {
         if (animator == null || isDead || isAttacking) return;
-
         Vector2 velocity = rb.linearVelocity;
         float speed = velocity.magnitude;
-
         if (speed > 0.01f)
         {
             velocity.Normalize(); 
             animator.SetFloat("Horizontal", velocity.x);
             animator.SetFloat("Vertical", velocity.y);
         }
-
         AnimState targetState = currentState;
         if (speed < 0.1f) targetState = AnimState.Idle;
         else 
@@ -147,7 +142,6 @@ public abstract class EnemyBase : MonoBehaviour
             if (isAlerted) targetState = AnimState.Run;
             else targetState = AnimState.Walk;
         }
-
         if (targetState != currentState) ChangeAnimationState(targetState);
     }
 
@@ -155,7 +149,12 @@ public abstract class EnemyBase : MonoBehaviour
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
         if (isDead) return;
-        if (collision.CompareTag("Pit")) Die();
+        if (collision.CompareTag("Pit")) 
+        {
+            // NEW LOG: Tells you exactly when they fall
+            Debug.Log($"<color=red><b>[DEATH]</b> {gameObject.name} fell into PIT: {collision.name}</color>");
+            Die();
+        }
     }
 
     public virtual void Die()
@@ -193,7 +192,6 @@ public abstract class EnemyBase : MonoBehaviour
         foreach (Transform mask in masksToDrop) { mask.SetParent(null); mask.rotation = Quaternion.identity; }
     }
 
-    // --- HELPERS ---
     private void OnTransformChildrenChanged()
     {
         if (isDead) return;
@@ -239,15 +237,51 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected abstract void PerformBehavior(float distanceToPlayer);
 
+    // -----------------------------------------------------------------------------------
+    // UPDATED: CIRCLE CAST (Body Width) + DEBUG LOGS
+    // -----------------------------------------------------------------------------------
     protected void MoveToSmart(Vector2 target, LayerMask avoidanceLayers)
     {
         if (isDead) return;
+        
         Vector2 desiredDir = (target - (Vector2)transform.position).normalized;
         Vector2 finalDir = desiredDir;
-        if (Physics2D.Raycast(transform.position, desiredDir, avoidRange, avoidanceLayers).collider != null) {
-            Vector2[] directionsToCheck = new Vector2[] { RotateVector(desiredDir, 45), RotateVector(desiredDir, -45), RotateVector(desiredDir, 90), RotateVector(desiredDir, -90) };
-            foreach (Vector2 checkDir in directionsToCheck) { if (Physics2D.Raycast(transform.position, checkDir, avoidRange, avoidanceLayers).collider == null) { finalDir = checkDir; break; } }
+
+        // Use CircleCast (Thick check) instead of Raycast (Thin check)
+        RaycastHit2D hit = Physics2D.CircleCast(transform.position, bodyWidth, desiredDir, avoidRange, avoidanceLayers);
+
+        if (hit.collider != null)
+        {
+            // LOGGING SECTION
+            string layerName = LayerMask.LayerToName(hit.collider.gameObject.layer);
+            
+            // Check if what we hit is specifically in the Pit Layer
+            bool isPit = ((1 << hit.collider.gameObject.layer) & pitLayer) != 0;
+
+            if (isPit)
+            {
+                Debug.Log($"<color=cyan><b>[PIT DETECTED]</b></color> {gameObject.name} saw a PIT: '{hit.collider.name}'. Avoiding!");
+            }
+            else
+            {
+                 // Uncomment this if you want to see Wall detections too
+                 // Debug.Log($"<color=orange>[OBSTACLE]</color> {gameObject.name} saw a Wall: '{hit.collider.name}'.");
+            }
+
+            // AVOIDANCE LOGIC
+            Vector2 hitNormal = hit.normal;
+            Vector2 avoidDir = Vector2.Perpendicular(hitNormal).normalized;
+            Vector2 left = avoidDir;
+            Vector2 right = -avoidDir;
+            finalDir = Vector2.Dot(left, desiredDir) > Vector2.Dot(right, desiredDir) ? left : right;
+            
+            Debug.DrawRay(transform.position, finalDir * 2f, Color.red);
         }
+        else
+        {
+            Debug.DrawRay(transform.position, desiredDir * 2f, Color.green);
+        }
+
         ApplyVelocity(finalDir);
     }
 
@@ -259,9 +293,8 @@ public abstract class EnemyBase : MonoBehaviour
     }
 
     protected void StopMoving() { rb.linearVelocity = Vector2.SmoothDamp(rb.linearVelocity, Vector2.zero, ref currentVelocityRef, slideInertia); }
-    Vector2 RotateVector(Vector2 v, float degrees) { float r = degrees * Mathf.Deg2Rad, c = Mathf.Cos(r), s = Mathf.Sin(r); return new Vector2(c * v.x - s * v.y, s * v.x + c * v.y); }
     
-    // --- VISUALS (FIXED) ---
+    // --- VISUALS ---
     void SetupLineRenderer() 
     { 
         if (!TryGetComponent(out lineRenderer)) lineRenderer = gameObject.AddComponent<LineRenderer>(); 
@@ -270,9 +303,6 @@ public abstract class EnemyBase : MonoBehaviour
         lineRenderer.startColor = lineRenderer.endColor = skinColor; 
         lineRenderer.startWidth = lineRenderer.endWidth = 0.05f; 
         lineRenderer.useWorldSpace = false; 
-        
-        // --- FIX IS HERE ---
-        // Was -1, now uses the public variable (Default 5)
         lineRenderer.sortingOrder = visionSortingOrder; 
     }
 
@@ -299,4 +329,10 @@ public abstract class EnemyBase : MonoBehaviour
     float GetFacingAngleFromAnimator() { float x = animator.GetFloat("Horizontal"), y = animator.GetFloat("Vertical"); return (Mathf.Abs(x)<0.1f && Mathf.Abs(y)<0.1f) ? 270f : Mathf.Atan2(y, x) * Mathf.Rad2Deg; }
     protected virtual void OnAlertReceived(Vector3 p, Vector3 o, float r) { if (Vector2.Distance(transform.position, o) <= r) isAlerted = true; }
     protected virtual void OnDestroy() { EnemyAlertSystem.OnPlayerFound -= OnAlertReceived; }
+    
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, bodyWidth);
+    }
 }
