@@ -42,12 +42,12 @@ public class BlueMaskType : ThrowableType
 }
 
 /// <summary>
-/// Green mask type - Charm effect.
+/// Yellow mask type - Charm effect.
 /// </summary>
 [System.Serializable]
-public class GreenMaskType : ThrowableType
+public class YellowMaskType : ThrowableType
 {
-    public GreenMaskType(GameObject prefab = null) : base("Charm", Color.green, prefab) { }
+    public YellowMaskType(GameObject prefab = null) : base("Charm", Color.yellow, prefab) { }
 }
 
 

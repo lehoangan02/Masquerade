@@ -21,70 +21,39 @@ public class Enemy_Standard : EnemyBase
 
     protected override void PerformBehavior(float distanceToPlayer)
     {
-        // -------------------------------------------------------------------
-        // 1. RED MASK LOGIC (Reckless - IGNORES PITS)
-        // -------------------------------------------------------------------
+        // 1. RED MASK LOGIC (Reckless)
         if (currentMask == MaskType.Red)
         {
-            moveSpeed = chaseSpeed * 1.5f; // Berserk Speed
-            
-            if (distanceToPlayer <= attackRange)
-            {
-                TryAttack(); 
-            }
-            else if (distanceToPlayer > stoppingDistance) 
-            {
-                // CRITICAL LINE:
-                // We pass ONLY 'obstacleLayer'. 
-                // Because 'pitLayer' is missing, the 360-Radar in EnemyBase is DISABLED.
-                // The enemy will walk straight into the pit.
-                MoveToSmart(player.position, obstacleLayer); 
-            }
-            else 
-            {
-                StopMoving();
-            }
-            return; // Return early so we don't run the Normal logic
+            moveSpeed = chaseSpeed * 1.5f;
+            if (distanceToPlayer <= attackRange) TryAttack();
+            else if (distanceToPlayer > stoppingDistance) MoveToSmart(player.position, false); // Ignored Pits
+            else StopMoving();
+            return; 
         }
 
-        // -------------------------------------------------------------------
-        // 2. NORMAL LOGIC (Smart - AVOIDS PITS)
-        // -------------------------------------------------------------------
+        // 2. NORMAL LOGIC
         bool canSeePlayer = IsPlayerVisible(distanceToPlayer);
 
-        if (canSeePlayer || isAlerted) 
+        if (canSeePlayer) 
         {
             loseAggroTimer = giveUpTime;
-            if (isAlerted) isAlerted = false; 
+            isAlerted = true;
         }
         else if (loseAggroTimer > 0) 
         {
             loseAggroTimer -= Time.deltaTime;
+            if (loseAggroTimer <= 0) isAlerted = false;
         }
 
-        if (loseAggroTimer > 0)
+        if (isAlerted)
         {
             moveSpeed = chaseSpeed;
-
-            if (distanceToPlayer <= attackRange)
-            {
-                TryAttack();
-            }
-            else if (distanceToPlayer > stoppingDistance) 
-            {
-                // SAFE CHASE:
-                // Default MoveToSmart uses (obstacleLayer | pitLayer).
-                // The 360-Radar sees the 'pitLayer' flag and activates repulsion.
-                MoveToSmart(player.position); 
-            }
-            else 
-            {
-                StopMoving();
-            }
+            if (distanceToPlayer <= attackRange) TryAttack();
+            else if (distanceToPlayer > stoppingDistance) MoveToSmart(player.position, true); // Avoids Pits
+            else StopMoving();
         }
         else
         {
-            // PATROL
             moveSpeed = patrolSpeed;
             PatrolLogic();
         }
@@ -96,16 +65,9 @@ public class Enemy_Standard : EnemyBase
         float offset = movingPositive ? patrolRange : -patrolRange;
         Vector2 target = startPos + (direction * offset);
         
-        // Patrol is always safe
-        MoveToSmart(target); 
+        MoveToSmart(target, true); // Smooth, safe patrol
         
-        if (Vector2.Distance(transform.position, target) < 0.1f) 
+        if (Vector2.Distance(transform.position, target) < 0.2f) 
             movingPositive = !movingPositive;
-    }
-    
-    protected override void OnAlertReceived(Vector3 p, Vector3 o, float r)
-    {
-        base.OnAlertReceived(p, o, r);
-        if (isAlerted) loseAggroTimer = giveUpTime; 
     }
 }

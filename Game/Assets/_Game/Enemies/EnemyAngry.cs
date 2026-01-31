@@ -4,13 +4,12 @@ public class Enemy_Angry : EnemyBase
 {
     [Header("Angry Stats")]
     public float berserkSpeed = 10f;
-    
-    private void Reset()
+    private float originalMoveSpeed;
+
+    protected override void Start()
     {
-        moveSpeed = 6f; 
-        visionRange = 8f; 
-        stoppingDistance = 0.6f;
-        skinColor = Color.red;
+        base.Start();
+        originalMoveSpeed = moveSpeed;
     }
 
     protected override void PerformBehavior(float distanceToPlayer)
@@ -22,57 +21,40 @@ public class Enemy_Angry : EnemyBase
 
             if (distanceToPlayer <= attackRange)
             {
-                TryAttack(); // <--- ATTACK
+                TryAttack();
             }
             else if (distanceToPlayer > stoppingDistance) 
             {
-                // Chase fast, ignore pits
-                MoveToSmart(player.position, obstacleLayer);
+                // Pass 'false' to IGNORE pits and charge straight forward
+                MoveToSmart(player.position, false);
             }
             else StopMoving();
         }
         else
         {
             // --- NORMAL ANGRY MODE ---
+            moveSpeed = originalMoveSpeed;
             bool visible = IsPlayerVisible(distanceToPlayer);
             
             if (visible || isAlerted)
             {
-                if (!isAlerted) isAlerted = true; 
-
-                if (distanceToPlayer <= attackRange)
-                {
-                    TryAttack(); // <--- ATTACK
-                }
-                else if (distanceToPlayer > stoppingDistance)
-                {
-                    // Smart chase (avoids pits)
-                    MoveToSmart(player.position); 
-                }
-                else
-                {
-                    StopMoving();
-                }
+                if (distanceToPlayer <= attackRange) TryAttack();
+                else if (distanceToPlayer > stoppingDistance) MoveToSmart(player.position, true); // Avoids pits
+                else StopMoving();
             }
-            else
-            {
-                StopMoving();
-            }
+            else StopMoving();
         }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (isDead) return;
+        if (isDead || currentMask != MaskType.Red) return;
 
-        if (currentMask == MaskType.Red)
+        EnemyBase otherEnemy = collision.gameObject.GetComponent<EnemyBase>();
+        if (otherEnemy != null)
         {
-            EnemyBase otherEnemy = collision.gameObject.GetComponent<EnemyBase>();
-            if (otherEnemy != null)
-            {
-                if(animator) animator.SetTrigger("Attack"); // Animation for smashing friend
-                otherEnemy.Die(); 
-            }
+            if(animator) animator.SetTrigger("Attack"); 
+            otherEnemy.Die(); 
         }
     }
 }
