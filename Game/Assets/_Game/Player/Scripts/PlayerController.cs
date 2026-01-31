@@ -151,13 +151,6 @@ public class PlayerController : MonoBehaviour
         // 5. Kill Enemy
         Debug.Log("Stealth Kill Executed!");
         targetEnemy.Die();
-
-        // 6. Wait for Animation to finish (approx 0.4s to 0.5s)
-        yield return new WaitForSeconds(0.4f);
-
-        // 7. Unlock Player
-        currentState = State.Normal;
-        animator.SetTrigger("Idle"); // Return to idle explicitly
     }
 
     // --- 3. ANIMATION SYNC (Updated for V9 Generator) ---
