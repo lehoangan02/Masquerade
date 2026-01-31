@@ -49,6 +49,10 @@ public Vector3 visionOffset = Vector3.zero;
     protected bool isDead = false;
     protected bool isAttacking = false; // Prevents movement from overriding attack
     protected AnimState currentState = AnimState.Idle; // Track current state
+    protected float attackTimer = 0f; // Timer for attacks against other enemies
+
+    // Public Properties
+    public bool IsDead => isDead;
 
     private Vector2 currentVelocityRef;
 
@@ -178,6 +182,14 @@ public Vector3 visionOffset = Vector3.zero;
     {
         if (isDead) return;
         if (collision.CompareTag("Pit")) Die();
+    }
+
+    public virtual void TakeDamage(int damage)
+    {
+        if (isDead) return;
+        // For now, enemies die in one hit from other enemies
+        Debug.Log($"<color=red>{gameObject.name} took {damage} damage!</color>");
+        Die();
     }
 
     public virtual void Die()
