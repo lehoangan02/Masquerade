@@ -3,14 +3,15 @@ using TMPro;
 using System.Collections;
 using UnityEngine.InputSystem;
 using System;
+using System.Collections.Generic;
 
 public class Dialog : MonoBehaviour
 {
+    public Action[] lineActions;
     public TextMeshProUGUI dialogText;
     public string[] dialogLines;
     public int currentDialogIndex = 0;
     public float textSpeed = 0.05f;
-    public Action onDialogComplete;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -23,22 +24,29 @@ public class Dialog : MonoBehaviour
         if (Keyboard.current.spaceKey.wasPressedThisFrame
         || Mouse.current.leftButton.wasPressedThisFrame)
         {
-            if (dialogText.text == dialogLines[currentDialogIndex])
+            if (currentDialogIndex >= 0 && currentDialogIndex < dialogLines.Length)
             {
-                NextLine();
-            }
-            else
-            {
-                StopAllCoroutines();
-                dialogText.text = dialogLines[currentDialogIndex];
+                if (dialogText.text == dialogLines[currentDialogIndex])
+                {
+                    NextLine();
+                }
+                else
+                {
+                    StopAllCoroutines();
+                    dialogText.text = dialogLines[currentDialogIndex];
+                }
             }
         }
     }
     public void StartDialog()
     {
         dialogText.text = "";
+        // Execute action for the first line if it exists
+        if (lineActions != null && lineActions.Length > 0 && lineActions[0] != null)
+        {
+            lineActions[0]?.Invoke();
+        }
         StartCoroutine(TypeLine());
-        Debug.Log(dialogText.text);
     }
     void NextLine()
     {
@@ -46,17 +54,17 @@ public class Dialog : MonoBehaviour
         {
             currentDialogIndex++;
             dialogText.text = "";
+            // Execute action for this line if it exists
+            if (lineActions != null && currentDialogIndex < lineActions.Length && lineActions[currentDialogIndex] != null)
+            {
+                lineActions[currentDialogIndex]?.Invoke();
+            }
             StartCoroutine(TypeLine());
         }
         else
         {
             dialogText.text = "";
             gameObject.SetActive(false);
-            if (onDialogComplete != null)
-            {
-                onDialogComplete.Invoke();
-                onDialogComplete = null;
-            }
         }
     }
     IEnumerator TypeLine()
