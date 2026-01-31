@@ -16,9 +16,4 @@ public class BlueMask : Mask
         // TODO: Visual feedback (particles, etc.)
     }
 
-    public override void ApplyEffect(GameObject target)
-    {
-        Debug.Log($"[Blue Mask] Applying effect to {target.name}!");
-        // TODO: Make enemy move erratically or freeze
-    }
 }

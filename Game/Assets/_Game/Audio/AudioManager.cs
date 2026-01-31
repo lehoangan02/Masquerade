@@ -8,6 +8,9 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource sfxSource;
 
+    [Header("Level Music List")]
+    public AudioClip[] levelMusicArray;
+
     [Header("Music Clips")]
     public AudioClip backgroundMusic;
     public AudioClip chaseMusic;
@@ -15,11 +18,19 @@ public class AudioManager : MonoBehaviour
     public AudioClip loseMusic;
 
     [Header("SFX Clips")]
+    public AudioClip buttonClick;
+    public AudioClip enterLevel;
     public AudioClip hurtSound;
-    public AudioClip itemCollectSound;
-    public AudioClip footsteps;
+    public AudioClip throwMask;
+    public AudioClip runInGlass;
+    public AudioClip runOnRoad;
     public AudioClip teleportSound;
-    public AudioClip slowZoneSound;
+
+    [Header("Enemy SFX Clips")]
+    public AudioClip enemyDeath;
+    public AudioClip enemyCream;
+    public AudioClip enemyRoar;
+
 
     private void Awake()
     {
@@ -45,6 +56,18 @@ public class AudioManager : MonoBehaviour
 
         musicSource.clip = clip;
         musicSource.Play();
+    }
+
+    public void PlayMusicByIndex(int index)
+    {
+        if (index >= 0 && index < levelMusicArray.Length)
+        {
+            if (levelMusicArray[index] != null)
+            {
+                musicSource.clip = levelMusicArray[index];
+                musicSource.Play();
+            }
+        }
     }
 
     public void PlaySFX(AudioClip clip)
