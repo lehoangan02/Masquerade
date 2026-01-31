@@ -289,6 +289,14 @@ PrefabInstance:
       propertyPath: isHidden
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 537896703140039652, guid: 80aa7a99ef7323945b6905bf7daa7963, type: 3}
+      propertyPath: moveSpeed
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 973841807691431428, guid: 80aa7a99ef7323945b6905bf7daa7963, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -5615041109936842368, guid: 2fc4b22b602490d6aa05e016aa012835, type: 3}
     - target: {fileID: 973841807691431428, guid: 80aa7a99ef7323945b6905bf7daa7963, type: 3}
       propertyPath: m_SortingOrder
       value: 2
@@ -337,10 +345,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7918279211516910683, guid: 80aa7a99ef7323945b6905bf7daa7963, type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.x
+      value: 0.6875
+      objectReference: {fileID: 0}
+    - target: {fileID: 7918279211516910683, guid: 80aa7a99ef7323945b6905bf7daa7963, type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.y
+      value: 0.875
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1043192435436107677, guid: 80aa7a99ef7323945b6905bf7daa7963, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1490786216}
   m_SourcePrefab: {fileID: 100100000, guid: 80aa7a99ef7323945b6905bf7daa7963, type: 3}
 --- !u!4 &753856832 stripped
 Transform:
@@ -814,7 +833,7 @@ MonoBehaviour:
     rid: 627570044675031328
   m_ShadowCastingSource: 2
   m_ShadowMesh:
-    m_Mesh: {fileID: 1802310809}
+    m_Mesh: {fileID: 1592878026}
     m_LocalBounds:
       m_Center: {x: 0, y: 0, z: 0}
       m_Extent: {x: 0.44999695, y: 0.44999695, z: 0}
@@ -956,7 +975,34 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7b3580ec919e7884d9fcc0e8572c1ee6, type: 3}
---- !u!43 &1802310809
+--- !u!1 &1490786209 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1043192435436107677, guid: 80aa7a99ef7323945b6905bf7daa7963, type: 3}
+  m_PrefabInstance: {fileID: 753856831}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1490786216
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1490786209}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7748c276bdb33ac199ab7271c26ee766, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!43 &1592878026
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
