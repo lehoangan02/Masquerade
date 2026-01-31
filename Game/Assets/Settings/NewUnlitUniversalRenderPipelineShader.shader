@@ -42,15 +42,11 @@ Shader "Custom/URP_InvertBackground"
             
             half4 frag(Varyings IN) : SV_Target
             {
-                // Sample using screen-space coordinates
                 float2 screenUV = IN.positionCS.xy * _BackgroundTex_TexelSize.xy;
-                
-                // Sample the background render texture
                 half4 background = SAMPLE_TEXTURE2D(_BackgroundTex, sampler_BackgroundTex, screenUV);
                 
                 // Invert the colors
                 background.rgb = 1.0 - background.rgb;
-                background.a = 1.0;
                 
                 return background;
             }
