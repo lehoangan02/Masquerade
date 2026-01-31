@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 
 public class SlowArea : MonoBehaviour
 {
@@ -20,6 +21,15 @@ public class SlowArea : MonoBehaviour
                 player.moveSpeed *= slowFactor;
             }
         }
+        else if (other.CompareTag("Enemy"))
+        {
+            NavMeshAgent agent = other.GetComponent<NavMeshAgent>();
+            if (agent != null)
+            {
+                originalSpeed = agent.speed;
+                agent.speed *= slowFactor;
+            }
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -28,6 +38,14 @@ public class SlowArea : MonoBehaviour
         {
             player.moveSpeed = originalSpeed;
             player = null;
+        }
+        else if (other.CompareTag("Enemy"))
+        {
+            NavMeshAgent agent = other.GetComponent<NavMeshAgent>();
+            if (agent != null)
+            {
+                agent.speed = originalSpeed;
+            }
         }
     }
 }
