@@ -130311,7 +130311,7 @@ GameObject:
   - component: {fileID: 2007890408}
   - component: {fileID: 2007890407}
   m_Layer: 0
-  m_Name: NextLevelTrigger
+  m_Name: NextLevelTrigger2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
