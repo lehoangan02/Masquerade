@@ -58,6 +58,7 @@ MonoBehaviour:
   chaseMusic: {fileID: 8300000, guid: 62b65b49824d0ad4eaf30d8931f6a7e7, type: 3}
   winMusic: {fileID: 8300000, guid: 848c757fad075da498c18f976343de8b, type: 3}
   loseMusic: {fileID: 8300000, guid: 9da19b39c74a27c43a48d845bfc35c58, type: 3}
+  buttonClick: {fileID: 8300000, guid: b46ab7d6f64a44042893f8f7f2ad4877, type: 3}
   enterLevel: {fileID: 8300000, guid: 59b60fddb2af67b4598f6adf4d02c96a, type: 3}
   hurtSound: {fileID: 8300000, guid: 2266c8badadff364eb90ccc71c47b861, type: 3}
   throwMask: {fileID: 8300000, guid: 90b6c32e5c90d394bb10f7d58da7ff58, type: 3}
