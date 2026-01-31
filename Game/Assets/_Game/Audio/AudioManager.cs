@@ -16,8 +16,9 @@ public class AudioManager : MonoBehaviour
 
     [Header("SFX Clips")]
     public AudioClip hurtSound;
-    public AudioClip itemCollectSound;
-    public AudioClip footsteps;
+    public AudioClip throwMask;
+    public AudioClip runInGlass;
+    public AudioClip runOnRoad;
     public AudioClip teleportSound;
     public AudioClip slowZoneSound;
 
