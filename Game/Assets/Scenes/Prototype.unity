@@ -119,6 +119,67 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &203138489
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5274352161144566321, guid: 72416e4bba4e9194ba5fb49e152d5d37, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5293109909417580721, guid: 72416e4bba4e9194ba5fb49e152d5d37, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.1592
+      objectReference: {fileID: 0}
+    - target: {fileID: 5293109909417580721, guid: 72416e4bba4e9194ba5fb49e152d5d37, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.07109
+      objectReference: {fileID: 0}
+    - target: {fileID: 5293109909417580721, guid: 72416e4bba4e9194ba5fb49e152d5d37, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5293109909417580721, guid: 72416e4bba4e9194ba5fb49e152d5d37, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5293109909417580721, guid: 72416e4bba4e9194ba5fb49e152d5d37, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5293109909417580721, guid: 72416e4bba4e9194ba5fb49e152d5d37, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5293109909417580721, guid: 72416e4bba4e9194ba5fb49e152d5d37, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5293109909417580721, guid: 72416e4bba4e9194ba5fb49e152d5d37, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5293109909417580721, guid: 72416e4bba4e9194ba5fb49e152d5d37, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5293109909417580721, guid: 72416e4bba4e9194ba5fb49e152d5d37, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8967450520182165440, guid: 72416e4bba4e9194ba5fb49e152d5d37, type: 3}
+      propertyPath: m_Name
+      value: KillArea_Prefab
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 72416e4bba4e9194ba5fb49e152d5d37, type: 3}
 --- !u!1 &510436359
 GameObject:
   m_ObjectHideFlags: 0
@@ -228,7 +289,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyRender
   Player: {fileID: 0}
---- !u!43 &896362413
+--- !u!43 &1067371601
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -658,7 +719,7 @@ MonoBehaviour:
     rid: 627570044675031328
   m_ShadowCastingSource: 2
   m_ShadowMesh:
-    m_Mesh: {fileID: 896362413}
+    m_Mesh: {fileID: 1067371601}
     m_LocalBounds:
       m_Center: {x: 0, y: 0, z: 0}
       m_Extent: {x: 0.44999695, y: 0.44999695, z: 0}
@@ -898,3 +959,4 @@ SceneRoots:
   - {fileID: 1107994539}
   - {fileID: 1155775430021141310}
   - {fileID: 510436361}
+  - {fileID: 203138489}
