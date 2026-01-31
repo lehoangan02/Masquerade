@@ -17,6 +17,10 @@ public class PlayerController : MonoBehaviour
         {
             sceneLoader.LoadSceneByName("Level2_IntoTheDungeon");
         }
+        else if (collision.gameObject.name == "NextLevelTrigger2")
+        {
+            sceneLoader.LoadSceneByName("Win");
+        }
             
     }
     public Material fogMaterial; // Assign this in the Inspector
