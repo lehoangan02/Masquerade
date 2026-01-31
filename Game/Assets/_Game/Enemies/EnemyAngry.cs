@@ -17,38 +17,41 @@ public class Enemy_Angry : EnemyBase
     {
         if (currentMask == MaskType.Red)
         {
-            // --- BERSERK MODE (Red Mask) ---
+            // --- BERSERK MODE ---
             moveSpeed = berserkSpeed;
 
-            if (distanceToPlayer > stoppingDistance) 
+            if (distanceToPlayer <= attackRange)
             {
-                // CRITICAL: We pass ONLY 'obstacleLayer'.
-                // This means it ignores 'pitLayer', so it will run into pits and die.
+                TryAttack(); // <--- ATTACK
+            }
+            else if (distanceToPlayer > stoppingDistance) 
+            {
+                // Chase fast, ignore pits
                 MoveToSmart(player.position, obstacleLayer);
             }
-            else 
-            {
-                StopMoving();
-            }
+            else StopMoving();
         }
         else
         {
             // --- NORMAL ANGRY MODE ---
-            // Behaves like a standard enemy (Smart Chase: Avoids Walls AND Pits)
+            bool visible = IsPlayerVisible(distanceToPlayer);
             
-            if (IsPlayerVisible(distanceToPlayer) || isAlerted)
+            if (visible || isAlerted)
             {
                 if (!isAlerted) isAlerted = true; 
 
-                if (distanceToPlayer > stoppingDistance)
+                if (distanceToPlayer <= attackRange)
                 {
-                    // No mask passed = Defaults to (Obstacle | Pit)
+                    TryAttack(); // <--- ATTACK
+                }
+                else if (distanceToPlayer > stoppingDistance)
+                {
+                    // Smart chase (avoids pits)
                     MoveToSmart(player.position); 
                 }
                 else
                 {
                     StopMoving();
-                    if(spriteRenderer) spriteRenderer.flipX = player.position.x < transform.position.x;
                 }
             }
             else
@@ -58,16 +61,17 @@ public class Enemy_Angry : EnemyBase
         }
     }
 
-    // Logic: Berserkers destroy other enemies on impact
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (isDead) return;
+
         if (currentMask == MaskType.Red)
         {
             EnemyBase otherEnemy = collision.gameObject.GetComponent<EnemyBase>();
             if (otherEnemy != null)
             {
-                Debug.Log("Berserker smashed an ally! Masks dropped.");
-                otherEnemy.Die(); // Kills the other enemy and drops their mask
+                if(animator) animator.SetTrigger("Attack"); // Animation for smashing friend
+                otherEnemy.Die(); 
             }
         }
     }
