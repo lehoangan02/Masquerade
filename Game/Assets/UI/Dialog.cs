@@ -57,6 +57,7 @@ public class Dialog : MonoBehaviour
             // Execute action for this line if it exists
             if (lineActions != null && currentDialogIndex < lineActions.Length && lineActions[currentDialogIndex] != null)
             {
+                Debug.Log("Executing action for line " + currentDialogIndex);
                 lineActions[currentDialogIndex]?.Invoke();
             }
             StartCoroutine(TypeLine());
@@ -65,6 +66,13 @@ public class Dialog : MonoBehaviour
         {
             dialogText.text = "";
             gameObject.SetActive(false);
+            // Execute action for after the dialog closes (last+1)
+            int afterLast = currentDialogIndex + 1;
+            if (lineActions != null && afterLast < lineActions.Length && lineActions[afterLast] != null)
+            {
+                Debug.Log("Executing action after dialog closes: " + afterLast);
+                lineActions[afterLast]?.Invoke();
+            }
         }
     }
     IEnumerator TypeLine()
