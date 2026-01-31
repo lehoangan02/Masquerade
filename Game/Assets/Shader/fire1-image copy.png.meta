@@ -1,0 +1,727 @@
+fileFormatVersion: 2
+guid: 8953be3d40c37404e865933c9d4160c4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3234457235779557008
+    second: fire1-image copy_0
+  - first:
+      213: 6679207657414548891
+    second: fire1-image copy_1
+  - first:
+      213: 4530832613716465879
+    second: fire1-image copy_2
+  - first:
+      213: -829367721828571060
+    second: fire1-image copy_3
+  - first:
+      213: 166428359998159698
+    second: fire1-image copy_4
+  - first:
+      213: 3365212257802348466
+    second: fire1-image copy_5
+  - first:
+      213: -2224508676192299756
+    second: fire1-image copy_6
+  - first:
+      213: 948828889781566272
+    second: fire1-image copy_7
+  - first:
+      213: -6125777239147796886
+    second: fire1-image copy_8
+  - first:
+      213: -6907784977179552268
+    second: fire1-image copy_9
+  - first:
+      213: -3277168530402930260
+    second: fire1-image copy_10
+  - first:
+      213: 9199478121944126370
+    second: fire1-image copy_11
+  - first:
+      213: -718866693165385231
+    second: fire1-image copy_12
+  - first:
+      213: 6578775677895565012
+    second: fire1-image copy_13
+  - first:
+      213: 2522013463294511245
+    second: fire1-image copy_14
+  - first:
+      213: 5600232128063918286
+    second: fire1-image copy_15
+  - first:
+      213: -3375497961189764253
+    second: fire1-image copy_16
+  - first:
+      213: 5827189028986964733
+    second: fire1-image copy_17
+  - first:
+      213: -5201886294311283693
+    second: fire1-image copy_18
+  - first:
+      213: -4341229208946712
+    second: fire1-image copy_19
+  - first:
+      213: -3629754021555567694
+    second: fire1-image copy_20
+  - first:
+      213: 7232225516438091667
+    second: fire1-image copy_21
+  - first:
+      213: -142518701546690298
+    second: fire1-image copy_22
+  - first:
+      213: 1328734311711004449
+    second: fire1-image copy_23
+  - first:
+      213: 8583336373941667125
+    second: fire1-image copy_24
+  - first:
+      213: -5845514435732927016
+    second: fire1-image copy_25
+  - first:
+      213: 7373725756467407592
+    second: fire1-image copy_26
+  - first:
+      213: 3702537811579885757
+    second: fire1-image copy_27
+  - first:
+      213: -1819101057692224702
+    second: fire1-image copy_28
+  - first:
+      213: -5250899030437409618
+    second: fire1-image copy_29
+  - first:
+      213: -862507290783349136
+    second: fire1-image copy_30
+  - first:
+      213: -7584914270857136909
+    second: fire1-image copy_31
+  - first:
+      213: 4234462866577993959
+    second: fire1-image copy_32
+  - first:
+      213: -329255607818207501
+    second: fire1-image copy_33
+  - first:
+      213: -4127882440289804860
+    second: fire1-image copy_34
+  - first:
+      213: -6806815523445194127
+    second: fire1-image copy_35
+  - first:
+      213: 4615383137941139234
+    second: fire1-image copy_36
+  - first:
+      213: 4659909496816155170
+    second: fire1-image copy_37
+  - first:
+      213: 1747188153913835691
+    second: fire1-image copy_38
+  - first:
+      213: -6580341216523145548
+    second: fire1-image copy_39
+  - first:
+      213: -3723461158047156471
+    second: fire1-image copy_40
+  - first:
+      213: 2703110395864950444
+    second: fire1-image copy_41
+  - first:
+      213: 6148598854164717753
+    second: fire1-image copy_42
+  - first:
+      213: 3386084864882370612
+    second: fire1-image copy_43
+  - first:
+      213: 8999492871222820475
+    second: fire1-image copy_44
+  - first:
+      213: 243431877466138316
+    second: fire1-image copy_45
+  - first:
+      213: -1538861406680214360
+    second: fire1-image copy_46
+  - first:
+      213: -8081995881970400718
+    second: fire1-image copy_47
+  - first:
+      213: 1784854015458992469
+    second: fire1-image copy_48
+  - first:
+      213: 7343267466682206399
+    second: fire1-image copy_49
+  - first:
+      213: 1519708250388096844
+    second: fire1-image copy_50
+  - first:
+      213: 337320264988575884
+    second: fire1-image copy_51
+  - first:
+      213: -1798961059335463994
+    second: fire1-image copy_52
+  - first:
+      213: -6618602361125710310
+    second: fire1-image copy_53
+  - first:
+      213: -660152976556854562
+    second: fire1-image copy_54
+  - first:
+      213: 462711206291332151
+    second: fire1-image copy_55
+  - first:
+      213: -4217886571494577957
+    second: fire1-image copy_56
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: fire1-image copy_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09615d318b913ec20800000000000000
+      internalID: 3234457235779557008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_1
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9d5349f9ff41bc50800000000000000
+      internalID: 6679207657414548891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_2
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d8135db140c0ee30800000000000000
+      internalID: 4530832613716465879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_3
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c48ab30837e7d74f0800000000000000
+      internalID: -829367721828571060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_4
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25bbd3e26b54f4200800000000000000
+      internalID: 166428359998159698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_5
+      rect:
+        serializedVersion: 2
+        x: 2400
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b7691408b2a3be20800000000000000
+      internalID: 3365212257802348466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_6
+      rect:
+        serializedVersion: 2
+        x: 2880
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41598cb1525f021e0800000000000000
+      internalID: -2224508676192299756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_7
+      rect:
+        serializedVersion: 2
+        x: 3360
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04bfe0029daea2d00800000000000000
+      internalID: 948828889781566272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_8
+      rect:
+        serializedVersion: 2
+        x: 3840
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a662c678e0edcfaa0800000000000000
+      internalID: -6125777239147796886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_9
+      rect:
+        serializedVersion: 2
+        x: 4320
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f5de6a892e9220a0800000000000000
+      internalID: -6907784977179552268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_10
+      rect:
+        serializedVersion: 2
+        x: 4800
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca19e34b5982582d0800000000000000
+      internalID: -3277168530402930260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_11
+      rect:
+        serializedVersion: 2
+        x: 5280
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a315796c9c1baf70800000000000000
+      internalID: 9199478121944126370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_12
+      rect:
+        serializedVersion: 2
+        x: 5760
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f974012d821606f0800000000000000
+      internalID: -718866693165385231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_13
+      rect:
+        serializedVersion: 2
+        x: 6240
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ded1f98f918c4b50800000000000000
+      internalID: 6578775677895565012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_14
+      rect:
+        serializedVersion: 2
+        x: 6720
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d880c66f1edfff220800000000000000
+      internalID: 2522013463294511245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_15
+      rect:
+        serializedVersion: 2
+        x: 7200
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec0dafcf27508bd40800000000000000
+      internalID: 5600232128063918286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_16
+      rect:
+        serializedVersion: 2
+        x: 7680
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3639a3b0d72d721d0800000000000000
+      internalID: -3375497961189764253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_17
+      rect:
+        serializedVersion: 2
+        x: 8160
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dfa42df4c855ed050800000000000000
+      internalID: 5827189028986964733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fire1-image copy_18
+      rect:
+        serializedVersion: 2
+        x: 8640
+        y: 0
+        width: 480
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3145a91e9ff2fc7b0800000000000000
+      internalID: -5201886294311283693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 503d37c42c55247e595d333fbf737c24
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":480.0,"y":480.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      fire1-image copy_0: 3234457235779557008
+      fire1-image copy_1: 6679207657414548891
+      fire1-image copy_10: -3277168530402930260
+      fire1-image copy_11: 9199478121944126370
+      fire1-image copy_12: -718866693165385231
+      fire1-image copy_13: 6578775677895565012
+      fire1-image copy_14: 2522013463294511245
+      fire1-image copy_15: 5600232128063918286
+      fire1-image copy_16: -3375497961189764253
+      fire1-image copy_17: 5827189028986964733
+      fire1-image copy_18: -5201886294311283693
+      fire1-image copy_2: 4530832613716465879
+      fire1-image copy_3: -829367721828571060
+      fire1-image copy_4: 166428359998159698
+      fire1-image copy_5: 3365212257802348466
+      fire1-image copy_6: -2224508676192299756
+      fire1-image copy_7: 948828889781566272
+      fire1-image copy_8: -6125777239147796886
+      fire1-image copy_9: -6907784977179552268
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
