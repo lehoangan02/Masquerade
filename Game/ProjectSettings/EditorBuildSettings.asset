@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/Scenes/LHAN/Transition2.unity
     guid: 1d2f5a599a17a4f7bbcc6167b7fe6cdd
   - enabled: 1
-    path: Assets/Scenes/LHAN/Menu.unity
+    path: Assets/_Game/Scenes/Menu.unity
     guid: 5adf48529133b4d3f9bbaf88918b8c4a
   - enabled: 1
     path: Assets/_Game/Scenes/Intro.unity

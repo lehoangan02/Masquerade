@@ -363,7 +363,8 @@ MonoBehaviour:
   dialogText: {fileID: 1574888787}
   dialogLines:
   - There was a witch in a land called Sunvale.
-  - She experience some spells and accidentally turn most people into wandering souls.
+  - She experienced with some spells and accidentally turn most people into wandering
+    souls.
   - You need to find the wand she left behind and break it.
   currentDialogIndex: 0
   textSpeed: 0.05
