@@ -48,6 +48,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
   musicSource: {fileID: 4256367534412095071}
   sfxSource: {fileID: 1159911100512594657}
+  levelMusicArray:
+  - {fileID: 8300000, guid: 0a93a1990dfdc8a4c954ddac520ea333, type: 3}
+  - {fileID: 8300000, guid: 25438bc57680f4c48b450cb9e976ddbf, type: 3}
   backgroundMusic: {fileID: 8300000, guid: e5a2784e677ed594bb19ebfb5fdc8486, type: 3}
   chaseMusic: {fileID: 8300000, guid: 62b65b49824d0ad4eaf30d8931f6a7e7, type: 3}
   winMusic: {fileID: 8300000, guid: 848c757fad075da498c18f976343de8b, type: 3}
@@ -57,7 +60,9 @@ MonoBehaviour:
   runInGlass: {fileID: 8300000, guid: 81c1fe0cee2b5b8479c7351387c8d2c1, type: 3}
   runOnRoad: {fileID: 8300000, guid: d41de278395ade442b082fde46c37166, type: 3}
   teleportSound: {fileID: 8300000, guid: 7009e625c2095c548a8a33c304e1ccf4, type: 3}
-  slowZoneSound: {fileID: 0}
+  enemyDeath: {fileID: 8300000, guid: 97e20039465670148bec9af9e1b857d4, type: 3}
+  enemyCream: {fileID: 8300000, guid: 0f0b6eee591e8f241bdf376d606a59a4, type: 3}
+  enemyRoar: {fileID: 8300000, guid: 3220ebef6dcff174c9d928e358e261fb, type: 3}
 --- !u!82 &4256367534412095071
 AudioSource:
   m_ObjectHideFlags: 0
