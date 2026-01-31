@@ -36,7 +36,7 @@ public class PauseManager : MonoBehaviour
     {
         isPaused = true;
         pauseAnimator.SetTrigger("onPause");
-        // Time.timeScale = 0f;
+        Time.timeScale = 0f;
     }
     public void ResumeGame()
     {
