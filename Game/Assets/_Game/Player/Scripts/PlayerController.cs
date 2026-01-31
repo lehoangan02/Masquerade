@@ -7,6 +7,19 @@ using System.Collections;
 [RequireComponent(typeof(BoxCollider2D))]
 public class PlayerController : MonoBehaviour
 {
+
+    // lehoangan added this
+    public SceneLoader sceneLoader;
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        print("Collided with " + collision.gameObject.name);
+        if (collision.gameObject.name == "NextLevelTrigger")
+        {
+            sceneLoader.LoadSceneByName("Level2_IntoTheDungeon");
+        }
+            
+    }
+
     public enum State { Normal, Locked, Attacking }
     
     [Header("State")]
