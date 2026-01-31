@@ -3,7 +3,7 @@ using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour
 {
-    public Transform m_Player;
+    public Transform Player;
     private NavMeshAgent m_Agent;
 
     void Start()
@@ -15,6 +15,6 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
-        m_Agent.SetDestination(m_Player.position);
+        m_Agent.SetDestination(Player.position);
     }
 }
