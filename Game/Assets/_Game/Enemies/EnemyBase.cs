@@ -1,7 +1,11 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public enum MaskType { None, Red, Yellow, Green }
+
+// 1. Define the States available to the enemy
+public enum AnimState { Idle, Walk, Run, Attack, Dead }
 
 [RequireComponent(typeof(Rigidbody2D))]
 public abstract class EnemyBase : MonoBehaviour
@@ -14,35 +18,44 @@ public abstract class EnemyBase : MonoBehaviour
     public Color skinColor = Color.white;
     public bool showVisionCircle = true;
 
+    [Header("Combat")]
+    public float attackRange = 1.2f;
+    public float attackCooldown = 1.0f;
+    public int attackDamage = 10;
+    private float lastAttackTime = -999f;
+
     [Header("Vision Settings")]
-    [Tooltip("Adjust Y to move the cone to eye level (e.g., 0.5)")]
-    public Vector3 visionOffset = new Vector3(0, 0.5f, 0); 
+public Vector3 visionOffset = Vector3.zero;
 
     [Header("Movement Feel")]
     public float slideInertia = 0.1f; 
 
     [Header("Pathfinding & Pits")]
-    public LayerMask obstacleLayer; // Assign "Default" or "Walls"
-    public LayerMask pitLayer;      // Assign "Pit" layer here
+    public LayerMask obstacleLayer; 
+    public LayerMask pitLayer;      
     public float avoidRange = 1.5f; 
 
-    // --- MASK STATE ---
+    // References
     protected MaskType currentMask = MaskType.None;
     protected float visionMultiplier = 1f;
-
-    // References
     protected Transform player;
     protected Rigidbody2D rb;
     protected SpriteRenderer spriteRenderer;
     protected LineRenderer lineRenderer;
+    protected Animator animator; 
+    
+    // State Flags
     protected bool isAlerted = false;
+    protected bool isDead = false;
+    protected bool isAttacking = false; // Prevents movement from overriding attack
+    protected AnimState currentState = AnimState.Idle; // Track current state
 
-    // Movement Smoothing Helper
     private Vector2 currentVelocityRef;
 
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -50,8 +63,6 @@ public abstract class EnemyBase : MonoBehaviour
 
         rb.gravityScale = 0;
         rb.freezeRotation = true;
-        
-        // Unity 6+ uses 'linearDamping', older versions use 'drag'
         rb.linearDamping = 1f; 
 
         if(spriteRenderer) spriteRenderer.color = skinColor;
@@ -60,86 +71,172 @@ public abstract class EnemyBase : MonoBehaviour
         if (showVisionCircle) SetupLineRenderer();
     }
 
-    protected virtual void Update() { UpdateMaskStatus(); }
+    protected virtual void Update() 
+    { 
+        if (isDead) return;
+        UpdateMaskStatus();
+        UpdateAnimation(); 
+    }
 
     protected virtual void FixedUpdate()
     {
-        if (player == null) return;
+        if (player == null || isDead || isAttacking) return; // Don't move while attacking
         PerformBehavior(Vector2.Distance(transform.position, player.position));
     }
 
     void LateUpdate() { if (showVisionCircle && lineRenderer != null) DrawVisionCone(); }
 
-    // --- DEATH, DROPS & PITS ---
-    
-    // 1. Handle falling into pits
-    protected virtual void OnTriggerEnter2D(Collider2D collision)
+    // --- STATE MANAGEMENT HELPER ---
+    protected void ChangeAnimationState(AnimState newState)
     {
-        if (collision.CompareTag("Pit"))
+        // Don't switch if we are already in this state (prevents trigger spam)
+        if (currentState == newState) return;
+
+        currentState = newState;
+
+        // Call the specific trigger we set up in the V5/V6 Tool
+        switch (newState)
         {
-            Debug.Log(gameObject.name + " fell into a pit!");
-            Die();
+            case AnimState.Idle:   animator.SetTrigger("DoIdle"); break;
+            case AnimState.Walk:   animator.SetTrigger("DoWalk"); break;
+            case AnimState.Run:    animator.SetTrigger("DoRun"); break;
+            case AnimState.Attack: animator.SetTrigger("Attack"); break;
+            case AnimState.Dead:   animator.SetTrigger("Die"); break;
         }
     }
 
-    // 2. Die and Drop Logic
+    // --- COMBAT LOGIC ---
+    protected void TryAttack()
+    {
+        if (Time.time >= lastAttackTime + attackCooldown)
+        {
+            lastAttackTime = Time.time;
+            
+            // 1. Stop Moving
+            StopMoving();
+            
+            // 2. Play Animation & Lock State
+            isAttacking = true;
+            ChangeAnimationState(AnimState.Attack);
+            StartCoroutine(ResetAttackState()); // Unlock after animation finishes
+
+            // 3. Deal Damage
+            Debug.Log($"<color=red>{gameObject.name} attacked Player for {attackDamage} damage!</color>");
+        }
+    }
+
+    private IEnumerator ResetAttackState()
+    {
+        // Wait for animation duration (approx 0.5s for most pixel attacks)
+        yield return new WaitForSeconds(0.5f); 
+        
+        isAttacking = false;
+        currentState = AnimState.Idle; // Reset state so UpdateAnimation can take over again
+        animator.SetTrigger("DoIdle"); // Return to idle immediately
+    }
+
+    // --- ANIMATION LOGIC (UPDATED) ---
+    protected void UpdateAnimation()
+    {
+        if (animator == null || isDead || isAttacking) return;
+
+        Vector2 velocity = rb.linearVelocity;
+        float speed = velocity.magnitude;
+
+        // 1. Always update Direction for Blend Trees (so they face the right way)
+        if (speed > 0.01f)
+        {
+            velocity.Normalize(); 
+            animator.SetFloat("Horizontal", velocity.x);
+            animator.SetFloat("Vertical", velocity.y);
+        }
+
+        // 2. Decide State based on Logic
+        // Logic: If barely moving -> Idle. If moving AND Alerted -> Run. If moving AND Not Alerted -> Walk.
+        AnimState targetState = currentState;
+
+        if (speed < 0.1f)
+        {
+            targetState = AnimState.Idle;
+        }
+        else 
+        {
+            // If we know about the player (isAlerted), we RUN. Otherwise we WALK (Patrol).
+            if (isAlerted) targetState = AnimState.Run;
+            else targetState = AnimState.Walk;
+        }
+
+        // 3. Apply Change
+        if (targetState != currentState)
+        {
+            ChangeAnimationState(targetState);
+        }
+    }
+
+    // --- DEATH & PITS ---
+    protected virtual void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (isDead) return;
+        if (collision.CompareTag("Pit")) Die();
+    }
+
     public virtual void Die()
     {
-        List<Transform> masksToDrop = new List<Transform>();
+        if (isDead) return;
+        isDead = true;
         
-        // Find masks
-        foreach (Transform child in transform)
-        {
-            if (child.name.Contains("Mask")) masksToDrop.Add(child);
-        }
+        StopMoving();
+        rb.linearVelocity = Vector2.zero;
+        rb.simulated = false; 
 
-        // Drop masks
-        foreach (Transform mask in masksToDrop)
-        {
-            mask.SetParent(null); 
-            mask.rotation = Quaternion.identity; 
-            
-            // Optional: Re-enable collider logic here if needed
-            // var col = mask.GetComponent<Collider2D>();
-            // if(col) col.enabled = true;
-        }
+        DropMasks();
 
-        // Kill Enemy
+        if (animator != null)
+        {
+            // Use the new State helper
+            // Note: Horizontal/Vertical are still set from the last frame, 
+            // so the Death Blend Tree will pick the correct directional death.
+            ChangeAnimationState(AnimState.Dead);
+            StartCoroutine(WaitAndDestroy(1.0f)); // Wait longer for 8-frame death
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private IEnumerator WaitAndDestroy(float delay)
+    {
+        yield return new WaitForSeconds(delay);
         Destroy(gameObject);
     }
 
-    // --- MASK SWAPPING LOGIC ---
+    private void DropMasks()
+    {
+        List<Transform> masksToDrop = new List<Transform>();
+        foreach (Transform child in transform) { if (child.name.Contains("Mask")) masksToDrop.Add(child); }
+        foreach (Transform mask in masksToDrop) { mask.SetParent(null); mask.rotation = Quaternion.identity; }
+    }
 
-    // Automatically removes old masks when a new one is attached
+    // --- MOVEMENT & HELPERS ---
     private void OnTransformChildrenChanged()
     {
+        if (isDead) return;
         List<Transform> masks = new List<Transform>();
         foreach (Transform child in transform) { if (child.name.Contains("Mask")) masks.Add(child); }
-
-        if (masks.Count > 1)
-        {
-            // Destroy all except the newest one (last in list)
-            for (int i = 0; i < masks.Count - 1; i++) { Destroy(masks[i].gameObject); }
-            
-            // Center the new mask
-            Transform winner = masks[masks.Count - 1];
-            winner.localPosition = Vector3.zero;
-        }
+        if (masks.Count > 1) { for (int i = 0; i < masks.Count - 1; i++) Destroy(masks[i].gameObject); masks[masks.Count - 1].localPosition = Vector3.zero; }
     }
 
     public void UpdateMaskStatus()
     {
         currentMask = MaskType.None;
         visionMultiplier = 1f;
-        
-        for (int i = transform.childCount - 1; i >= 0; i--)
-        {
+        for (int i = transform.childCount - 1; i >= 0; i--) {
             Transform child = transform.GetChild(i);
-            if (child.name.Contains("Mask")) // Safe check if pending destroy
-            {
-                if (child.name.Contains("RedMask")) { currentMask = MaskType.Red; }
+            if (child.name.Contains("Mask")) {
+                if (child.name.Contains("RedMask")) currentMask = MaskType.Red;
                 else if (child.name.Contains("YellowMask")) { currentMask = MaskType.Yellow; visionMultiplier = 0.5f; }
-                else if (child.name.Contains("GreenMask")) { currentMask = MaskType.Green; }
+                else if (child.name.Contains("GreenMask")) currentMask = MaskType.Green;
                 return;
             }
         }
@@ -149,113 +246,77 @@ public abstract class EnemyBase : MonoBehaviour
     {
         float actualVision = visionRange * visionMultiplier;
         if (dist > actualVision) return false;
-        if (isAlerted) return true;
-        if (fovAngle >= 360f) return true;
         
-        Vector2 facingDir = (spriteRenderer != null && spriteRenderer.flipX) ? Vector2.left : Vector2.right;
+        // If already alerted, we keep seeing them (chase logic)
+        if (isAlerted) return true;
+        
+        if (fovAngle >= 360f) return true;
+        Vector2 facingDir = (animator != null) ? (Vector2)(Quaternion.Euler(0,0,GetFacingAngleFromAnimator()) * Vector2.right) : (spriteRenderer != null && spriteRenderer.flipX ? Vector2.left : Vector2.right);
         Vector2 dirToPlayer = (player.position - transform.position).normalized;
-        return Vector2.Angle(facingDir, dirToPlayer) < (fovAngle / 2f);
+        
+        bool seesPlayer = Vector2.Angle(facingDir, dirToPlayer) < (fovAngle / 2f);
+        
+        // If we see them, we become Alerted -> Updates Animation to RUN
+        if (seesPlayer) isAlerted = true; 
+        
+        return seesPlayer;
     }
 
     protected abstract void PerformBehavior(float distanceToPlayer);
 
-    // --- SMART MOVEMENT ---
-
-    // Standard Move: Avoids Walls AND Pits
-    protected void MoveToSmart(Vector2 target)
-    {
-        MoveToSmart(target, obstacleLayer | pitLayer);
-    }
-
-    // Specific Move: Pass specific layers to avoid (e.g., only walls)
     protected void MoveToSmart(Vector2 target, LayerMask avoidanceLayers)
     {
+        if (isDead) return;
         Vector2 desiredDir = (target - (Vector2)transform.position).normalized;
         Vector2 finalDir = desiredDir;
-
-        // Check ahead
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, desiredDir, avoidRange, avoidanceLayers);
-
-        if (hit.collider != null)
-        {
-            // Try alternate paths
-            Vector2[] directionsToCheck = new Vector2[] {
-                RotateVector(desiredDir, 45), RotateVector(desiredDir, -45), 
-                RotateVector(desiredDir, 90), RotateVector(desiredDir, -90)  
-            };
-
-            foreach (Vector2 checkDir in directionsToCheck)
-            {
-                if (Physics2D.Raycast(transform.position, checkDir, avoidRange, avoidanceLayers).collider == null)
-                {
-                    finalDir = checkDir;
-                    break;
-                }
-            }
+        if (Physics2D.Raycast(transform.position, desiredDir, avoidRange, avoidanceLayers).collider != null) {
+            Vector2[] directionsToCheck = new Vector2[] { RotateVector(desiredDir, 45), RotateVector(desiredDir, -45), RotateVector(desiredDir, 90), RotateVector(desiredDir, -90) };
+            foreach (Vector2 checkDir in directionsToCheck) { if (Physics2D.Raycast(transform.position, checkDir, avoidRange, avoidanceLayers).collider == null) { finalDir = checkDir; break; } }
         }
         ApplyVelocity(finalDir);
     }
 
-    private void ApplyVelocity(Vector2 dir)
-    {
+    protected void MoveToSmart(Vector2 target) { MoveToSmart(target, obstacleLayer | pitLayer); }
+
+    private void ApplyVelocity(Vector2 dir) {
         Vector2 targetVelocity = dir * moveSpeed;
         rb.linearVelocity = Vector2.SmoothDamp(rb.linearVelocity, targetVelocity, ref currentVelocityRef, slideInertia);
-        if (spriteRenderer && rb.linearVelocity.sqrMagnitude > 0.1f) 
-            spriteRenderer.flipX = rb.linearVelocity.x < 0;
     }
 
-    protected void StopMoving()
-    {
-        rb.linearVelocity = Vector2.SmoothDamp(rb.linearVelocity, Vector2.zero, ref currentVelocityRef, slideInertia);
-    }
-
-    Vector2 RotateVector(Vector2 v, float degrees)
-    {
-        float rad = degrees * Mathf.Deg2Rad;
-        float ca = Mathf.Cos(rad);
-        float sa = Mathf.Sin(rad);
-        return new Vector2(ca * v.x - sa * v.y, sa * v.x + ca * v.y);
-    }
-
-    // --- VISUALS ---
-
-    void SetupLineRenderer()
-    {
-        if (!TryGetComponent<LineRenderer>(out lineRenderer)) lineRenderer = gameObject.AddComponent<LineRenderer>();
-        lineRenderer.startWidth = 0.05f; lineRenderer.endWidth = 0.05f;
-        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-        lineRenderer.sortingOrder = -1;
-        lineRenderer.startColor = skinColor; lineRenderer.endColor = skinColor;
+    protected void StopMoving() { rb.linearVelocity = Vector2.SmoothDamp(rb.linearVelocity, Vector2.zero, ref currentVelocityRef, slideInertia); }
+    Vector2 RotateVector(Vector2 v, float degrees) { float r = degrees * Mathf.Deg2Rad, c = Mathf.Cos(r), s = Mathf.Sin(r); return new Vector2(c * v.x - s * v.y, s * v.x + c * v.y); }
+    
+    // VISUALS
+    void SetupLineRenderer() { if (!TryGetComponent(out lineRenderer)) lineRenderer = gameObject.AddComponent<LineRenderer>(); lineRenderer.material = new Material(Shader.Find("Sprites/Default")); lineRenderer.startColor = lineRenderer.endColor = skinColor; lineRenderer.startWidth = lineRenderer.endWidth = 0.05f; lineRenderer.useWorldSpace = false; lineRenderer.sortingOrder = -1; }
+    void DrawVisionCone() 
+    { 
+        if (!lineRenderer) return; 
         
-        // IMPORTANT: Local space ensures cone follows enemy
-        lineRenderer.useWorldSpace = false; 
+        int s = 50; // Resolution (Smoothness)
+        
+        // OLD: s + 2
+        // NEW: s + 3 (We need one extra point to close the loop back to center)
+        lineRenderer.positionCount = s + 3; 
+
+        float ang = (animator ? GetFacingAngleFromAnimator() : 0f) - fovAngle/2f;
+        float step = fovAngle/s;
+        float rng = visionRange * visionMultiplier; 
+
+        // 1. Start at Center
+        lineRenderer.SetPosition(0, visionOffset); 
+
+        // 2. Draw the Arc (Indices 1 to s+1)
+        for(int i=0; i<=s; i++) 
+        { 
+            float r = Mathf.Deg2Rad * (ang + step * i); 
+            Vector3 pointOnCircle = new Vector3(Mathf.Cos(r)*rng, Mathf.Sin(r)*rng) + visionOffset;
+            lineRenderer.SetPosition(i+1, pointOnCircle); 
+        } 
+        
+        // 3. NEW: Close the loop (Draw line from End of Arc back to Center)
+        lineRenderer.SetPosition(s+2, visionOffset);
     }
-
-    void DrawVisionCone()
-    {
-        if (lineRenderer == null) return;
-        int segments = 50;
-        lineRenderer.positionCount = segments + 2;
-        float currentFacingAngle = (spriteRenderer != null && spriteRenderer.flipX) ? 180f : 0f;
-        float startAngle = currentFacingAngle - (fovAngle / 2f);
-        float angleStep = fovAngle / segments;
-        float actualRange = visionRange * visionMultiplier;
-
-        // Start at offset (Eye level)
-        lineRenderer.SetPosition(0, visionOffset);
-
-        for (int i = 0; i <= segments; i++) {
-            float angleRad = Mathf.Deg2Rad * (startAngle + (angleStep * i));
-            float x = Mathf.Cos(angleRad) * actualRange;
-            float y = Mathf.Sin(angleRad) * actualRange;
-            
-            // Apply offset to outer points too
-            lineRenderer.SetPosition(i + 1, new Vector3(x, y, 0) + visionOffset);
-        }
-        lineRenderer.loop = true;
-        if (fovAngle >= 360) lineRenderer.positionCount = segments;
-    }
-
+    float GetFacingAngleFromAnimator() { float x = animator.GetFloat("Horizontal"), y = animator.GetFloat("Vertical"); return (Mathf.Abs(x)<0.1f && Mathf.Abs(y)<0.1f) ? 270f : Mathf.Atan2(y, x) * Mathf.Rad2Deg; }
     protected virtual void OnAlertReceived(Vector3 p, Vector3 o, float r) { if (Vector2.Distance(transform.position, o) <= r) isAlerted = true; }
     protected virtual void OnDestroy() { EnemyAlertSystem.OnPlayerFound -= OnAlertReceived; }
 }
