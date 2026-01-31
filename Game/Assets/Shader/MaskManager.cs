@@ -13,9 +13,9 @@ public class MaskManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector2 mousePosition = Mouse.current.position.ReadValue();
-        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.WorldToScreenPoint(transform.position).z));
-        transform.position = worldPosition;
+        // Vector2 mousePosition = Mouse.current.position.ReadValue();
+        // Vector3 worldPosition = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.WorldToScreenPoint(transform.position).z));
+        // transform.position = worldPosition;
         // get average color of sprite renderer
         Color avgColor = GetAverageColor(spriteRenderer);
         // set fire sprite renderer color to average color

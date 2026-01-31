@@ -8,6 +8,7 @@ public class Enemy_Standard : EnemyBase
     public float patrolSpeed = 1.5f;    
     public float chaseSpeed = 4f;       
     public float giveUpTime = 2f; 
+    public GameObject mask;
     
     private Vector2 startPos;
     private bool movingPositive = true;
@@ -17,10 +18,19 @@ public class Enemy_Standard : EnemyBase
     {
         base.Start();
         startPos = transform.position;
+        mask = transform.Find("CIRCLE_MASK").gameObject;
     }
 
     protected override void PerformBehavior(float distanceToPlayer)
     {
+        if (currentMask == MaskType.None)
+        {
+            mask.SetActive(false);
+        }
+        else
+        {
+            mask.SetActive(true);
+        }
         // 1. RED MASK LOGIC (Reckless)
         if (currentMask == MaskType.Red)
         {

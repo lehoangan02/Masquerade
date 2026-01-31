@@ -19,6 +19,8 @@ public class PlayerController : MonoBehaviour
         }
             
     }
+    public Material fogMaterial; // Assign this in the Inspector
+    
 
     public enum State { Normal, Locked, Attacking }
     
@@ -104,6 +106,10 @@ public class PlayerController : MonoBehaviour
     {
         if (currentState == State.Normal) HandleInput();
         UpdateAnimation();
+        if (fogMaterial != null)
+    {
+        fogMaterial.SetVector("_PlayerPos", new Vector4(transform.position.x, transform.position.y, 0, 0));
+    }
     }
 
     void FixedUpdate()

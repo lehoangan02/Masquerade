@@ -82,7 +82,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 20
+  m_SortingOrder: 41
   m_MaskInteraction: 0
   m_Sprite: {fileID: -280423042701715671, guid: 0a15b3187960b40d28260d43d601ddda, type: 3}
   m_Color: {r: 1, g: 0.8820755, b: 0.8820755, a: 1}
@@ -186,7 +186,6 @@ MonoBehaviour:
   damage: 5
   lifetime: 5
   stickOffset: {x: 0, y: 0}
-  stickScale: 0.5
   attractionRadius: 3
   attractionSpeed: 8
   pickupRadius: 0.5
