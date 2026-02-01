@@ -125567,7 +125567,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1099790965}
   - component: {fileID: 1099790964}
-  - component: {fileID: 1099790963}
   - component: {fileID: 1099790962}
   - component: {fileID: 1099790961}
   m_Layer: 0
@@ -125633,14 +125632,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!81 &1099790963
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1099790960}
-  m_Enabled: 1
 --- !u!20 &1099790964
 Camera:
   m_ObjectHideFlags: 0
@@ -125870,6 +125861,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 537896703140039652, guid: 80aa7a99ef7323945b6905bf7daa7963, type: 3}
+      propertyPath: sceneLoader
+      value: 
+      objectReference: {fileID: 1945181943}
     - target: {fileID: 1043192435436107677, guid: 80aa7a99ef7323945b6905bf7daa7963, type: 3}
       propertyPath: m_Name
       value: Player
@@ -130481,6 +130476,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4507212664335066920, guid: 84d88e6f4748e46e698c959b75ca92f8, type: 3}
   m_PrefabInstance: {fileID: 1945181941}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1945181943 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4230289336352420785, guid: 84d88e6f4748e46e698c959b75ca92f8, type: 3}
+  m_PrefabInstance: {fileID: 1945181941}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 027c335b5287443f9857a3dc9c95f869, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SceneLoader
 --- !u!1 &2007890406
 GameObject:
   m_ObjectHideFlags: 0
@@ -130566,7 +130572,7 @@ Transform:
   m_GameObject: {fileID: 2007890406}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 48.5, y: -7, z: 0}
+  m_LocalPosition: {x: 49.625, y: -7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
