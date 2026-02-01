@@ -100,7 +100,7 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected virtual void LateUpdate()
     {
-        if (showVisionCircle && lineRenderer != null) DrawVisionCone();
+        // if (showVisionCircle && lineRenderer != null) DrawVisionCone();
     }
 
     // --- SMART MOVEMENT ---
