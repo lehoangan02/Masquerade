@@ -19,6 +19,7 @@ public class PauseManager : MonoBehaviour
     {
         Debug.Log("Restarting scene: " + SceneManager.GetActiveScene().name);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Time.timeScale = 1f;
     }
     public void TogglePause()
     {
