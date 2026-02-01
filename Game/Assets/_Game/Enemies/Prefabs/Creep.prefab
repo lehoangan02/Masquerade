@@ -101,7 +101,7 @@ MonoBehaviour:
   patrolSpeed: 1.5
   chaseSpeed: 4
   giveUpTime: 2
-  mask: {fileID: 0}
+  mask: {fileID: 8339584131673145136}
 --- !u!61 &7843849973687307220
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -289,5 +289,10 @@ PrefabInstance:
 --- !u!4 &6281903284607066193 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6968540276933921295, guid: 844247c8992c346f78270483736df529, type: 3}
+  m_PrefabInstance: {fileID: 4006224234467240542}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8339584131673145136 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4910278338442401134, guid: 844247c8992c346f78270483736df529, type: 3}
   m_PrefabInstance: {fileID: 4006224234467240542}
   m_PrefabAsset: {fileID: 0}

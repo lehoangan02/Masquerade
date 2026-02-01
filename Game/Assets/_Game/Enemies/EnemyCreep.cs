@@ -19,6 +19,7 @@ public class Enemy_Standard : EnemyBase
         base.Start();
         startPos = transform.position;
         mask = transform.Find("CIRCLE_MASK").gameObject;
+        mask.SetActive(false);
     }
 
     protected override void PerformBehavior(float distanceToPlayer)
